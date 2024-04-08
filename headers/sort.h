@@ -22,7 +22,7 @@ typedef struct Sort_function {
 extern const int SORT_FUNCTIONS_LEN;
 extern const Sort_function SORT_FUNCTIONS[];
 
-Sort_info* init_sort(int array_size);
+Sort_info* init_sort_info(int array_size);
 void free_sort_info(Sort_info* info);
 
 #endif

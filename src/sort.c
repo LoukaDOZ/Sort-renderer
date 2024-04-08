@@ -26,7 +26,7 @@ const Sort_function SORT_FUNCTIONS[] = {
 
 ////////////////////////////////////
 
-Sort_info* init_sort(int array_size) {
+Sort_info* init_sort_info(int array_size) {
     Sort_info* info = (Sort_info*) malloc(sizeof(Sort_info));
     if(info == NULL)
         return NULL;

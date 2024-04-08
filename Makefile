@@ -7,7 +7,7 @@ SortHeadersFolder=$(SortsFolder)/headers
 SortSrcFolder=$(SortsFolder)/src
 OFiles=$(patsubst %.c,%.o,$(wildcard $(SortSrcFolder)/*.c)) $(patsubst %.c,%.o,$(wildcard $(SrcFolder)/*.c))
 Exec=exec
-Flags=-lm -lpthread
+Flags=-lm
 SDLFlags=`sdl2-config --cflags --libs` -lSDL2 -lSDL2_ttf
 
 all: build run
