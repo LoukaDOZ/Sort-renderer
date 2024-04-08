@@ -38,7 +38,15 @@ typedef struct Args {
     int w, h, framerate, fullscreen;
 } Args;
 
+typedef struct Thread_arg {
+    pthread_mutex_t* mutex;
+    Sort_info* info;
+    Render* render;
+} Thread_arg;
+
 SDL_bool HAS_QUITTED = SDL_FALSE;
+
+
 
 void handle_render_events(Render* render) {
     handle_events(render);
@@ -113,38 +121,40 @@ SDL_bool draw_text_info(Render* render, Sort_info* info, long start_time, int wi
     return SDL_TRUE;
 }
 
-SDL_bool draw(Render* render, Sort_info* info, long start_time, SDL_bool show_texts) {
+SDL_bool run_display(void* args) {
+    Thread_arg* targs = (Thread_arg*) args;
+    Render* render = targs->render;
+    Sort_info* info = targs->info;
+    pthread_mutex_t* info_mutex = targs->mutex;
+
     int ww, wh;
-    get_window_size(render, &ww, &wh);
-
-    if(!fill_background(render, BLACK_COLOR) || !draw_array(render, info, ww, wh))
-        return SDL_FALSE;
-    
-    if(show_texts && !draw_text_info(render, info, start_time, ww, wh))
-        return SDL_FALSE;
-
-    refresh(render);
-    return SDL_TRUE;
-}
-
-SDL_bool run_sort(Render* render, Sort_info* info, const Sort_function* sort_func) {
-    if(!draw(render, info, NO_TIME, SHOW_TEXTS))
-        return SDL_FALSE;
-
+    long return_value = 0;
     long start_time = ms_time();
+
+    get_window_size(render, &ww, &wh);
+    
     while(!HAS_QUITTED) {
         tick(render);
         handle_render_events(render);
-        int state = sort_func->sort(info);
 
-        if(state == SORT_FAILURE)
+        if(!fill_background(render, BLACK_COLOR)) {
+            return_value = 1;
             return SDL_FALSE;
+        }
 
-        if(state == SORT_FINISHED)
-            break;
-
-        if(!draw(render, info, start_time, SHOW_TEXTS))
+        pthread_mutex_lock(info_mutex);
+        if(!draw_array(render, info, ww, wh)) {
+            pthread_mutex_unlock(info_mutex);
             return SDL_FALSE;
+        }
+        pthread_mutex_unlock(info_mutex);
+
+        /*pthread_mutex_lock(info_mutex);
+        if(!draw_text_info(render, info, start_time, ww, wh)) {
+            pthread_mutex_unlock(info_mutex);
+            return SDL_FALSE;
+        }
+        pthread_mutex_unlock(info_mutex);*/
 
         refresh(render);
     }
@@ -152,68 +162,90 @@ SDL_bool run_sort(Render* render, Sort_info* info, const Sort_function* sort_fun
     return SDL_TRUE;
 }
 
-SDL_bool shuffle(Render* render, Sort_info* info) {
-    int save_cursor = info->cursor;
-
-    for(int i = 0; i < info->array_len && !HAS_QUITTED; i++) {
-        tick(render);
-        handle_render_events(render);
-
-        int randi = rand() % info->array_len;
-        int tmp = info->array[i];
-
-        info->array[i] = info->array[randi];
-        info->array[randi] = tmp;
-        info->cursor = i;
-
-        if(!draw(render, info, NO_TIME, SHOW_TEXTS))
-            return SDL_FALSE;
-    }
-
-    info->cursor = save_cursor;
-    return SDL_TRUE;
+short init_sort_func(pthread_mutex_t* mutex, const Sort_function* func, Sort_info* info) {
+    pthread_mutex_lock(mutex);
+    short state = func->init(info);
+    pthread_mutex_unlock(mutex);
+    return state;
 }
 
-SDL_bool run(Render* render) {
-    int i = 0;
+short run_sort_func(pthread_mutex_t* mutex, const Sort_function* func, Sort_info* info) {
+    pthread_mutex_lock(mutex);
+    short state = func->sort(info);
+    pthread_mutex_unlock(mutex);
+    return state;
+}
+
+void free_sort_func(pthread_mutex_t* mutex, const Sort_function* func, Sort_info* info) {
+    pthread_mutex_lock(mutex);
+    func->free(info);
+    pthread_mutex_unlock(mutex);
+}
+
+void* run_sorting(void* args) {
+    Thread_arg* targs = (Thread_arg*) args;
+    Sort_info* info = targs->info;
+    pthread_mutex_t* info_mutex = targs->mutex;
+
+    long return_value = 0;
+    int sort_func_i = 0;
+
+    pthread_mutex_lock(info_mutex);
+    int array_len = info->array_len;
+    pthread_mutex_unlock(info_mutex);
 
     while(!HAS_QUITTED) {
-        Sort_info* info = init_sort(50);
-        const Sort_function* sort_func = &(SORT_FUNCTIONS[i]);
+        const Sort_function* sort_func = &(SORT_FUNCTIONS[sort_func_i]);
 
-        if(sort_func->init(info) != SORT_SUCCESS) {
-            free_sort_info(info);
-            return SDL_FALSE;
+        for(int i = 0; i < array_len; i++) {
+            pthread_mutex_lock(info_mutex);
+
+            int randi = rand() % info->array_len;
+            int tmp = info->array[i];
+
+            info->array[i] = info->array[randi];
+            info->array[randi] = tmp;
+            info->cursor = i;
+
+            pthread_mutex_unlock(info_mutex);
+            usleep(10000);
         }
 
-        shuffle(render, info);
+        if(init_sort_func(info_mutex, sort_func, info) != SORT_SUCCESS) {
+            return_value = 1;
+            break;
+        }
 
         if(HAS_QUITTED) {
-            sort_func->free(info);
-            free_sort_info(info);
+            free_sort_func(info_mutex, sort_func, info);
             break;
         }
 
         usleep(HALF_SEC);
-        SDL_bool state = run_sort(render, info, sort_func);
+        short state = SORT_SUCCESS;
+        while(!HAS_QUITTED && state == SORT_SUCCESS) {
+            state = run_sort_func(info_mutex, sort_func, info);
+            usleep(10000);
+        }
         
-        sort_func->free(info);
-        free_sort_info(info);
+        free_sort_func(info_mutex, sort_func, info);
 
-        if(!state)
-            return SDL_FALSE;
+        if(state != SORT_FINISHED) {
+            return_value = 1;
+            break;
+        }
 
         if(HAS_QUITTED)
             break;
         
         usleep(HALF_SEC);
 
-        i++;
-        if(i >= SORT_FUNCTIONS_LEN)
-            i = 0;
+        sort_func_i++;
+        if(sort_func_i >= SORT_FUNCTIONS_LEN)
+            sort_func_i = 0;
     }
 
-    return SDL_TRUE;
+    pthread_exit((void*) return_value);
 }
 
 void init_args(Args* args) {
@@ -231,70 +263,6 @@ int get_args(Args* args, int argc, char** argv) {
     init_args(args);
     
     return ARGS_SUCCESS;
-}
-
-typedef struct Thread_arg {
-    pthread_mutex_t* mutex;
-    Sort_info* info;
-} Thread_arg;
-
-void* aa(void* args) {
-    Thread_arg* targs = (Thread_arg*) args;
-    Sort_info* info = targs->info;
-    long return_value = 0;
-    int i = 0;
-
-    while(!HAS_QUITTED) {
-        const Sort_function* sort_func = &(SORT_FUNCTIONS[i]);
-
-        pthread_mutex_lock(targs->mutex); // != 0
-        if(sort_func->init(info) != SORT_SUCCESS) {
-            pthread_mutex_unlock(targs->mutex);
-            free_sort_info(info);
-            return_value = 1;
-            break;
-        }
-        pthread_mutex_unlock(targs->mutex); // != 0
-
-        pthread_mutex_lock(targs->mutex); // != 0
-        if(HAS_QUITTED) {
-            pthread_mutex_unlock(targs->mutex);
-            sort_func->free(info);
-            free_sort_info(info);
-            break;
-        }
-        pthread_mutex_unlock(targs->mutex); // != 0
-
-        usleep(HALF_SEC);
-        SDL_bool state = SDL_TRUE;
-        for(int i = 0; i < info->array_len && !HAS_QUITTED; i++) {
-            pthread_mutex_lock(targs->mutex); // != 0
-            info->cursor = i;
-            pthread_mutex_unlock(targs->mutex); // != 0
-            usleep(100000);
-        }
-        
-        pthread_mutex_lock(targs->mutex); // != 0
-        sort_func->free(info);
-        pthread_mutex_unlock(targs->mutex); // != 0
-
-        if(!state) {
-            return_value = 1;
-            break;
-        }
-
-        if(HAS_QUITTED)
-            break;
-        
-        usleep(HALF_SEC);
-
-        i++;
-        if(i >= SORT_FUNCTIONS_LEN)
-            i = 0;
-    }
-
-    printf("EXIT %d\n", HAS_QUITTED);
-    pthread_exit((void*) return_value);
 }
 
 int main(int argc, char** argv) {
@@ -320,34 +288,26 @@ int main(int argc, char** argv) {
     show_window(render);
 
     Sort_info* info = init_sort(50);
-    pthread_t pid;
-    int ret = 0;
-    pthread_mutex_t mutex; // TODO HAS_QUIT MUTEX
-    pthread_mutex_init(&mutex, NULL); // != 0
-    Thread_arg ta = {&mutex, info};
-    pthread_create(&pid, NULL, &aa, &ta);
 
-    while(!HAS_QUITTED) {
-        tick(render);
-        fill_background(render, BLACK_COLOR);
-        handle_render_events(render);
-        pthread_mutex_lock(&mutex); // != 0
-        draw_array(render, info, 500, 500);
-        pthread_mutex_unlock(&mutex); // != 0
-        refresh(render);
-    }
-    printf("WAIT\n");
-    pthread_join(pid, (void**) &ret); // != 0
+    pthread_mutex_t mutex; // TODO HAS_QUIT MUTEX
+    pthread_mutex_init(&mutex, NULL);
+
+    int thread_res = 0;
+    pthread_t pid;
+    Thread_arg targs = {&mutex, info, render};
+    pthread_create(&pid, NULL, &run_sorting, &targs);
+    
+    SDL_bool display_res_state = run_display(&targs);
+    
+    pthread_join(pid, (void**) &thread_res);
     pthread_mutex_destroy(&mutex);
     free_sort_info(info);
-    printf("STOP %d\n", ret);
-
-    /*if(!run(render)) {
-        fprintf(stderr, "An error occur when rendering : %s\n", render_error());
-        destroy_render(render);
-        return EXIT_FAILURE;
-    }*/
-
     destroy_render(render);
+
+    if(!display_res_state || thread_res != 0) {
+        fprintf(stderr, "An error occur when rendering : %s\n", render_error());
+        return EXIT_FAILURE;
+    }
+
     return EXIT_SUCCESS;
 }

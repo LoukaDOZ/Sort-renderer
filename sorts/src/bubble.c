@@ -27,7 +27,7 @@ short bubble_sort(Sort_info* info) {
     }
 
     info->cursor++;
-    if(info->cursor >= *limit) {
+    if(info->cursor > *limit) {
         info->cursor = 0;
         (*limit)--;
     }

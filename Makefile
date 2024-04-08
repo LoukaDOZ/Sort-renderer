@@ -1,10 +1,11 @@
 CC=gcc
 BuildFolder=./build
 SortsFolder=./sorts
+SrcFolder=./src
 HeadersFolder=./headers
 SortHeadersFolder=$(SortsFolder)/headers
 SortSrcFolder=$(SortsFolder)/src
-OFiles=$(patsubst %.c,%.o,$(wildcard $(SortSrcFolder)/*.c)) src/sort.o src/render.o src/main.o
+OFiles=$(patsubst %.c,%.o,$(wildcard $(SortSrcFolder)/*.c)) $(patsubst %.c,%.o,$(wildcard $(SrcFolder)/*.c))
 Exec=exec
 Flags=-lm -lpthread
 SDLFlags=`sdl2-config --cflags --libs` -lSDL2 -lSDL2_ttf
