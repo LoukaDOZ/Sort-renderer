@@ -2,29 +2,28 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <unistd.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include "render.h"
 
-#define NB_EVENTS 2
-#define QUIT_EVENTS 0
+#define NB_EVENTS 10
 
+const short WINDOW_QUIT = 0;
 const short KEY_Q = 1;
 const short KEY_P = 2;
+const short KEY_I = 3;
+const short KEY_ARROW_UP = 4;
+const short KEY_ARROW_DOWN = 5;
+const short KEY_ARROW_LEFT = 6;
+const short KEY_ARROW_RIGHT = 7;
+const short MOUSE_WHEEL_UP = 8;
+const short MOUSE_WHEEL_DOWN = 9;
 
 const SDL_Color BLACK_COLOR = {0, 0, 0, 255};
 const SDL_Color WHITE_COLOR = {255, 255, 255, 255};
 const SDL_Color RED_COLOR = {255, 0, 0, 255};
 const SDL_Color ORANGE_COLOR = {255, 90, 0, 255};
-
-struct Render {
-    int w, h, framerate;
-    SDL_Window* window;
-    SDL_Renderer* renderer;
-    TTF_Font* font;
-    SDL_bool fullscreen;
-    short* events;
-};
 
 //////// Render ////////
 
@@ -115,12 +114,6 @@ void get_window_size(Render* render, int* w, int* h) {
 
 //////// Draw ////////
 
-long tick(Render* render) {
-    long delay = (long) (1000 / render->framerate);
-    SDL_Delay(delay);
-    return delay;
-}
-
 void refresh(Render* render) {
     SDL_RenderPresent(render->renderer);
 }
@@ -172,7 +165,13 @@ void handle_events(Render* render) {
     while(SDL_PollEvent(&event)) {
         switch(event.type) {
             case SDL_QUIT:
-                render->events[QUIT_EVENTS] = SDL_TRUE;
+                render->events[WINDOW_QUIT] = SDL_TRUE;
+                break;
+            case SDL_MOUSEWHEEL:
+                if(event.wheel.y > 0)
+                    render->events[MOUSE_WHEEL_UP] += event.wheel.y;
+                else
+                    render->events[MOUSE_WHEEL_DOWN] += abs(event.wheel.y);
                 break;
             case SDL_KEYDOWN:
                 switch(event.key.keysym.scancode) {
@@ -182,6 +181,21 @@ void handle_events(Render* render) {
                     case SDL_SCANCODE_P:
                         render->events[KEY_P]++;
                         break;
+                    case SDL_SCANCODE_I:
+                        render->events[KEY_I]++;
+                        break;
+                    case SDL_SCANCODE_UP:
+                        render->events[KEY_ARROW_UP]++;
+                        break;
+                    case SDL_SCANCODE_DOWN:
+                        render->events[KEY_ARROW_DOWN]++;
+                        break;
+                    case SDL_SCANCODE_RIGHT:
+                        render->events[KEY_ARROW_RIGHT]++;
+                        break;
+                    case SDL_SCANCODE_LEFT:
+                        render->events[KEY_ARROW_LEFT]++;
+                        break;
                 }
                 break;
         }
@@ -189,7 +203,7 @@ void handle_events(Render* render) {
 }
 
 SDL_bool do_quit(Render* render) {
-    return render->events[QUIT_EVENTS];
+    return render->events[WINDOW_QUIT];
 }
 
 short was_pressed(Render* render, short key) {

@@ -21,11 +21,14 @@
 
 #define NAME_TEXT "Sort"
 #define COMPLEXITY_TEXT "Average complexity"
-#define DURATION_TEXT "Time"
-#define CORECTED_DURATION_TEXT "Real duration"
+#define TIME_TEXT "Time"
+#define CORRECTED_TIME_TEXT "Corrected time"
 
 #define SHUFFLE_TEXT "Shuffling"
 #define SHUFFLE_TEXT_LEN 9
+
+#define PAUSE_TEXT "Paused"
+#define PAUSE_TEXT_LEN 6
 
 #define TEXT_LETTER_W 8
 #define TEXT_H 15
@@ -47,14 +50,46 @@ typedef struct Thread_arg {
 } Thread_arg;
 
 SDL_bool HAS_QUITTED = SDL_FALSE;
+SDL_bool HAS_PAUSED = SDL_FALSE;
+SDL_bool SHOW_INFO = SDL_TRUE;
+int NEXT_SORT = 0;
 
 
+SDL_bool inverse_bool(SDL_bool b) {
+    return (b + 1) % 2;
+}
 
 void handle_render_events(Render* render) {
+    int tmp_framerate = render->framerate;
     handle_events(render);
 
     if(do_quit(render) || was_pressed(render, KEY_Q) > 0)
         HAS_QUITTED = SDL_TRUE;
+
+    if(was_pressed(render, KEY_I) % 2 > 0)
+        SHOW_INFO = inverse_bool(SHOW_INFO);
+
+    NEXT_SORT += was_pressed(render, KEY_ARROW_RIGHT);
+    NEXT_SORT -= was_pressed(render, KEY_ARROW_LEFT);
+
+    if(was_pressed(render, KEY_P) % 2 > 0)
+        HAS_PAUSED = inverse_bool(HAS_PAUSED);
+
+    int nb_up = was_pressed(render, MOUSE_WHEEL_UP) + was_pressed(render, KEY_ARROW_UP);
+    int nb_down = was_pressed(render, MOUSE_WHEEL_DOWN) + was_pressed(render, KEY_ARROW_DOWN);
+
+    if(nb_up > 0 && HAS_PAUSED && render->framerate <= 0)
+        HAS_PAUSED = SDL_FALSE;
+
+    tmp_framerate += nb_up;
+    tmp_framerate -= nb_down;
+    
+    if(tmp_framerate <= 0) {
+        HAS_PAUSED = SDL_TRUE;
+        tmp_framerate = 0;
+    }
+
+    render->framerate = tmp_framerate;
 }
 
 int max(int a, int b) {
@@ -73,11 +108,24 @@ long us_time(void) {
     return tv.tv_sec * 1000000 + tv.tv_usec;
 }
 
+void tick(Render* render) {
+    long step = render->framerate > 0 ? 1000000 / render->framerate : 0;
+    long start = us_time();
+    long limit = start + step;
+
+    handle_render_events(render);
+    while(us_time() < limit && !HAS_QUITTED && NEXT_SORT == 0) {
+        handle_render_events(render);
+        step = render->framerate > 0 ? 1000000 / render->framerate : 0;
+        limit = start + step;
+    }
+}
+
 SDL_bool draw_array(Render* render, Sort_info* info, int window_w, int window_h) {
     int barw = max(floor(window_w / info->array_len), 1);
     SDL_Rect bar = {0, 0, barw, 0};
 
-    for(int i = 0; i < info->array_len && !HAS_QUITTED; i++) {
+    for(int i = 0; i < info->array_len && !HAS_QUITTED && NEXT_SORT == 0; i++) {
         SDL_Color color = i == info->cursor ? RED_COLOR : WHITE_COLOR;
         float ratio = ((float) info->array[i]) / ((float) info->array_len);
         bar.h = floor(window_h * ratio);
@@ -91,13 +139,17 @@ SDL_bool draw_array(Render* render, Sort_info* info, int window_w, int window_h)
     return SDL_TRUE;
 }
 
-SDL_bool draw_one_text_info(Render* render, char* title, char* content, int line) {
-    sprintf(TEXT_BUFFER, "%s: %s", title, content);
-    SDL_Rect text_rect = {0, TEXT_H * line, TEXT_LETTER_W * strlen(TEXT_BUFFER), TEXT_H};
-    return draw_text(render, TEXT_BUFFER, &text_rect, ORANGE_COLOR);
+SDL_bool draw_one_info(Render* render, char* text, int x, int y, int w, int h) {
+    SDL_Rect text_rect = {x, y, w, h};
+    return draw_text(render, text, &text_rect, ORANGE_COLOR);
 }
 
-SDL_bool draw_text_info(Render* render, Sort_info* info, long time_ms, long corrected_time_us, int window_w, int window_h) {
+SDL_bool draw_one_func_info(Render* render, char* title, char* content, int line) {
+    sprintf(TEXT_BUFFER, "%s: %s", title, content);
+    return draw_one_info(render, TEXT_BUFFER, 0, TEXT_H * line, TEXT_LETTER_W * strlen(TEXT_BUFFER), TEXT_H);
+}
+
+SDL_bool draw_func_info(Render* render, const Sort_function* func, long time_ms, long corrected_time_us) {
     int ms = 0, sec = 0, min = 0;
     int corrected_us = 0, corrected_ms = 0, corrected_sec = 0, corrected_min = 0;
 
@@ -114,92 +166,121 @@ SDL_bool draw_text_info(Render* render, Sort_info* info, long time_ms, long corr
         corrected_min = corrected_time_us / 60000000;
     }
 
-    if(!draw_one_text_info(render, NAME_TEXT, info->name, 0))
+    if(!draw_one_func_info(render, NAME_TEXT, func->name, 0))
         return SDL_FALSE;
 
-    if(!draw_one_text_info(render, COMPLEXITY_TEXT, info->complexity, 1))
+    if(!draw_one_func_info(render, COMPLEXITY_TEXT, func->complexity, 1))
         return SDL_FALSE;
 
     sprintf(TIME_BUFFER, "%02dmin  %02ds  %03dms", min, sec, ms);
-    if(!draw_one_text_info(render, DURATION_TEXT, TIME_BUFFER, 2))
+    if(!draw_one_func_info(render, TIME_TEXT, TIME_BUFFER, 2))
         return SDL_FALSE;
 
     sprintf(TIME_BUFFER, "%02dmin  %02ds  %03dms %03dµs", corrected_min, corrected_sec, corrected_ms, corrected_us);
-    return draw_one_text_info(render, CORECTED_DURATION_TEXT, TIME_BUFFER, 3);
+    return draw_one_func_info(render, CORRECTED_TIME_TEXT, TIME_BUFFER, 3);
 }
 
-SDL_bool draw_text_shuffle(Render* render, int window_w, int window_h) {
-    SDL_Rect text_rect = {0, 0, TEXT_LETTER_W * SHUFFLE_TEXT_LEN, TEXT_H};
-    return draw_text(render, SHUFFLE_TEXT, &text_rect, ORANGE_COLOR);
+SDL_bool draw_program_info(Render* render, double lps, int ips, SDL_bool is_shuffling, int window_w, int window_h) {
+    if(is_shuffling) {
+        int w = TEXT_LETTER_W * SHUFFLE_TEXT_LEN;
+        if(!draw_one_info(render, SHUFFLE_TEXT, window_w - w, 0, w, TEXT_H))
+            return SDL_FALSE;
+    }
+
+    if(HAS_PAUSED && !draw_one_info(render, PAUSE_TEXT, 0, window_h - TEXT_H * 3, TEXT_LETTER_W * PAUSE_TEXT_LEN, TEXT_H))
+        return SDL_FALSE;
+
+    sprintf(TEXT_BUFFER, "%0.2lf LPS", lps);
+    if(!draw_one_info(render, TEXT_BUFFER, 0, window_h - TEXT_H * 2, TEXT_LETTER_W * strlen(TEXT_BUFFER), TEXT_H))
+            return SDL_FALSE;
+
+    sprintf(TEXT_BUFFER, "%d IPS", ips);
+    return draw_one_info(render, TEXT_BUFFER, 0, window_h - TEXT_H, TEXT_LETTER_W * strlen(TEXT_BUFFER), TEXT_H);
 }
 
-SDL_bool draw_display(Render* render, Sort_info* info, long time_ms, long corrected_time_us, SDL_bool shuffling) {
+SDL_bool draw_display(Render* render, Sort_info* info, const Sort_function* func, long time_ms, long corrected_time_us, double lps, SDL_bool is_shuffling) {
     int ww, wh;
     get_window_size(render, &ww, &wh);
 
     if(!fill_background(render, BLACK_COLOR) || !draw_array(render, info, ww, wh))
         return SDL_FALSE;
 
-    if(shuffling && !draw_text_shuffle(render, ww, wh))
-        return SDL_FALSE;
-
-    if(!shuffling && !draw_text_info(render, info, time_ms, corrected_time_us, ww, wh))
+    if(SHOW_INFO && (!draw_func_info(render, func, time_ms, corrected_time_us) 
+            || !draw_program_info(render, lps, (int) lps, is_shuffling, ww, wh)))
         return SDL_FALSE;
 
     refresh(render);
     return SDL_TRUE;
 }
 
-SDL_bool shuffle(Render* render, Sort_info* info) {
-    for(int i = 0; i < info->array_len && !HAS_QUITTED; i++) {
+SDL_bool shuffle(Render* render, Sort_info* info, const Sort_function* func) {
+    double loop_time = 0;
+
+    for(int i = 0; i < info->array_len && !HAS_QUITTED && NEXT_SORT == 0; i++) {
+        long loop_start_time = us_time();
         tick(render);
-        handle_render_events(render);
 
-        int rand_i = rand() % info->array_len;
-        int tmp = info->array[rand_i];
+        if(!HAS_PAUSED) {
+            int rand_i = rand() % info->array_len;
+            int tmp = info->array[rand_i];
 
-        info->array[rand_i] = info->array[i];
-        info->array[i] = tmp;
-        info->cursor = i;
+            info->array[rand_i] = info->array[i];
+            info->array[i] = tmp;
+            info->cursor = i;
 
-        if(!draw_display(render, info, NO_TIME, NO_TIME, SDL_TRUE))
+            loop_time = ((double) (us_time() - loop_start_time));
+        } else
+            i--;
+
+        if(!draw_display(render, info, func, NO_TIME, NO_TIME, 1. / (loop_time / 1000000), SDL_TRUE))
             return SDL_FALSE;
     }
 
-    if(!HAS_QUITTED) sleep(1);
+    if(!HAS_QUITTED && NEXT_SORT == 0) sleep(1);
     return SDL_TRUE;
 }
 
 SDL_bool sort(Render* render, Sort_info* info, const Sort_function* func) {
     short state = SORT_SUCCESS;
     long start_time = ms_time();
+    long running_time = 0;
+    long total_time = 0;
     long corrected_total_time = 0;
+    double loop_time = 0;
 
-    while(!HAS_QUITTED && state == SORT_SUCCESS) {
+    while(!HAS_QUITTED && NEXT_SORT == 0 && state == SORT_SUCCESS) {
+        long loop_start_time = us_time();
         tick(render);
-        handle_render_events(render);
 
-        long corrected_start_time = us_time();
-        state = func->sort(info);
-        corrected_total_time += us_time() - corrected_start_time;
+        if(!HAS_PAUSED) {
+            long corrected_start_time = us_time();
+            state = func->sort(info);
+            corrected_total_time += us_time() - corrected_start_time;
+            running_time = ms_time() - start_time;
+            loop_time = ((double) (us_time() - loop_start_time));
+        } else {
+            total_time += running_time;
+            start_time = ms_time();
+            running_time = 0;
+        }
 
-        if(state == SORT_FAILURE || !draw_display(render, info, ms_time() - start_time, corrected_total_time, SDL_FALSE))
+        if(state == SORT_FAILURE || !draw_display(render, info, func, total_time + running_time, corrected_total_time, 1. / (loop_time / 1000000), SDL_FALSE))
             return SDL_FALSE;
     }
 
-    if(!HAS_QUITTED) sleep(1);
+    if(!HAS_QUITTED && NEXT_SORT == 0) sleep(1);
     return SDL_TRUE;
 }
 
 SDL_bool run(Render* render)  {
-    Sort_info* info = init_sort_info(250);
+    Sort_info* info = init_sort_info(500);
     SDL_bool res_state = SDL_TRUE;
     int sort_func_i = 0;
 
     while(!HAS_QUITTED) {
         const Sort_function* func = &(SORT_FUNCTIONS[sort_func_i]);
 
-        if(!shuffle(render, info) || func->init(info) != SORT_SUCCESS) {
+        if(!shuffle(render, info, func) || func->init(info) != SORT_SUCCESS) {
             res_state = SDL_FALSE;
             break;
         }
@@ -211,9 +292,9 @@ SDL_bool run(Render* render)  {
         }
 
         func->free(info);
-        sort_func_i++;
-        if(sort_func_i >= SORT_FUNCTIONS_LEN)
-            sort_func_i = 0;
+        if(NEXT_SORT == 0) sort_func_i++;
+        sort_func_i = abs((sort_func_i + NEXT_SORT) % SORT_FUNCTIONS_LEN);
+        NEXT_SORT = 0;
     }
 
     free_sort_info(info);
@@ -223,7 +304,7 @@ SDL_bool run(Render* render)  {
 void init_args(Args* args) {
     args->w = 500;
     args->h = 500;
-    args->framerate = 500;
+    args->framerate = 60;
     args->fullscreen = 0;
 }
 
