@@ -115,8 +115,10 @@ void get_window_size(Render* render, int* w, int* h) {
 
 //////// Draw ////////
 
-void tick(Render* render) {
-    SDL_Delay((int) (1000 / render->framerate));
+long tick(Render* render) {
+    long delay = (long) (1000 / render->framerate);
+    SDL_Delay(delay);
+    return delay;
 }
 
 void refresh(Render* render) {
@@ -141,16 +143,21 @@ SDL_bool draw_rect(Render* render, SDL_Rect* rect, SDL_Color color) {
 }
 
 SDL_bool draw_text(Render* render, char* text, SDL_Rect* r, SDL_Color color) {
-    SDL_Surface * surface = TTF_RenderUTF8_Solid(render->font, text, color);
+    SDL_Surface* surface = TTF_RenderUTF8_Solid(render->font, text, color);
     if(surface == NULL)
         return SDL_FALSE;
 
-    SDL_Texture * texture = SDL_CreateTextureFromSurface(render->renderer, surface);
-    if(texture == NULL)
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(render->renderer, surface);
+    if(texture == NULL) {
+        SDL_FreeSurface(surface);
         return SDL_FALSE;
+    }
 
-    if(SDL_RenderCopy(render->renderer, texture, NULL, r) != 0)
+    if(SDL_RenderCopy(render->renderer, texture, NULL, r) != 0) {
+        SDL_DestroyTexture(texture);
+        SDL_FreeSurface(surface);
         return SDL_FALSE;
+    }
 
     SDL_DestroyTexture(texture);
     SDL_FreeSurface(surface);

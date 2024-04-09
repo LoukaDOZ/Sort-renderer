@@ -18,7 +18,7 @@ const char* render_error();
 void show_window(Render* render);
 void get_window_size(Render* render, int* w, int* y);
 
-void tick(Render* render);
+long tick(Render* render);
 void refresh(Render* render);
 SDL_bool fill_background(Render* render, SDL_Color color);
 SDL_bool draw_rect(Render* render, SDL_Rect* rect, SDL_Color color);
