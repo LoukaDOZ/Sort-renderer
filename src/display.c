@@ -143,10 +143,10 @@ bool draw_program_info(Render* render, Shared_data shared_data, int fps, bool pa
     return draw_one_info(render, TEXT_BUFFER, 0, window_h - TEXT_H, TEXT_LETTER_W * strlen(TEXT_BUFFER), TEXT_H);
 }
 
-bool run_display(Render* render, Shared_data shared_data) {
+bool run_display(Render* render, Shared_data shared_data, bool show_info) {
     long fps = 0;
     int ww, wh;
-    bool quitted = has_quitted(shared_data), paused = is_paused(shared_data), show_info = true;
+    bool quitted = has_quitted(shared_data), paused = is_paused(shared_data);
 
     get_window_size(render, &ww, &wh);
 

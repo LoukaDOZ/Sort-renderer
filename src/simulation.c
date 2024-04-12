@@ -60,7 +60,6 @@ bool run_simulation(Shared_data shared_data) {
     
     bool shuffling = true;
     reset(shared_data, &current_sort_index, &start_time, &saved_time, &corrected_time);
-    set_simulation_delay(shared_data, SEC_US / 500);
 
     while(!has_quitted(shared_data)) {
         long loop_start_time = us_time();

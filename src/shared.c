@@ -78,7 +78,7 @@ void free_incomplete_data(Shared_data data, int limit) {
     free(data);
 }
 
-Shared_data create_shared_data(int array_size) {
+Shared_data create_shared_data(int array_size, int simulation_delay) {
     Shared_data data = (Shared_data) malloc(sizeof(Shared_pointer*) * NB_SHARED_POINTER);
     if(data == NULL)
         return NULL;
@@ -159,7 +159,7 @@ Shared_data create_shared_data(int array_size) {
     *((unsigned int*) data[TIME_SHARED_POINTER]->pointer) = 0;
     *((unsigned long*) data[CORRECTED_TIME_SHARED_POINTER]->pointer) = 0;
     *((unsigned int*) data[LPS_SHARED_POINTER]->pointer) = 0;
-    *((unsigned long*) data[SIMULATION_DELAY_SHARED_POINTER]->pointer) = 0;
+    *((unsigned long*) data[SIMULATION_DELAY_SHARED_POINTER]->pointer) = simulation_delay;
     *((unsigned int*) data[SORT_FUNCTION_SHARED_POINTER]->pointer) = 0;
     return data;
 }

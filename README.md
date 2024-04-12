@@ -6,11 +6,12 @@ A C program to graphically show how different sorting algorithms work. Made with
 ### Makefile
 
 | Command          | Description                                 |
-| ---------------- | ------------------------------------------- |
+|------------------|---------------------------------------------|
+| `make all`       | Build and run project (with default config) |
 | `make install`   | Install SDL2 and SDL2 TTF libraries         |
 | `make uninstall` | Uninstall SDL2 and SDL2 TTF libraries       |
 | `make build`     | Compile project                             |
-| `make run`       | Build and run project (with default config) |
+| `make run`       | Run project (with default config)           |
 | `make clean`     | Clean compiled files                        |
 
 ### Manual run
@@ -18,46 +19,47 @@ A C program to graphically show how different sorting algorithms work. Made with
 ```bash
 make install
 make build
-./exec
+./build/exec
 ```
 
 Arguments :
-| Argument                         | Description                                                           | Type                  | Default                  |
-| -------------------------------- | --------------------------------------------------------------------- | --------------------- | ------------------------ |
-| `-h, --help`                     | Show help                                                             |                       |                          |
-| `-p, --probability <value>`      | Probability for a cell to be alive when filling board at startup in % | int (>= 0 and <= 100) | 50                       |
-| `-r, --framerate <value>`        | Simulation refresh rate in times per seconds                          | int (> 0)             | 25                       |
-| `-c, --cell-size <value>`        | Cell size in pixels                                                   | int (> 0)             | 10                       |
-| `--window-size=<width>x<height>` | Window size in pixels                                                 | "intxint" (int > 0)   | 500x500                  |
-| `-i, --no-interactive`           | Disable interactible board                                            |                       | Active                   |
-| `-g, --show-generation`          | Show generation count                                                 |                       | Hidden                   |
-| `-f, --fullscreen`               | Fullscreen window                                                     |                       | Value of `--window-size` |
+| Argument                 | Description                      | Type                      | Default        |
+|--------------------------|----------------------------------|---------------------------|----------------|
+| `-h, --help`             | Show help                        |                           |                |
+| `-w, --width <int>`      | Screen width in pixels           | int (>= 1)                | 500px          |
+| `-e, --height <int>`     | Screen height in pixels          | int (>= 1)                | 500px          |
+| `-r, --framerate <int>`  | Display max frames per seconds   | int (>= 1 and <= 1000000) | 60/s           |
+| `-l, --looprate <int>`   | Simulation max loops per seconds | int (>= 1 and <= 1000000) | 500/s          |
+| `-a, --array-size <int>` | Array size                       | int (>= 2)                | Screen width   |
+| `-f, --fullscreen`       | Set fullscreen                   |                           | Not fullscreen |
+| `-i, --no-info`          | Disable information messages     |                           | Shown          |
 
 
 ### In game controls
 
-| Control              | Description                |
-| -------------------- | -------------------------- |
-| `P`                  | Pause/resume simulation    |
-| `G`                  | Show/hide generation count |
-| `C`                  | Clear simulation           |
-| `Q`                  | Quit                       |
-| `Mouse left button`  | Add cell                   |
-| `Mouse right button` | Remove cell                |
+| Control                         | Description                    |
+|---------------------------------|--------------------------------|
+| `Q`                             | Quit                           |
+| `P`                             | Pause/resume simulation        |
+| `I`                             | Show/hide information messages |
+| `Left arrow`                    | Previous sort                  |
+| `Right arrow`                   | Next sort                      |
+| `Up arrow, mouse scrool up`     | Increase simulation looprate   |
+| `Down arrow, mouse scrool down` | Decrease simulation looprate   |
 
 # Example
 
 Default configuration:
 ```bash
-./exec
+./build/exec
 ```
 
 All arguments with a window size of 1000x700:
 ```bash
-./exec -p 70 -r 30 -c 50 --window-size=1000x700 -i -g
+./build/exec -w 1000 -e 700 -r 30 -l 1000 -a 500 -i
 ```
 
 All arguments with fullscreen:
 ```bash
-./exec -p 70 -r 30 -c 50 -i -g -f
+./build/exec -w 1000 -e 700 -r 30 -l 1000 -a 500 -i -f
 ```

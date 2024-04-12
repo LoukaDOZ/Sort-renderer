@@ -59,6 +59,11 @@ Render* init_render(int w, int h, int framerate, bool fullscreen) {
         return NULL;
     }
 
+    if(fullscreen && SDL_SetWindowFullscreen(render->window, SDL_WINDOW_FULLSCREEN_DESKTOP) != 0) {
+        destroy_render(render);
+        return NULL;
+    }
+
     render->renderer = SDL_CreateRenderer(render->window, -1, 0);
     if(render->renderer == NULL) {
         destroy_render(render);
