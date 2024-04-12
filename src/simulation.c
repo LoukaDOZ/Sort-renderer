@@ -114,7 +114,7 @@ bool run_simulation(Shared_data shared_data) {
 
         usleep(get_simulation_delay(shared_data));
         long diff = us_time() - loop_start_time;
-        set_lps(shared_data, diff > 0 ? double_sec_us / ((double) diff) : SEC_US);
+        set_lps(shared_data, diff <= SEC_US ? double_sec_us / ((double) diff) : SEC_US);
     }
 
     return true;

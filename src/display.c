@@ -9,8 +9,9 @@
 #include "utils.h"
 #include "display.h"
 
-#define MIN_DELAY 1
+#define MIN_DELAY 0
 #define MAX_DELAY SEC_US
+#define DELAY_STEP 10000
 
 #define NAME_TEXT "Sort"
 #define COMPLEXITY_TEXT "Average complexity"
@@ -56,8 +57,8 @@ void handle_render_events(Render* render, Shared_data shared_data, bool* quitted
         set_is_paused(shared_data, *paused);
     }
 
-    if(nb_up == nb_down) {
-        unsigned long delay = get_simulation_delay(shared_data) + nb_up - nb_down;
+    if(nb_up != nb_down) {
+        long delay = get_simulation_delay(shared_data) + (nb_down - nb_up) * DELAY_STEP;
 
         if(delay < MIN_DELAY)
             delay = MIN_DELAY;
