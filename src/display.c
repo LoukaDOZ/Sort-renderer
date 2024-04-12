@@ -32,7 +32,7 @@ char TEXT_BUFFER[TEXT_BUFFER_SIZE];
 #define TIME_BUFFER_SIZE 50
 char TIME_BUFFER[TIME_BUFFER_SIZE];
 
-void handle_render_events(Render* render, Shared_data shared_data, bool* show_info) {
+void handle_render_events(Render* render, Shared_data shared_data, bool* quitted, bool* paused, bool* show_info) {
     handle_events(render);
 
     int nb_up = was_pressed(render, MOUSE_WHEEL_UP) + was_pressed(render, KEY_ARROW_UP);
@@ -40,7 +40,8 @@ void handle_render_events(Render* render, Shared_data shared_data, bool* show_in
     int nb_next = was_pressed(render, KEY_ARROW_RIGHT) - was_pressed(render, KEY_ARROW_LEFT);
 
     if(do_quit(render) || was_pressed(render, KEY_Q) > 0) {
-        set_has_quitted(shared_data, true);
+        *quitted = true;
+        set_has_quitted(shared_data, *quitted);
         return;
     }
 
@@ -50,8 +51,10 @@ void handle_render_events(Render* render, Shared_data shared_data, bool* show_in
     if(nb_next != 0)
         set_sort_function(shared_data, nb_next);
 
-    if(was_pressed(render, KEY_P) % 2 > 0)
-        set_is_paused(shared_data, inverse_bool(is_paused(shared_data)));
+    if(was_pressed(render, KEY_P) % 2 > 0) {
+        *paused = inverse_bool(is_paused(shared_data));
+        set_is_paused(shared_data, *paused);
+    }
 
     if(nb_up == nb_down) {
         unsigned long delay = get_simulation_delay(shared_data) + nb_up - nb_down;
@@ -116,7 +119,7 @@ bool draw_func_info(Render* render, Shared_data shared_data) {
     return draw_one_func_info(render, CORRECTED_TIME_TEXT, TIME_BUFFER, 3);
 }
 
-bool draw_program_info(Render* render, Shared_data shared_data, int fps, int window_w, int window_h) {
+bool draw_program_info(Render* render, Shared_data shared_data, int fps, bool paused, int window_w, int window_h) {
     bool shuffling_shown = false;
     if(is_shuffling(shared_data)) {
         shuffling_shown = true;
@@ -125,7 +128,7 @@ bool draw_program_info(Render* render, Shared_data shared_data, int fps, int win
             return false;
     }
 
-    if(is_paused(shared_data)) {
+    if(paused) {
         int w = TEXT_LETTER_W * PAUSE_TEXT_LEN;
         if(!draw_one_info(render, PAUSE_TEXT, window_w - w, TEXT_H * shuffling_shown, w, TEXT_H))
             return false;
@@ -142,21 +145,21 @@ bool draw_program_info(Render* render, Shared_data shared_data, int fps, int win
 bool run_display(Render* render, Shared_data shared_data) {
     long fps = 0;
     int ww, wh;
-    bool show_info = true;
+    bool quitted = has_quitted(shared_data), paused = is_paused(shared_data), show_info = true;
 
     get_window_size(render, &ww, &wh);
 
-    while(!has_quitted(shared_data)) {
+    while(!quitted) {
         long fps_start_time = us_time();
 
         if(!fill_background(render, BLACK_COLOR) || !draw_array(render, shared_data, ww, wh))
             return false;
 
-        if(show_info && (!draw_func_info(render, shared_data) || !draw_program_info(render, shared_data, fps, ww, wh)))
+        if(show_info && (!draw_func_info(render, shared_data) || !draw_program_info(render, shared_data, fps, paused, ww, wh)))
             return false;
 
         refresh(render);
-        handle_render_events(render, shared_data, &show_info);
+        handle_render_events(render, shared_data, &quitted, &paused, &show_info);
         usleep(SEC_US / render->framerate);
 
         long time_diff = us_time() - fps_start_time;
