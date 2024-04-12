@@ -28,8 +28,12 @@ unsigned int get_lps(Shared_data data);
 void set_simulation_delay(Shared_data data, unsigned long delay);
 unsigned long get_simulation_delay(Shared_data data);
 
-void set_next_sort(Shared_data data, unsigned int count);
-unsigned int get_next_sort(Shared_data data);
+void set_sort_function(Shared_data data, int shift);
+unsigned int get_sort_function_index(Shared_data data);
+const Sort_function* get_sort_function(Shared_data data);
+short sort_function_init(Shared_data data);
+short sort_function_sort(Shared_data data);
+void sort_function_free(Shared_data data);
 
 void lock_info(Shared_data data);
 void unlock_info(Shared_data data);
@@ -44,9 +48,5 @@ void set_array_value(Shared_data data, int i, int value);
 int get_array_value(Shared_data data, int i);
 void set_cursor(Shared_data data, int cursor);
 int get_cursor(Shared_data data);
-
-short sort_function_init(Shared_data data, const Sort_function* function);
-short sort_function_sort(Shared_data data, const Sort_function* function);
-void sort_function_free(Shared_data data, const Sort_function* function);
 
 #endif

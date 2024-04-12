@@ -15,7 +15,7 @@
 #define CORRECTED_TIME_SHARED_POINTER 5
 #define LPS_SHARED_POINTER 6
 #define SIMULATION_DELAY_SHARED_POINTER 7
-#define NEXT_SORT_SHARED_POINTER 8
+#define SORT_FUNCTION_SHARED_POINTER 8
 
 typedef struct Shared_pointer {
     void* pointer;
@@ -139,8 +139,8 @@ Shared_data create_shared_data(int array_size) {
     }
     limit++;
 
-    data[NEXT_SORT_SHARED_POINTER] = create_v_shared_pointer(sizeof(unsigned int));
-    if(data[NEXT_SORT_SHARED_POINTER] == NULL) {
+    data[SORT_FUNCTION_SHARED_POINTER] = create_v_shared_pointer(sizeof(unsigned int));
+    if(data[SORT_FUNCTION_SHARED_POINTER] == NULL) {
         free_incomplete_data(data, limit);
         return NULL;
     }
@@ -160,7 +160,7 @@ Shared_data create_shared_data(int array_size) {
     *((unsigned long*) data[CORRECTED_TIME_SHARED_POINTER]->pointer) = 0;
     *((unsigned int*) data[LPS_SHARED_POINTER]->pointer) = 0;
     *((unsigned long*) data[SIMULATION_DELAY_SHARED_POINTER]->pointer) = 0;
-    *((unsigned int*) data[NEXT_SORT_SHARED_POINTER]->pointer) = 0;
+    *((unsigned int*) data[SORT_FUNCTION_SHARED_POINTER]->pointer) = 0;
     return data;
 }
 
@@ -263,17 +263,48 @@ unsigned long get_simulation_delay(Shared_data data) {
     return delay;
 }
 
-void set_next_sort(Shared_data data, unsigned int count) {
-    lock_shared_pointer(data[NEXT_SORT_SHARED_POINTER]);
-    *((unsigned int*) data[NEXT_SORT_SHARED_POINTER]->pointer) = count;
-    unlock_shared_pointer(data[NEXT_SORT_SHARED_POINTER]);
+void set_sort_function(Shared_data data, int shift) {
+    lock_shared_pointer(data[SORT_FUNCTION_SHARED_POINTER]);
+    unsigned int* value = (unsigned int*) data[SORT_FUNCTION_SHARED_POINTER]->pointer;
+    *value = abs(*value + shift) % SORT_FUNCTIONS_LEN;
+    unlock_shared_pointer(data[SORT_FUNCTION_SHARED_POINTER]);
 }
 
-unsigned int get_next_sort(Shared_data data) {
-    lock_shared_pointer(data[NEXT_SORT_SHARED_POINTER]);
-    unsigned int count = *((unsigned int*) data[NEXT_SORT_SHARED_POINTER]->pointer);
-    unlock_shared_pointer(data[NEXT_SORT_SHARED_POINTER]);
-    return count;
+unsigned int get_sort_function_index(Shared_data data) {
+    lock_shared_pointer(data[SORT_FUNCTION_SHARED_POINTER]);
+    unsigned int function_i = *((unsigned int*) data[SORT_FUNCTION_SHARED_POINTER]->pointer);
+    unlock_shared_pointer(data[SORT_FUNCTION_SHARED_POINTER]);
+    return function_i;
+}
+
+const Sort_function* get_sort_function(Shared_data data) {
+    lock_shared_pointer(data[SORT_FUNCTION_SHARED_POINTER]);
+    unsigned int function_i = *((unsigned int*) data[SORT_FUNCTION_SHARED_POINTER]->pointer);
+    unlock_shared_pointer(data[SORT_FUNCTION_SHARED_POINTER]);
+    return &SORT_FUNCTIONS[function_i];
+}
+
+short sort_function_init(Shared_data data) {
+    Sort_info* info = lock_and_get_info(data);
+    const Sort_function* function = get_sort_function(data);
+    short state = function->init(info);
+    unlock_info(data);
+    return state;
+}
+
+short sort_function_sort(Shared_data data) {
+    Sort_info* info = lock_and_get_info(data);
+    const Sort_function* function = get_sort_function(data);
+    short state = function->sort(info);
+    unlock_info(data);
+    return state;
+}
+
+void sort_function_free(Shared_data data) {
+    Sort_info* info = lock_and_get_info(data);
+    const Sort_function* function = get_sort_function(data);
+    function->free(info);
+    unlock_info(data);
 }
 
 void lock_info(Shared_data data) {
@@ -348,24 +379,4 @@ int get_cursor(Shared_data data) {
     int cursor = info->cursor;
     unlock_info(data);
     return cursor;
-}
-
-short sort_function_init(Shared_data data, const Sort_function* function) {
-    Sort_info* info = lock_and_get_info(data);
-    short state = function->init(info);
-    unlock_info(data);
-    return state;
-}
-
-short sort_function_sort(Shared_data data, const Sort_function* function) {
-    Sort_info* info = lock_and_get_info(data);
-    short state = function->sort(info);
-    unlock_info(data);
-    return state;
-}
-
-void sort_function_free(Shared_data data, const Sort_function* function) {
-    Sort_info* info = lock_and_get_info(data);
-    function->free(info);
-    unlock_info(data);
 }

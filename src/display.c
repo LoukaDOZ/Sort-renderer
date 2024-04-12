@@ -48,7 +48,7 @@ void handle_render_events(Render* render, Shared_data shared_data, bool* show_in
         *show_info = inverse_bool(*show_info);
 
     if(nb_next != 0)
-        set_next_sort(shared_data, get_next_sort(shared_data) + nb_next);
+        set_sort_function(shared_data, nb_next);
 
     if(was_pressed(render, KEY_P) % 2 > 0)
         set_is_paused(shared_data, inverse_bool(is_paused(shared_data)));

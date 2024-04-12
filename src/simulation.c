@@ -10,21 +10,15 @@
 #define SUCCESS 0
 #define FINSIHED 1
 #define FAILURE 2
+#define CHANGED 3
 
-short reset(Shared_data shared_data, const Sort_function** function, int *sort_func_i, unsigned int* start_time, unsigned int* saved_time, unsigned long* corrected_time) {
-    int next_sort_count = get_next_sort(shared_data);
-    if(next_sort_count != 0) {
-        set_next_sort(shared_data, 0);
-        *sort_func_i = abs(*sort_func_i + next_sort_count % SORT_FUNCTIONS_LEN);
-    } else
-        *sort_func_i = (*sort_func_i + 1) % SORT_FUNCTIONS_LEN;
-
-    *function = &(SORT_FUNCTIONS[*sort_func_i]);
+short reset(Shared_data shared_data, unsigned int* current_sort_index, unsigned int* start_time, unsigned int* saved_time, unsigned long* corrected_time) {
     *start_time = 0;
     *saved_time = 0;
     *corrected_time = 0;
+    *current_sort_index = get_sort_function_index(shared_data);
     set_cursor(shared_data, 0);
-    return reset_info(shared_data) == SORT_SUCCESS && sort_function_init(shared_data, *function) == SORT_SUCCESS ? SUCCESS : FAILURE;
+    return reset_info(shared_data) == SORT_SUCCESS && sort_function_init(shared_data) == SORT_SUCCESS ? SUCCESS : FAILURE;
 }
 
 short shuffling_step(Shared_data shared_data) {
@@ -45,9 +39,9 @@ short shuffling_step(Shared_data shared_data) {
     return SUCCESS;
 }
 
-short sorting_step(Shared_data shared_data, const Sort_function* function, unsigned long* corrected_time) {
+short sorting_step(Shared_data shared_data, unsigned long* corrected_time) {
     unsigned long corrected_start_time = us_time();
-    short state = sort_function_sort(shared_data,  function);
+    short state = sort_function_sort(shared_data);
     *corrected_time += us_time() - corrected_start_time;
 
     if(state == SORT_SUCCESS)
@@ -60,20 +54,25 @@ short sorting_step(Shared_data shared_data, const Sort_function* function, unsig
 }
 
 bool run_simulation(Shared_data shared_data) {
-    const Sort_function* function;
-    int sort_func_i = -1;
-    unsigned int start_time, diff_time, saved_time;
+    unsigned int current_sort_index, start_time, diff_time, saved_time;
     unsigned long corrected_time;
     double double_sec_us = ((double) SEC_US);
     
     bool shuffling = true;
-    reset(shared_data, &function, &sort_func_i, &start_time, &saved_time, &corrected_time);
+    reset(shared_data, &current_sort_index, &start_time, &saved_time, &corrected_time);
     set_simulation_delay(shared_data, SEC_US / 500);
 
     while(!has_quitted(shared_data)) {
         long loop_start_time = us_time();
 
         if(!is_paused(shared_data)) {
+            if(current_sort_index != get_sort_function_index(shared_data)) {
+                sort_function_free(shared_data);
+                shuffling = true;
+                set_is_shuffling(shared_data, true);
+                reset(shared_data, &current_sort_index, &start_time, &saved_time, &corrected_time);
+            }
+
             if(shuffling) {
                 short state = shuffling_step(shared_data);
 
@@ -88,11 +87,11 @@ bool run_simulation(Shared_data shared_data) {
                     corrected_time = 0;
                 }
             } else {
-                short state = sorting_step(shared_data, function, &corrected_time);
+                short state = sorting_step(shared_data, &corrected_time);
                 diff_time = ms_time() - start_time;
 
                 if(state != SUCCESS) {
-                    sort_function_free(shared_data, function);
+                    sort_function_free(shared_data);
 
                     if(state == FAILURE)
                         return false;
@@ -100,7 +99,8 @@ bool run_simulation(Shared_data shared_data) {
                     sleep(1);
                     shuffling = true;
                     set_is_shuffling(shared_data, true);
-                    reset(shared_data, &function, &sort_func_i, &start_time, &saved_time, &corrected_time);
+                    set_sort_function(shared_data, 1);
+                    reset(shared_data, &current_sort_index, &start_time, &saved_time, &corrected_time);
                 }
             }
         } else {
