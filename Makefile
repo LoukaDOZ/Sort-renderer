@@ -7,7 +7,7 @@ SortHeadersFolder=$(SortsFolder)/headers
 SortSrcFolder=$(SortsFolder)/src
 OFiles=$(patsubst %.c,%.o,$(wildcard $(SortSrcFolder)/*.c)) $(patsubst %.c,%.o,$(wildcard $(SrcFolder)/*.c))
 Exec=exec
-Flags=-lm
+Flags=-lm -lpthread
 SDLFlags=`sdl2-config --cflags --libs` -lSDL2 -lSDL2_ttf
 
 all: build run
@@ -21,13 +21,13 @@ uninstall: clean
 	sudo apt remove libfreetype6-dev libsdl2-ttf-dev libsdl2-ttf-2.0-0 -y
 
 build: $(OFiles)
-	$(CC) -o $(BuildFolder)/$(Exec) $(BuildFolder)/*.o $(SDLFlags) $(Flags)
+	$(CC) -g -o $(BuildFolder)/$(Exec) $(BuildFolder)/*.o $(SDLFlags) $(Flags)
 
 run:
 	$(BuildFolder)/$(Exec)
 
 %.o: %.c
-	$(CC) -o $(BuildFolder)/$(notdir $@) -I $(HeadersFolder) -I $(SortHeadersFolder) -c $< $(SDLFlags) $(Flags)
+	$(CC) -g -o $(BuildFolder)/$(notdir $@) -I $(HeadersFolder) -I $(SortHeadersFolder) -c $< $(SDLFlags) $(Flags)
 
 clean:
 	rm -f $(BuildFolder)/*.o $(BuildFolder)/$(Exec)

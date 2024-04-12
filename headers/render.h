@@ -1,7 +1,7 @@
 #ifndef RENDER_H
 #define RENDER_H
 
-#include <SDL2/SDL_ttf.h> // Fix Unknown TTF_Font
+#include <SDL2/SDL_ttf.h> // Fix unknown TTF_Font
 
 extern const short WINDOW_QUIT;
 extern const short KEY_Q;
@@ -24,11 +24,11 @@ typedef struct Render {
     SDL_Window* window;
     SDL_Renderer* renderer;
     TTF_Font* font;
-    SDL_bool fullscreen;
+    bool fullscreen;
     short* events;
 } Render;
 
-Render* init_render(int w, int h, int framerate, SDL_bool fullscreen);
+Render* init_render(int w, int h, int framerate, bool fullscreen);
 void destroy_render(Render* render);
 const char* render_error();
 
@@ -36,12 +36,12 @@ void show_window(Render* render);
 void get_window_size(Render* render, int* w, int* y);
 
 void refresh(Render* render);
-SDL_bool fill_background(Render* render, SDL_Color color);
-SDL_bool draw_rect(Render* render, SDL_Rect* rect, SDL_Color color);
-SDL_bool draw_text(Render* render, char* text, SDL_Rect* r, SDL_Color color);
+bool fill_background(Render* render, SDL_Color color);
+bool draw_rect(Render* render, SDL_Rect* rect, SDL_Color color);
+bool draw_text(Render* render, char* text, SDL_Rect* r, SDL_Color color);
 
 void handle_events(Render* render);
-SDL_bool do_quit(Render* render);
+bool do_quit(Render* render);
 short was_pressed(Render* render, short key);
 
 #endif

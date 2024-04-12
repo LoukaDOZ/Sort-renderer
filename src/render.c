@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
@@ -27,7 +28,7 @@ const SDL_Color ORANGE_COLOR = {255, 90, 0, 255};
 
 //////// Render ////////
 
-Render* init_render(int w, int h, int framerate, SDL_bool fullscreen) {
+Render* init_render(int w, int h, int framerate, bool fullscreen) {
     Render* render = (Render*) malloc(sizeof(Render));
     if(render == NULL)
         return NULL;
@@ -118,43 +119,43 @@ void refresh(Render* render) {
     SDL_RenderPresent(render->renderer);
 }
 
-SDL_bool fill_background(Render* render, SDL_Color color) {
+bool fill_background(Render* render, SDL_Color color) {
     if(SDL_SetRenderDrawColor(render->renderer, color.r, color.g, color.b, color.a) != 0
             || SDL_RenderClear(render->renderer) != 0) {
-        return SDL_FALSE;
+        return false;
     }
 
-    return SDL_TRUE;
+    return true;
 }
 
-SDL_bool draw_rect(Render* render, SDL_Rect* rect, SDL_Color color) {
+bool draw_rect(Render* render, SDL_Rect* rect, SDL_Color color) {
     if(SDL_SetRenderDrawColor(render->renderer, color.r, color.g, color.b, color.a) != 0 
             || SDL_RenderFillRect(render->renderer, rect) != 0)
-        return SDL_FALSE;
+        return false;
 
-    return SDL_TRUE;
+    return true;
 }
 
-SDL_bool draw_text(Render* render, char* text, SDL_Rect* r, SDL_Color color) {
+bool draw_text(Render* render, char* text, SDL_Rect* r, SDL_Color color) {
     SDL_Surface* surface = TTF_RenderUTF8_Solid(render->font, text, color);
     if(surface == NULL)
-        return SDL_FALSE;
+        return false;
 
     SDL_Texture* texture = SDL_CreateTextureFromSurface(render->renderer, surface);
     if(texture == NULL) {
         SDL_FreeSurface(surface);
-        return SDL_FALSE;
+        return false;
     }
 
     if(SDL_RenderCopy(render->renderer, texture, NULL, r) != 0) {
         SDL_DestroyTexture(texture);
         SDL_FreeSurface(surface);
-        return SDL_FALSE;
+        return false;
     }
 
     SDL_DestroyTexture(texture);
     SDL_FreeSurface(surface);
-    return SDL_TRUE;
+    return true;
 }
 
 //////// Events ////////
@@ -165,7 +166,7 @@ void handle_events(Render* render) {
     while(SDL_PollEvent(&event)) {
         switch(event.type) {
             case SDL_QUIT:
-                render->events[WINDOW_QUIT] = SDL_TRUE;
+                render->events[WINDOW_QUIT] = true;
                 break;
             case SDL_MOUSEWHEEL:
                 if(event.wheel.y > 0)
@@ -202,7 +203,7 @@ void handle_events(Render* render) {
     }
 }
 
-SDL_bool do_quit(Render* render) {
+bool do_quit(Render* render) {
     return render->events[WINDOW_QUIT];
 }
 
