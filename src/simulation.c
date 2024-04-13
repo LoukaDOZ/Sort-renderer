@@ -59,7 +59,8 @@ bool run_simulation(Shared_data shared_data) {
     double double_sec_us = ((double) SEC_US);
     
     bool shuffling = true;
-    reset(shared_data, &current_sort_index, &start_time, &saved_time, &corrected_time);
+    if(reset(shared_data, &current_sort_index, &start_time, &saved_time, &corrected_time) != SUCCESS)
+        return false;
 
     while(!has_quitted(shared_data)) {
         long loop_start_time = us_time();
@@ -69,15 +70,19 @@ bool run_simulation(Shared_data shared_data) {
                 sort_function_free(shared_data);
                 shuffling = true;
                 set_is_shuffling(shared_data, true);
-                reset(shared_data, &current_sort_index, &start_time, &saved_time, &corrected_time);
+
+                if(reset(shared_data, &current_sort_index, &start_time, &saved_time, &corrected_time) != SUCCESS)
+                    return false;
             }
 
             if(shuffling) {
                 short state = shuffling_step(shared_data);
 
                 if(state != SUCCESS) {
-                    if(state == FAILURE)
+                    if(state == FAILURE) {
+                        sort_function_free(shared_data);
                         return false;
+                    }
 
                     sleep(1);
                     set_is_shuffling(shared_data, false);
@@ -99,7 +104,9 @@ bool run_simulation(Shared_data shared_data) {
                     shuffling = true;
                     set_is_shuffling(shared_data, true);
                     set_sort_function(shared_data, 1);
-                    reset(shared_data, &current_sort_index, &start_time, &saved_time, &corrected_time);
+
+                    if(reset(shared_data, &current_sort_index, &start_time, &saved_time, &corrected_time) != SUCCESS)
+                        return false;
                 }
             }
         } else {
