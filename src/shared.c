@@ -266,7 +266,7 @@ unsigned long get_simulation_delay(Shared_data data) {
 void set_sort_function(Shared_data data, int shift) {
     lock_shared_pointer(data[SORT_FUNCTION_SHARED_POINTER]);
     unsigned int* value = (unsigned int*) data[SORT_FUNCTION_SHARED_POINTER]->pointer;
-    *value = abs(*value + shift) % SORT_FUNCTIONS_LEN;
+    *value = (*value + shift) % SORT_FUNCTIONS_LEN;
     unlock_shared_pointer(data[SORT_FUNCTION_SHARED_POINTER]);
 }
 
