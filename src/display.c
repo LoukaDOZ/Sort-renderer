@@ -62,7 +62,7 @@ void handle_render_events(Render* render, Shared_data shared_data, bool* quitted
         *show_info = inverse_bool(*show_info);
 
     if(nb_next != 0)
-        set_sort_function(shared_data, nb_next);
+        add_next_sort_shift(shared_data, nb_next);
 
     if(was_pressed(render, KEY_P) % 2 > 0) {
         *paused = inverse_bool(is_paused(shared_data));

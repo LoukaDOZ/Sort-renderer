@@ -6,7 +6,7 @@
 #include "render.h"
 #include "shared.h"
 
-#define NB_SHARED_POINTER 9
+#define NB_SHARED_POINTER 10
 #define INFO_SHARED_POINTER 0
 #define HAS_QUITTED_SHARED_POINTER 1
 #define IS_PAUSED_SHARED_POINTER 2
@@ -16,6 +16,7 @@
 #define LPS_SHARED_POINTER 6
 #define SIMULATION_DELAY_SHARED_POINTER 7
 #define SORT_FUNCTION_SHARED_POINTER 8
+#define NEXT_SORT_FUNCTION_SHARED_POINTER 9
 
 typedef struct Shared_pointer {
     void* pointer;
@@ -146,6 +147,13 @@ Shared_data create_shared_data(int array_size, int simulation_delay) {
     }
     limit++;
 
+    data[NEXT_SORT_FUNCTION_SHARED_POINTER] = create_v_shared_pointer(sizeof(int));
+    if(data[NEXT_SORT_FUNCTION_SHARED_POINTER] == NULL) {
+        free_incomplete_data(data, limit);
+        return NULL;
+    }
+    limit++;
+
     Sort_info* info = init_sort_info(array_size);
     if(info == NULL) {
         free_incomplete_data(data, limit);
@@ -161,6 +169,7 @@ Shared_data create_shared_data(int array_size, int simulation_delay) {
     *((unsigned int*) data[LPS_SHARED_POINTER]->pointer) = 0;
     *((unsigned long*) data[SIMULATION_DELAY_SHARED_POINTER]->pointer) = simulation_delay;
     *((unsigned int*) data[SORT_FUNCTION_SHARED_POINTER]->pointer) = 0;
+    *((int*) data[NEXT_SORT_FUNCTION_SHARED_POINTER]->pointer) = 0;
     return data;
 }
 
@@ -263,10 +272,25 @@ unsigned long get_simulation_delay(Shared_data data) {
     return delay;
 }
 
+void add_next_sort_shift(Shared_data data, int shift) {
+    lock_shared_pointer(data[NEXT_SORT_FUNCTION_SHARED_POINTER]);
+    *((int*) data[NEXT_SORT_FUNCTION_SHARED_POINTER]->pointer) += shift;
+    unlock_shared_pointer(data[NEXT_SORT_FUNCTION_SHARED_POINTER]);
+}
+
+int get_next_sort_shift(Shared_data data, bool empty) {
+    lock_shared_pointer(data[NEXT_SORT_FUNCTION_SHARED_POINTER]);
+    int shift = *((int*) data[NEXT_SORT_FUNCTION_SHARED_POINTER]->pointer);
+    if(empty) *((int*) data[NEXT_SORT_FUNCTION_SHARED_POINTER]->pointer) = 0;
+    unlock_shared_pointer(data[NEXT_SORT_FUNCTION_SHARED_POINTER]);
+    return shift;
+}
+
 void set_sort_function(Shared_data data, int shift) {
     lock_shared_pointer(data[SORT_FUNCTION_SHARED_POINTER]);
     unsigned int* value = (unsigned int*) data[SORT_FUNCTION_SHARED_POINTER]->pointer;
-    *value = (*value + shift) % SORT_FUNCTIONS_LEN;
+    int shifted = (((int) *value) + shift) % SORT_FUNCTIONS_LEN;
+    *value = shifted < 0 ? SORT_FUNCTIONS_LEN + shifted : shifted;
     unlock_shared_pointer(data[SORT_FUNCTION_SHARED_POINTER]);
 }
 

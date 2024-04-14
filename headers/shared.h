@@ -28,6 +28,9 @@ unsigned int get_lps(Shared_data data);
 void set_simulation_delay(Shared_data data, unsigned long delay);
 unsigned long get_simulation_delay(Shared_data data);
 
+void add_next_sort_shift(Shared_data data, int shift);
+int get_next_sort_shift(Shared_data data, bool empty);
+
 void set_sort_function(Shared_data data, int shift);
 unsigned int get_sort_function_index(Shared_data data);
 const Sort_function* get_sort_function(Shared_data data);
