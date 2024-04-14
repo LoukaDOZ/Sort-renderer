@@ -19,11 +19,8 @@ short insertion_sort(Sort_info* info) {
     if(*current >= info->array_len)
         return SORT_FINISHED;
 
-    if(info->array[info->cursor - 1] > info->array[info->cursor]) {
-        int tmp = info->array[info->cursor];
-        info->array[info->cursor] = info->array[info->cursor - 1];
-        info->array[info->cursor - 1] = tmp;
-    }
+    if(info->array[info->cursor - 1] > info->array[info->cursor])
+        swap(info, info->cursor, info->cursor - 1);
 
     info->cursor--;
     if(info->cursor < 1 || info->array[info->cursor - 1] <= info->array[info->cursor]) {

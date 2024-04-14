@@ -74,6 +74,8 @@ void free_SORT_NAME_sort(Sort_info* info) {
 }
 ```
 
+:warning: You do not need to instantiate or free the Sort_info.
+
 #### The Sort_info structure
 
 ```c
@@ -115,7 +117,17 @@ void free_SORT_NAME_sort(Sort_info* info);
 #endif
 ```
 
-### Tell the program to use the sort algorithm
+### The swap helper
+
+The `sort.h` file describes a swap function to help swapping 2 array values :
+
+```c
+void swap(Sort_info* info, unsigned int i, unsigned int j)
+```
+
+:warning: Your are responsible for giving in bounds `i` and `j` indexes.
+
+### Tell to the program to use the sort algorithm
 
 In the `src/sort.c` file, update the following part of the code by adding the new sort information :
 ```c

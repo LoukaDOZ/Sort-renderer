@@ -25,5 +25,6 @@ extern const Sort_function SORT_FUNCTIONS[];
 Sort_info* init_sort_info(int array_size);
 short reset_sort_info(Sort_info* info);
 void free_sort_info(Sort_info* info);
+void swap(Sort_info* info, unsigned int i, unsigned int j);
 
 #endif

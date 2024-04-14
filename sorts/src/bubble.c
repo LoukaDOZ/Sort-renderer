@@ -19,11 +19,8 @@ short bubble_sort(Sort_info* info) {
     if(*limit <= 0)
         return SORT_FINISHED;
 
-    if(info->array[info->cursor] > info->array[info->cursor + 1]) {
-        int tmp = info->array[info->cursor];
-        info->array[info->cursor] = info->array[info->cursor + 1];
-        info->array[info->cursor + 1] = tmp;
-    }
+    if(info->array[info->cursor] > info->array[info->cursor + 1])
+        swap(info, info->cursor, info->cursor + 1);
 
     info->cursor++;
     if(info->cursor > *limit) {

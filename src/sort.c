@@ -9,8 +9,9 @@ const short SORT_FINISHED = 2;
 
 #include "bubble.h"
 #include "insertion.h"
+#include "gnome.h"
 
-const int SORT_FUNCTIONS_LEN = 2;
+const int SORT_FUNCTIONS_LEN = 3;
 const Sort_function SORT_FUNCTIONS[] = {
     {
         "Insertion sort",
@@ -25,6 +26,13 @@ const Sort_function SORT_FUNCTIONS[] = {
         &init_bubble_sort,
         &bubble_sort,
         &free_bubble_sort
+    },
+    {
+        "Gnome sort",
+        "Θ(n²)",
+        &init_gnome_sort,
+        &gnome_sort,
+        &free_gnome_sort
     }
 };
 
@@ -77,4 +85,10 @@ short reset_sort_info(Sort_info* info) {
 void free_sort_info(Sort_info* info) {
     free(info->array);
     free(info);
+}
+
+void swap(Sort_info* info, unsigned int i, unsigned int j) {
+    int tmp = info->array[i];
+    info->array[i] = info->array[j];
+    info->array[j] = tmp;
 }
