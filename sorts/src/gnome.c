@@ -1,5 +1,4 @@
 #include <stdlib.h>
-#include <stdbool.h>
 #include "sort.h"
 #include "gnome.h"
 
@@ -22,5 +21,5 @@ short gnome_sort(Sort_info* info) {
 }
 
 void free_gnome_sort(Sort_info* info) {
-    // Free potential manually allocated memory in init
+    // Ignore
 }

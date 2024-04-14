@@ -10,8 +10,9 @@ const short SORT_FINISHED = 2;
 #include "bubble.h"
 #include "insertion.h"
 #include "gnome.h"
+#include "shaker.h"
 
-const int SORT_FUNCTIONS_LEN = 3;
+const int SORT_FUNCTIONS_LEN = 4;
 const Sort_function SORT_FUNCTIONS[] = {
     {
         "Insertion sort",
@@ -33,6 +34,13 @@ const Sort_function SORT_FUNCTIONS[] = {
         &init_gnome_sort,
         &gnome_sort,
         &free_gnome_sort
+    },
+    {
+        "Shaker sort",
+        "Θ(n²)",
+        &init_shaker_sort,
+        &shaker_sort,
+        &free_shaker_sort
     }
 };
 
