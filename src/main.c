@@ -80,6 +80,17 @@ bool validate_int_min(char* arg, int value, int min) {
     return true;
 }
 
+void print_simulation_controls(void) {
+    printf("\nIn simulation controls :\n");
+    printf("\tQ\t\t\t\tQuit\n");
+    printf("\tP\t\t\t\tPause\n");
+    printf("\tI\t\t\t\tToggle information\n");
+    printf("\tLeft arrow\t\t\tPrevious sort\n");
+    printf("\tRight arrow\t\t\tNext sort\n");
+    printf("\tUp arrow, mouse scrool up\tIncrease simulation looprate\n");
+    printf("\tDown arrow, mouse scrool down\tDecrease simulation looprate\n");
+}
+
 int get_args(Args* args, int argc, char** argv) {
     init_args(args);
     int array_size_changed_index = -1;
@@ -99,14 +110,7 @@ int get_args(Args* args, int argc, char** argv) {
             printf("\t-f, --fullscreen\t\tSet fullscreen\n");
             printf("\t-i, --no-info\t\t\tDisable information messages\n");
 
-            printf("\nIn simulation controls :\n");
-            printf("\tQ\t\t\t\tQuit\n");
-            printf("\tP\t\t\t\tPause\n");
-            printf("\tI\t\t\t\tToggle information\n");
-            printf("\tLeft arrow\t\t\tPrevious sort\n");
-            printf("\tRight arrow\t\t\tNext sort\n");
-            printf("\tUp arrow, mouse scrool up\tIncrease simulation looprate\n");
-            printf("\tDown arrow, mouse scrool down\tDecrease simulation looprate\n");
+            print_simulation_controls();
             return ARGS_NO_RUN;
         }
 
@@ -174,6 +178,7 @@ int main(int argc, char** argv) {
 
     // Start program
     int w, h;
+    print_simulation_controls();
 
     Render* render = init_render(args.w, args.h, args.framerate, args.fullscreen);
     if(render == NULL) {

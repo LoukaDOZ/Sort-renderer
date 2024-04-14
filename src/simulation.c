@@ -12,10 +12,7 @@
 #define FAILURE 2
 #define CHANGED 3
 
-short reset(Shared_data shared_data, unsigned int* current_sort_index, unsigned int* start_time, unsigned int* saved_time, unsigned long* corrected_time) {
-    *start_time = 0;
-    *saved_time = 0;
-    *corrected_time = 0;
+short reset(Shared_data shared_data, unsigned int* current_sort_index) {
     *current_sort_index = get_sort_function_index(shared_data);
     set_cursor(shared_data, 0);
     return reset_info(shared_data) == SORT_SUCCESS && sort_function_init(shared_data) == SORT_SUCCESS ? SUCCESS : FAILURE;
@@ -54,12 +51,12 @@ short sorting_step(Shared_data shared_data, unsigned long* corrected_time) {
 }
 
 bool run_simulation(Shared_data shared_data) {
-    unsigned int current_sort_index, start_time, diff_time, saved_time;
-    unsigned long corrected_time;
+    unsigned int current_sort_index, start_time = 0, diff_time = 0, saved_time = 0;
+    unsigned long corrected_time = 0;
     double double_sec_us = ((double) SEC_US);
     
     bool shuffling = true;
-    if(reset(shared_data, &current_sort_index, &start_time, &saved_time, &corrected_time) != SUCCESS)
+    if(reset(shared_data, &current_sort_index) != SUCCESS)
         return false;
 
     while(!has_quitted(shared_data)) {
@@ -71,7 +68,7 @@ bool run_simulation(Shared_data shared_data) {
                 shuffling = true;
                 set_is_shuffling(shared_data, true);
 
-                if(reset(shared_data, &current_sort_index, &start_time, &saved_time, &corrected_time) != SUCCESS)
+                if(reset(shared_data, &current_sort_index) != SUCCESS)
                     return false;
             }
 
@@ -88,7 +85,6 @@ bool run_simulation(Shared_data shared_data) {
                     set_is_shuffling(shared_data, false);
                     shuffling = false;
                     start_time = ms_time();
-                    corrected_time = 0;
                 }
             } else {
                 short state = sorting_step(shared_data, &corrected_time);
@@ -104,8 +100,12 @@ bool run_simulation(Shared_data shared_data) {
                     shuffling = true;
                     set_is_shuffling(shared_data, true);
                     set_sort_function(shared_data, 1);
+                    start_time = 0;
+                    diff_time = 0;
+                    saved_time = 0;
+                    corrected_time = 0;
 
-                    if(reset(shared_data, &current_sort_index, &start_time, &saved_time, &corrected_time) != SUCCESS)
+                    if(reset(shared_data, &current_sort_index) != SUCCESS)
                         return false;
                 }
             }
@@ -115,8 +115,8 @@ bool run_simulation(Shared_data shared_data) {
             diff_time = 0;
         }
 
-        set_time(shared_data, saved_time + diff_time);
-        set_corrected_time(shared_data, corrected_time);
+        set_time(shared_data, shuffling ? 0 : saved_time + diff_time);
+        set_corrected_time(shared_data, shuffling ? 0 : corrected_time);
 
         usleep(get_simulation_delay(shared_data));
         long diff = us_time() - loop_start_time;
