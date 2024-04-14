@@ -47,6 +47,116 @@ Arguments :
 | `Up arrow, mouse scrool up`     | Increase simulation looprate   |
 | `Down arrow, mouse scrool down` | Decrease simulation looprate   |
 
+## Adding sort procedure
+### Define source file
+
+Add the `SORT_NAME.c` source file in the `sorts/src/` folder and copy the following sample code (replace `SORT_NAME` by the sort algorithm name) :
+```c
+#include <stdlib.h>
+#include "sort.h"
+#include "SORT_NAME.h"
+
+short init_SORT_NAME_sort(Sort_info* info) {
+    // Init values and allocate needed memory
+    return SORT_SUCCESS;
+}
+
+short SORT_NAME_sort(Sort_info* info) {
+    // Run one iteration
+    return SORT_SUCCESS;
+}
+
+void free_SORT_NAME_sort(Sort_info* info) {
+    // Free potential manually allocated memory in init
+}
+```
+
+#### The Sort_info structure
+
+```c
+typedef struct Sort_info {
+    int cursor, array_len, save_array_len;
+    int* array;
+    void* other;
+} Sort_info;
+```
+
+| Field | Description |
+| - | - |
+| `info->array_len` | Array values length |
+| `info->array` | Array values of `info->array_len` values |
+| `info->cursor` | Defines "where" we are in the array at the current iteration. Mainly used for rendering but also useful to store a data |
+| `info->other` | Use it to store whatever other data needed. Must be allocated in the `init_SORT_NAME_sort` function and freed in the `free_SORT_NAME_sort` function |
+| `info->save_array_len` | Should never be changed |
+
+#### Return values
+
+The `init_SORT_NAME_sort` and `SORT_NAME_sort` functions must return a value depending on the success or not of theses functions :
+| Return value | Functions | Description |
+| - | - | - |
+| `SORT_SUCCESS` | Both | Everything is OK |
+| `SORT_FAILURE` | Both | Something went wrong (unable to allocate memory, ...) |
+| `SORT_FINISHED` | `SORT_NAME_sort` only | Sort function finished : the array should be sorted |
+
+### Define header file
+
+Once the source file is ready, create a `SORT_NAME.h` (replace `SORT_NAME` by the sort algorithm name) file in `sorts/headers/` folder exposing the 3 functions defined previously :
+```c
+#ifndef SORT_NAME_H
+#define SORT_NAME_H
+
+short init_SORT_NAME_sort(Sort_info* info);
+short SORT_NAME_sort(Sort_info* info);
+void free_SORT_NAME_sort(Sort_info* info);
+
+#endif
+```
+
+### Tell the program to use the sort algorithm
+
+In the `src/sort.c` file, update the following part of the code by adding the new sort information :
+```c
+#include "bubble.h"
+#include "insertion.h"
+#include "SORT_NAME.h" // Import the sort
+
+const int SORT_FUNCTIONS_LEN = 3; // Update to match the length of SORT_FUNCTIONS
+const Sort_function SORT_FUNCTIONS[] = {
+    {
+        "Insertion sort",
+        "Θ(n²)",
+        &init_insertion_sort,
+        &insertion_sort,
+        &free_insertion_sort
+    },
+    {
+        "Bubble sort",
+        "Θ(n²)",
+        &init_bubble_sort,
+        &bubble_sort,
+        &free_bubble_sort
+    },
+    { // Add the sort
+        "SORT_NAME sort", // Name
+        "SORT_COMPLEXITY", // Average complexity
+        &init_SORT_NAME_sort, // Init function reference
+        &SORT_NAME_sort, // Sort function reference
+        &free_SORT_NAME_sort // Free function reference
+    }
+};
+```
+
+#### Sort_function structure
+```c
+typedef struct Sort_function {
+    char* name;
+    char* complexity;
+    short (*init)(Sort_info* info);
+    short (*sort)(Sort_info* info);
+    void (*free)(Sort_info* info);
+} Sort_function;
+```
+
 # Example
 
 Default configuration:
