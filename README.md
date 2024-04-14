@@ -1,6 +1,9 @@
 # Sort-renderer
 A C program to graphically show how different sorting algorithms work. Made with SDL2 library.
 
+
+![Capture d’écran du 2024-04-14 15-04-27](https://github.com/LoukaDOZ/Sort-renderer/assets/46566140/4a29c943-0050-430a-9923-44d6112c4813)
+
 ## Usage
 
 ### Makefile
