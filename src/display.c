@@ -109,10 +109,10 @@ bool draw_func_info(Render* render, Shared_data shared_data) {
     decompose_ms(get_time(shared_data), &min, &sec, &ms);
     decompose_us(get_corrected_time(shared_data), &corrected_min, &corrected_sec, &corrected_ms, &corrected_us);
 
-    if(!draw_one_func_info(render, NAME_TEXT, get_sort_name(shared_data), 0))
+    if(!draw_one_func_info(render, NAME_TEXT, get_sort_function_name(shared_data), 0))
         return false;
 
-    if(!draw_one_func_info(render, COMPLEXITY_TEXT, get_sort_complexity(shared_data), 1))
+    if(!draw_one_func_info(render, COMPLEXITY_TEXT, get_sort_function_complexity(shared_data), 1))
         return false;
 
     sprintf(TIME_BUFFER, "%02dmin  %02ds  %03dms", min, sec, ms);

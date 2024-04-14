@@ -8,12 +8,12 @@ extern const short SORT_FINISHED;
 typedef struct Sort_info {
     int cursor, array_len, save_array_len;
     int* array;
-    char* name;
-    char* complexity;
     void* other;
 } Sort_info;
 
 typedef struct Sort_function {
+    char* name;
+    char* complexity;
     short (*init)(Sort_info* info);
     short (*sort)(Sort_info* info);
     void (*free)(Sort_info* info);

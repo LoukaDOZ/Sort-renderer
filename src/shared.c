@@ -284,6 +284,20 @@ const Sort_function* get_sort_function(Shared_data data) {
     return &SORT_FUNCTIONS[function_i];
 }
 
+char* get_sort_function_name(Shared_data data) {
+    lock_shared_pointer(data[SORT_FUNCTION_SHARED_POINTER]);
+    unsigned int function_i = *((unsigned int*) data[SORT_FUNCTION_SHARED_POINTER]->pointer);
+    unlock_shared_pointer(data[SORT_FUNCTION_SHARED_POINTER]);
+    return SORT_FUNCTIONS[function_i].name;
+}
+
+char* get_sort_function_complexity(Shared_data data) {
+    lock_shared_pointer(data[SORT_FUNCTION_SHARED_POINTER]);
+    unsigned int function_i = *((unsigned int*) data[SORT_FUNCTION_SHARED_POINTER]->pointer);
+    unlock_shared_pointer(data[SORT_FUNCTION_SHARED_POINTER]);
+    return SORT_FUNCTIONS[function_i].complexity;
+}
+
 short sort_function_init(Shared_data data) {
     Sort_info* info = lock_and_get_info(data);
     const Sort_function* function = get_sort_function(data);
@@ -332,20 +346,6 @@ short reset_info(Shared_data data) {
     short state = reset_sort_info(info);
     unlock_info(data);
     return state;
-}
-
-char* get_sort_name(Shared_data data) {
-    Sort_info* info = lock_and_get_info(data);
-    char* name = info->name;
-    unlock_info(data);
-    return name;
-}
-
-char* get_sort_complexity(Shared_data data) {
-    Sort_info* info = lock_and_get_info(data);
-    char* complexity = info->complexity;
-    unlock_info(data);
-    return complexity;
 }
 
 int get_array_len(Shared_data data) {

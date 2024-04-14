@@ -10,8 +10,6 @@ short init_bubble_sort(Sort_info* info) {
     *limit = info->array_len - 1;
     info->other = (void*) limit;
     info->cursor = 0;
-    info->name = "Bubble sort";
-    info->complexity = "Θ(n²)";
     return SORT_SUCCESS;
 }
 

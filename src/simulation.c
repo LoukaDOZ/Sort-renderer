@@ -64,7 +64,9 @@ bool run_simulation(Shared_data shared_data) {
 
         if(!is_paused(shared_data)) {
             if(current_sort_index != get_sort_function_index(shared_data)) {
-                sort_function_free(shared_data);
+                if(!shuffling)
+                    sort_function_free(shared_data);
+
                 shuffling = true;
                 set_is_shuffling(shared_data, true);
 
@@ -76,15 +78,16 @@ bool run_simulation(Shared_data shared_data) {
                 short state = shuffling_step(shared_data);
 
                 if(state != SUCCESS) {
-                    if(state == FAILURE) {
-                        sort_function_free(shared_data);
+                    if(state == FAILURE)
                         return false;
-                    }
 
                     sleep(1);
                     set_is_shuffling(shared_data, false);
                     shuffling = false;
                     start_time = ms_time();
+
+                    if(sort_function_init(shared_data) != SORT_SUCCESS)
+                        return false;
                 }
             } else {
                 short state = sorting_step(shared_data, &corrected_time);

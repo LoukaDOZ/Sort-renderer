@@ -1,8 +1,6 @@
 #include <stdlib.h>
 #include "sort.h"
 
-#define UNDEFINED_STR "Undefined"
-
 const short SORT_SUCCESS = 0;
 const short SORT_FAILURE = 1;
 const short SORT_FINISHED = 2;
@@ -15,11 +13,15 @@ const short SORT_FINISHED = 2;
 const int SORT_FUNCTIONS_LEN = 2;
 const Sort_function SORT_FUNCTIONS[] = {
     {
+        "Insertion sort",
+        "Θ(n²)",
         &init_insertion_sort,
         &insertion_sort,
         &free_insertion_sort
     },
     {
+        "Bubble sort",
+        "Θ(n²)",
         &init_bubble_sort,
         &bubble_sort,
         &free_bubble_sort
@@ -69,8 +71,6 @@ short reset_sort_info(Sort_info* info) {
     }
 
     info->cursor = 0;
-    info->name = UNDEFINED_STR;
-    info->complexity = UNDEFINED_STR;
     return SORT_SUCCESS;
 }
 

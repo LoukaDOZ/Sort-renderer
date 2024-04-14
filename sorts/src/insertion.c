@@ -10,8 +10,6 @@ short init_insertion_sort(Sort_info* info) {
     *current = 1;
     info->other = (void*) current;
     info->cursor = *current;
-    info->name = "Insertion sort";
-    info->complexity = "Θ(n²)";
     return SORT_SUCCESS;
 }
 
