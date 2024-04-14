@@ -33,6 +33,18 @@ char TEXT_BUFFER[TEXT_BUFFER_SIZE];
 #define TIME_BUFFER_SIZE 50
 char TIME_BUFFER[TIME_BUFFER_SIZE];
 
+int add_by_until(long* delay, int nb_add, long min, long max, long step) {
+    if(*delay != min && *delay != max && *delay % max == 0)
+        return nb_add;
+
+    long limit = nb_add < 0 ? min : max;
+    int until_limit = (limit - *delay) / step;
+    int count = abs(until_limit) < abs(nb_add) ? until_limit : nb_add;
+
+    *delay += step * count;
+    return nb_add - count;
+}
+
 void handle_render_events(Render* render, Shared_data shared_data, bool* quitted, bool* paused, bool* show_info) {
     handle_events(render);
 
@@ -58,7 +70,18 @@ void handle_render_events(Render* render, Shared_data shared_data, bool* quitted
     }
 
     if(nb_up != nb_down) {
-        long delay = get_simulation_delay(shared_data) + (nb_down - nb_up) * DELAY_STEP;
+        long delay = get_simulation_delay(shared_data);
+        int nb_add = nb_down - nb_up;
+
+        if(nb_add > 0) {
+            if(delay <= 0) {
+                delay = 1;
+                nb_add--;
+            }
+
+            for(; nb_add > 0; nb_add--) delay *= 2;
+        } else
+            for(; nb_add < 0; nb_add++) delay /= 2;
 
         if(delay < MIN_DELAY)
             delay = MIN_DELAY;
