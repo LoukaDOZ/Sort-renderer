@@ -1,5 +1,4 @@
 #include <stdlib.h>
-#include <stdio.h>
 #include <stdbool.h>
 #include "sort.h"
 #include "quick.h"
@@ -70,14 +69,14 @@ short quick_sort(Sort_info* info) {
     Other_info* other_info = (Other_info*) info->other;
     Sub_list* current = other_info->current;
 
-    if(info->cursor >= other_info->pivot) {
+    if(info->cursor >= current->end) {
         swap(info, other_info->last_i, other_info->pivot);
 
-        if(other_info->last_i < current->end)
-            add_to_heap(other_info, other_info->last_i + 1, current->end);
+        if(other_info->last_i < current->end && !add_to_heap(other_info, other_info->last_i + 1, current->end))
+            return SORT_FAILURE;
 
-        if(other_info->last_i > current->start)
-            add_to_heap(other_info, current->start, other_info->last_i - 1);
+        if(other_info->last_i > current->start && !add_to_heap(other_info, current->start, other_info->last_i - 1))
+            return SORT_FAILURE;
 
         if(other_info->current->next == NULL)
             return SORT_FINISHED;

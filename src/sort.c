@@ -12,9 +12,10 @@ const short SORT_FINISHED = 2;
 #include "gnome.h"
 #include "shaker.h"
 #include "quick.h"
+#include "merge_top_down.h"
 #include "merge_bottom_up.h"
 
-const int SORT_FUNCTIONS_LEN = 6;
+const int SORT_FUNCTIONS_LEN = 7;
 const Sort_function SORT_FUNCTIONS[] = {
     {
         "Insertion sort",
@@ -50,6 +51,13 @@ const Sort_function SORT_FUNCTIONS[] = {
         &init_quick_sort,
         &quick_sort,
         &free_quick_sort
+    },
+    {
+        "Merge sort (Top-down)",
+        "Θ(n log n)",
+        &init_merge_top_down_sort,
+        &merge_top_down_sort,
+        &free_merge_top_down_sort
     },
     {
         "Merge sort (Bottom-up)",
