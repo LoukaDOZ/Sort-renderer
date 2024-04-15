@@ -14,8 +14,9 @@ const short SORT_FINISHED = 2;
 #include "quick.h"
 #include "merge_top_down.h"
 #include "merge_bottom_up.h"
+#include "bongo.h"
 
-const int SORT_FUNCTIONS_LEN = 7;
+const int SORT_FUNCTIONS_LEN = 8;
 const Sort_function SORT_FUNCTIONS[] = {
     {
         "Insertion sort",
@@ -65,6 +66,13 @@ const Sort_function SORT_FUNCTIONS[] = {
         &init_merge_bottom_up_sort,
         &merge_bottom_up_sort,
         &free_merge_bottom_up_sort
+    },
+    {
+        "Bongo sort",
+        "Θ((n + 1)!)",
+        &init_bongo_sort,
+        &bongo_sort,
+        &free_bongo_sort
     }
 };
 
