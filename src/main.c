@@ -12,8 +12,8 @@
 #include "shared.h"
 #include "utils.h"
 
-#define MIN_WIDTH 1
-#define MIN_HEIGHT 1
+#define MIN_WIDTH 2
+#define MIN_HEIGHT 2
 #define MIN_FRAMERATE 1
 #define MAX_FRAMERATE SEC_US
 #define MIN_LOOPRATE 1

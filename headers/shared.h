@@ -46,6 +46,7 @@ Sort_info* lock_and_get_info(Shared_data data);
 Sort_info* get_info(Shared_data data);
 short reset_info(Shared_data data);
 
+int get_save_array_len(Shared_data data);
 int get_array_len(Shared_data data);
 void set_array_value(Shared_data data, int i, int value);
 int get_array_value(Shared_data data, int i);

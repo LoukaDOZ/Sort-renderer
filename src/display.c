@@ -93,25 +93,28 @@ void handle_render_events(Render* render, Shared_data shared_data, bool* quitted
 }
 
 bool draw_array(Render* render, Shared_data shared_data, int window_w, int window_h) {
+    int save_array_len = get_save_array_len(shared_data);
     int array_len = get_array_len(shared_data);
     int cursor = get_cursor(shared_data);
-    int w_sum = 0;
+    SDL_Rect bar = {0, 0, 0, 0};
+
+    int w_unit = window_w / array_len;
+    w_unit = w_unit > 0 ? w_unit : 1;
+
+    int w_offset = (window_w - w_unit * array_len) / 2;
+    w_offset = w_offset >= 0 ? w_offset : 0;
 
     for(int i = 0; i < array_len; i++) {
         SDL_Color color = i == cursor ? RED_COLOR : WHITE_COLOR;
         int val = get_array_value(shared_data, i);
-        int barw = max(floor((window_w - w_sum) / (array_len - i)), 1);
-        SDL_Rect bar = {0, 0, barw, 0};
 
-        float ratio = ((float) val) / ((float) array_len);
-        bar.h = floor(window_h * ratio);
-        bar.x = w_sum;
+        bar.w = w_unit;
+        bar.h = window_h * (((float) val) / ((float) save_array_len));
+        bar.x = w_offset + w_unit * i;
         bar.y = window_h - bar.h;
 
         if(!draw_rect(render, &bar, color))
             return false;
-
-        w_sum += barw;
     }
 
     return true;

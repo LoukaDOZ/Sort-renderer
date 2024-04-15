@@ -372,6 +372,13 @@ short reset_info(Shared_data data) {
     return state;
 }
 
+int get_save_array_len(Shared_data data) {
+    Sort_info* info = lock_and_get_info(data);
+    int len = info->save_array_len;
+    unlock_info(data);
+    return len;
+}
+
 int get_array_len(Shared_data data) {
     Sort_info* info = lock_and_get_info(data);
     int len = info->array_len;

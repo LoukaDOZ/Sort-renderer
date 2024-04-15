@@ -26,16 +26,16 @@ make build
 ```
 
 Arguments :
-| Argument                 | Description                      | Type                      | Default        |
-|--------------------------|----------------------------------|---------------------------|----------------|
-| `-h, --help`             | Show help                        |                           |                |
-| `-w, --width <int>`      | Screen width in pixels           | int (>= 1)                | 500px          |
-| `-e, --height <int>`     | Screen height in pixels          | int (>= 1)                | 500px          |
-| `-r, --framerate <int>`  | Display max frames per seconds   | int (>= 1 and <= 1000000) | 60/s           |
-| `-l, --looprate <int>`   | Simulation max loops per seconds | int (>= 1 and <= 1000000) | 500/s          |
-| `-a, --array-size <int>` | Array size                       | int (>= 2)                | Screen width   |
-| `-f, --fullscreen`       | Set fullscreen                   |                           | Not fullscreen |
-| `-i, --no-info`          | Disable information messages     |                           | Shown          |
+| Argument                 | Description                      | Type                      | Default                          |
+|--------------------------|----------------------------------|---------------------------|----------------------------------|
+| `-h, --help`             | Show help                        |                           |                                  |
+| `-w, --width <int>`      | Screen width in pixels           | int (>= 2)                | 500px                            |
+| `-e, --height <int>`     | Screen height in pixels          | int (>= 2)                | 500px                            |
+| `-r, --framerate <int>`  | Display max frames per seconds   | int (>= 1 and <= 1000000) | 60/s                             |
+| `-l, --looprate <int>`   | Simulation max loops per seconds | int (>= 1 and <= 1000000) | 500/s                            |
+| `-a, --array-size <int>` | Array size                       | int (>= 2)                | min(screen width, screen height) |
+| `-f, --fullscreen`       | Set fullscreen                   |                           | Not fullscreen                   |
+| `-i, --no-info`          | Disable information messages     |                           | Shown                            |
 
 
 ### In game controls
@@ -86,22 +86,22 @@ typedef struct Sort_info {
 } Sort_info;
 ```
 
-| Field | Description |
-| - | - |
-| `info->array_len` | Array values length |
-| `info->array` | Array values of `info->array_len` values |
-| `info->cursor` | Defines "where" we are in the array at the current iteration. Mainly used for rendering but also useful to store a data |
-| `info->other` | Use it to store whatever other data needed. Must be allocated in the `init_SORT_NAME_sort` function and freed in the `free_SORT_NAME_sort` function |
-| `info->save_array_len` | Should never be changed |
+| Field                  | Description                                                                                                                                         |
+|------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
+| `info->array_len`      | Array values length                                                                                                                                 |
+| `info->array`          | Array values of `info->array_len` values                                                                                                            |
+| `info->cursor`         | Defines "where" we are in the array at the current iteration. Mainly used for rendering but also useful to store a data                             |
+| `info->other`          | Use it to store whatever other data needed. Must be allocated in the `init_SORT_NAME_sort` function and freed in the `free_SORT_NAME_sort` function |
+| `info->save_array_len` | Should never be changed                                                                                                                             |
 
 #### Return values
 
 The `init_SORT_NAME_sort` and `SORT_NAME_sort` functions must return a value depending on the success or not of theses functions :
-| Return value | Functions | Description |
-| - | - | - |
-| `SORT_SUCCESS` | Both | Everything is OK |
-| `SORT_FAILURE` | Both | Something went wrong (unable to allocate memory, ...) |
-| `SORT_FINISHED` | `SORT_NAME_sort` only | Sort function finished : the array should be sorted |
+| Return value    | Functions             | Description                                           |
+|-----------------|-----------------------|-------------------------------------------------------|
+| `SORT_SUCCESS`  | Both                  | Everything is OK                                      |
+| `SORT_FAILURE`  | Both                  | Something went wrong (unable to allocate memory, ...) |
+| `SORT_FINISHED` | `SORT_NAME_sort` only | Sort function finished : the array should be sorted   |
 
 ### Define header file
 
