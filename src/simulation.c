@@ -69,6 +69,10 @@ bool run_simulation(Shared_data shared_data) {
                 if(!shuffling)
                     sort_function_free(shared_data);
 
+                start_time = 0;
+                diff_time = 0;
+                saved_time = 0;
+                corrected_time = 0;
                 shuffling = true;
                 set_is_shuffling(shared_data, true);
 
