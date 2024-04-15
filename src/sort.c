@@ -116,16 +116,13 @@ Sort_info* init_sort_info(int array_size) {
 }
 
 short reset_sort_info(Sort_info* info) {
-    if(info->save_array_len != info->array_len) {
-        int* array = create_array(info->save_array_len);
-        if(array == NULL)
-            return SORT_FAILURE;
+    int* array = create_array(info->save_array_len);
+    if(array == NULL)
+        return SORT_FAILURE;
 
-        free(info->array);
-        info->array = array;
-        info->array_len = info->save_array_len;
-    }
-
+    free(info->array);
+    info->array = array;
+    info->array_len = info->save_array_len;
     info->cursor = 0;
     return SORT_SUCCESS;
 }
