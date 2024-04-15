@@ -26,16 +26,16 @@ make build
 ```
 
 Arguments :
-| Argument                 | Description                      | Type                      | Default                          |
-|--------------------------|----------------------------------|---------------------------|----------------------------------|
-| `-h, --help`             | Show help                        |                           |                                  |
-| `-w, --width <int>`      | Screen width in pixels           | int (>= 2)                | 500px                            |
-| `-e, --height <int>`     | Screen height in pixels          | int (>= 2)                | 500px                            |
-| `-r, --framerate <int>`  | Display max frames per seconds   | int (>= 1 and <= 1000000) | 60/s                             |
-| `-l, --looprate <int>`   | Simulation max loops per seconds | int (>= 1 and <= 1000000) | 500/s                            |
-| `-a, --array-size <int>` | Array size                       | int (>= 2)                | min(screen width, screen height) |
-| `-f, --fullscreen`       | Set fullscreen                   |                           | Not fullscreen                   |
-| `-i, --no-info`          | Disable information messages     |                           | Shown                            |
+| Argument                 | Description                      | Type                           | Default                          |
+|--------------------------|----------------------------------|--------------------------------|----------------------------------|
+| `-h, --help`             | Show help                        |                                |                                  |
+| `-w, --width <int>`      | Screen width in pixels           | int (>= 2)                     | 500px                            |
+| `-e, --height <int>`     | Screen height in pixels          | int (>= 2)                     | 500px                            |
+| `-r, --framerate <int>`  | Display max frames per seconds   | int (>= 1 and <= 1000000)      | 60/s                             |
+| `-l, --looprate <int>`   | Simulation max loops per seconds | int (>= 1 and <= 1000000)      | 500/s                            |
+| `-a, --array-size <int>` | Array size                       | int (>= 2 and <= screen width) | Screen width                     |
+| `-f, --fullscreen`       | Set fullscreen                   |                                | Not fullscreen                   |
+| `-i, --no-info`          | Disable information messages     |                                | Shown                            |
 
 
 ### In game controls
