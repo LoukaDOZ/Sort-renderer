@@ -4,7 +4,7 @@
 typedef struct Shared_pointer Shared_pointer;
 typedef Shared_pointer** Shared_data;
 
-Shared_data create_shared_data(int array_size, int simulation_delay);
+Shared_data create_shared_data(int array_size, int simulation_delay, int start_sort);
 void free_shared_data(Shared_data data);
 
 void set_has_quitted(Shared_data data, bool quitted);

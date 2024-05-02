@@ -25,7 +25,7 @@
 #define ARGS_NO_RUN 2
 
 typedef struct Args {
-    int w, h, array_size, framerate, looprate;
+    int w, h, array_size, framerate, looprate, sort;
     bool fullscreen, show_info, array_size_changed;
 } Args;
 
@@ -35,6 +35,7 @@ void init_args(Args* args) {
     args->array_size = args->w;
     args->framerate = 60;
     args->looprate = 500;
+    args->sort = 0;
     args->fullscreen = false;
     args->show_info = true;
     args->array_size_changed = false;
@@ -107,6 +108,7 @@ int get_args(Args* args, int argc, char** argv) {
             printf("\t-r, --framerate <int>\t\tDisplay max frames per seconds (%d < framerate < %ld) (default: 60/s)\n", MIN_FRAMERATE, MAX_FRAMERATE);
             printf("\t-l, --looprate <int>\t\tSimulation max loops per seconds (%d < looprate < %ld) (default: 500/s)\n", MIN_LOOPRATE, MAX_LOOPRATE);
             printf("\t-a, --array-size <int>\t\tArray size (%d < array size < width) (default: screen width)\n", MIN_ARRAY_SIZE);
+            printf("\t-s, --sort <int>\t\tStarting sort index modulo SORT_FUNCTIONS_LEN (%d) (default: 0)\n", SORT_FUNCTIONS_LEN);
             printf("\t-f, --fullscreen\t\tSet fullscreen\n");
             printf("\t-i, --no-info\t\t\tDisable information messages\n");
 
@@ -143,6 +145,11 @@ int get_args(Args* args, int argc, char** argv) {
                 return ARGS_FAILURE;
 
             array_size_changed_index = i;
+            i++;
+        } else if(strcmp(arg, "--sort") == 0 || strcmp(arg, "-s") == 0) {
+            if(!get_int_arg(argc, argv, i, &(args->sort)))
+                return ARGS_FAILURE;
+
             i++;
         } else {
             fprintf(stderr, "Invalid option : '%s', use --help for help\n", arg);
@@ -189,7 +196,7 @@ int main(int argc, char** argv) {
     show_window(render);
     get_window_size(render, &w, &h);
 
-    Shared_data shared_data = create_shared_data(args.array_size_changed ? args.array_size : w, SEC_US / args.looprate);
+    Shared_data shared_data = create_shared_data(args.array_size_changed ? args.array_size : w, SEC_US / args.looprate, args.sort);
     if(shared_data == NULL) {
         fprintf(stderr, "An error occur when inititalizing simulation data : %s\n", render_error());
         destroy_render(render);
