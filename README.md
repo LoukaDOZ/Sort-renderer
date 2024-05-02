@@ -51,7 +51,22 @@ Arguments :
 | `Up arrow, mouse scrool up`     | Increase simulation looprate   |
 | `Down arrow, mouse scrool down` | Decrease simulation looprate   |
 
-## Adding sort procedure
+## Implemented sorts
+
+| Sort                   | Average complexity | Index |
+|------------------------|--------------------|-------|
+| Insertion sort         | Θ(n²)              | 0     |
+| Bubble sort            | Θ(n²)              | 1     |
+| Gnome sort             | Θ(n²)              | 2     |
+| Shaker sort            | Θ(n²)              | 3     |
+| Quick sort             | Θ(n log n)         | 4     |
+| Heap sort              | Θ(n log n)         | 5     |
+| Merge sort (Top-down)  | Θ(n log n)         | 6     |
+| Merge sort (Bottom-up) | Θ(n log n)         | 7     |
+| Bongo sort             | Θ((n + 1)!)        | 8     |
+| Stalin sort            | Θ(n)               | 9     |
+
+## Procedure to add a sort
 ### Define source file
 
 Add the `SORT_NAME.c` source file in the `sorts/src/` folder and copy the following sample code (replace `SORT_NAME` by the sort algorithm name) :
