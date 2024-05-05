@@ -1,36 +1,19 @@
 #include <stdlib.h>
-#include "sort.h"
+#include "api.h"
 #include "insertion.h"
 
-short init_insertion_sort(Sort_info* info) {
-    int* current = (int*) malloc(sizeof(int));
-    if(current == NULL)
-        return SORT_FAILURE;
+short run_insertion_sort(Data* data) {
+    for(int i = 1; i < data->array_len && data->run; i++) {        
+        for(int j = i; j > 0 && data->run; j--) {
+            if(data->array[j - 1] > data->array[j])
+                swap(data, j - 1, j);
+            else
+                break;
 
-    *current = 1;
-    info->other = (void*) current;
-    info->cursor = *current;
-    return SORT_SUCCESS;
-}
-
-short insertion_sort(Sort_info* info) {
-    int* current = (int*) info->other;
-
-    if(*current >= info->array_len)
-        return SORT_FINISHED;
-
-    if(info->array[info->cursor - 1] > info->array[info->cursor])
-        swap(info, info->cursor, info->cursor - 1);
-
-    info->cursor--;
-    if(info->cursor < 1 || info->array[info->cursor - 1] <= info->array[info->cursor]) {
-        (*current)++;
-        info->cursor = *current;
+            data->cursor = j - 1;
+            tick(data);
+        }
     }
 
     return SORT_SUCCESS;
-}
-
-void free_insertion_sort(Sort_info* info) {
-    free(info->other);
 }

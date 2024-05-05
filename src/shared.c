@@ -3,10 +3,11 @@
 #include <stdbool.h>
 #include <pthread.h>
 #include "sort.h"
+#include "functions.h"
 #include "render.h"
 #include "shared.h"
 
-#define NB_SHARED_POINTER 10
+#define NB_SHARED_POINTER 9
 #define INFO_SHARED_POINTER 0
 #define HAS_QUITTED_SHARED_POINTER 1
 #define IS_PAUSED_SHARED_POINTER 2
@@ -15,8 +16,7 @@
 #define CORRECTED_TIME_SHARED_POINTER 5
 #define LPS_SHARED_POINTER 6
 #define SIMULATION_DELAY_SHARED_POINTER 7
-#define SORT_FUNCTION_SHARED_POINTER 8
-#define NEXT_SORT_FUNCTION_SHARED_POINTER 9
+#define SORT_ALGO_SHARED_POINTER 8
 
 typedef struct Shared_pointer {
     void* pointer;
@@ -140,21 +140,14 @@ Shared_data create_shared_data(int array_size, int simulation_delay, int start_s
     }
     limit++;
 
-    data[SORT_FUNCTION_SHARED_POINTER] = create_v_shared_pointer(sizeof(unsigned int));
-    if(data[SORT_FUNCTION_SHARED_POINTER] == NULL) {
+    data[SORT_ALGO_SHARED_POINTER] = create_v_shared_pointer(sizeof(unsigned int));
+    if(data[SORT_ALGO_SHARED_POINTER] == NULL) {
         free_incomplete_data(data, limit);
         return NULL;
     }
     limit++;
 
-    data[NEXT_SORT_FUNCTION_SHARED_POINTER] = create_v_shared_pointer(sizeof(int));
-    if(data[NEXT_SORT_FUNCTION_SHARED_POINTER] == NULL) {
-        free_incomplete_data(data, limit);
-        return NULL;
-    }
-    limit++;
-
-    Sort_info* info = init_sort_info(array_size);
+    Sort_info* info = create_sort_info(array_size);
     if(info == NULL) {
         free_incomplete_data(data, limit);
         return NULL;
@@ -168,9 +161,8 @@ Shared_data create_shared_data(int array_size, int simulation_delay, int start_s
     *((unsigned long*) data[CORRECTED_TIME_SHARED_POINTER]->pointer) = 0;
     *((unsigned int*) data[LPS_SHARED_POINTER]->pointer) = 0;
     *((unsigned long*) data[SIMULATION_DELAY_SHARED_POINTER]->pointer) = simulation_delay;
-    *((unsigned int*) data[SORT_FUNCTION_SHARED_POINTER]->pointer) = 0;
-    *((int*) data[NEXT_SORT_FUNCTION_SHARED_POINTER]->pointer) = 0;
-    set_sort_function(data, start_sort);
+    *((unsigned int*) data[SORT_ALGO_SHARED_POINTER]->pointer) = 0;
+    set_sort_algo_index(data, start_sort);
     return data;
 }
 
@@ -273,77 +265,33 @@ unsigned long get_simulation_delay(Shared_data data) {
     return delay;
 }
 
-void add_next_sort_shift(Shared_data data, int shift) {
-    lock_shared_pointer(data[NEXT_SORT_FUNCTION_SHARED_POINTER]);
-    *((int*) data[NEXT_SORT_FUNCTION_SHARED_POINTER]->pointer) += shift;
-    unlock_shared_pointer(data[NEXT_SORT_FUNCTION_SHARED_POINTER]);
-}
-
-int get_next_sort_shift(Shared_data data, bool empty) {
-    lock_shared_pointer(data[NEXT_SORT_FUNCTION_SHARED_POINTER]);
-    int shift = *((int*) data[NEXT_SORT_FUNCTION_SHARED_POINTER]->pointer);
-    if(empty) *((int*) data[NEXT_SORT_FUNCTION_SHARED_POINTER]->pointer) = 0;
-    unlock_shared_pointer(data[NEXT_SORT_FUNCTION_SHARED_POINTER]);
-    return shift;
-}
-
-void set_sort_function(Shared_data data, int shift) {
-    lock_shared_pointer(data[SORT_FUNCTION_SHARED_POINTER]);
-    unsigned int* value = (unsigned int*) data[SORT_FUNCTION_SHARED_POINTER]->pointer;
+void set_sort_algo_index(Shared_data data, int shift) {
+    lock_shared_pointer(data[SORT_ALGO_SHARED_POINTER]);
+    unsigned int* value = (unsigned int*) data[SORT_ALGO_SHARED_POINTER]->pointer;
     int shifted = (((int) *value) + shift) % SORT_FUNCTIONS_LEN;
     *value = shifted < 0 ? SORT_FUNCTIONS_LEN + shifted : shifted;
-    unlock_shared_pointer(data[SORT_FUNCTION_SHARED_POINTER]);
+    unlock_shared_pointer(data[SORT_ALGO_SHARED_POINTER]);
 }
 
-unsigned int get_sort_function_index(Shared_data data) {
-    lock_shared_pointer(data[SORT_FUNCTION_SHARED_POINTER]);
-    unsigned int function_i = *((unsigned int*) data[SORT_FUNCTION_SHARED_POINTER]->pointer);
-    unlock_shared_pointer(data[SORT_FUNCTION_SHARED_POINTER]);
-    return function_i;
+unsigned int get_sort_algo_index(Shared_data data) {
+    lock_shared_pointer(data[SORT_ALGO_SHARED_POINTER]);
+    unsigned int algo_i = *((unsigned int*) data[SORT_ALGO_SHARED_POINTER]->pointer);
+    unlock_shared_pointer(data[SORT_ALGO_SHARED_POINTER]);
+    return algo_i;
 }
 
-const Sort_function* get_sort_function(Shared_data data) {
-    lock_shared_pointer(data[SORT_FUNCTION_SHARED_POINTER]);
-    unsigned int function_i = *((unsigned int*) data[SORT_FUNCTION_SHARED_POINTER]->pointer);
-    unlock_shared_pointer(data[SORT_FUNCTION_SHARED_POINTER]);
-    return &SORT_FUNCTIONS[function_i];
+char* get_sort_algo_name(Shared_data data) {
+    lock_shared_pointer(data[SORT_ALGO_SHARED_POINTER]);
+    unsigned int algo_i = *((unsigned int*) data[SORT_ALGO_SHARED_POINTER]->pointer);
+    unlock_shared_pointer(data[SORT_ALGO_SHARED_POINTER]);
+    return SORT_FUNCTIONS[algo_i].name;
 }
 
-char* get_sort_function_name(Shared_data data) {
-    lock_shared_pointer(data[SORT_FUNCTION_SHARED_POINTER]);
-    unsigned int function_i = *((unsigned int*) data[SORT_FUNCTION_SHARED_POINTER]->pointer);
-    unlock_shared_pointer(data[SORT_FUNCTION_SHARED_POINTER]);
-    return SORT_FUNCTIONS[function_i].name;
-}
-
-char* get_sort_function_complexity(Shared_data data) {
-    lock_shared_pointer(data[SORT_FUNCTION_SHARED_POINTER]);
-    unsigned int function_i = *((unsigned int*) data[SORT_FUNCTION_SHARED_POINTER]->pointer);
-    unlock_shared_pointer(data[SORT_FUNCTION_SHARED_POINTER]);
-    return SORT_FUNCTIONS[function_i].complexity;
-}
-
-short sort_function_init(Shared_data data) {
-    Sort_info* info = lock_and_get_info(data);
-    const Sort_function* function = get_sort_function(data);
-    short state = function->init(info);
-    unlock_info(data);
-    return state;
-}
-
-short sort_function_sort(Shared_data data) {
-    Sort_info* info = lock_and_get_info(data);
-    const Sort_function* function = get_sort_function(data);
-    short state = function->sort(info);
-    unlock_info(data);
-    return state;
-}
-
-void sort_function_free(Shared_data data) {
-    Sort_info* info = lock_and_get_info(data);
-    const Sort_function* function = get_sort_function(data);
-    function->free(info);
-    unlock_info(data);
+char* get_sort_algo_complexity(Shared_data data) {
+    lock_shared_pointer(data[SORT_ALGO_SHARED_POINTER]);
+    unsigned int algo_i = *((unsigned int*) data[SORT_ALGO_SHARED_POINTER]->pointer);
+    unlock_shared_pointer(data[SORT_ALGO_SHARED_POINTER]);
+    return SORT_FUNCTIONS[algo_i].complexity;
 }
 
 void lock_info(Shared_data data) {
@@ -366,11 +314,10 @@ Sort_info* get_info(Shared_data data) {
     return info;
 }
 
-short reset_info(Shared_data data) {
+void reset_info(Shared_data data) {
     Sort_info* info = lock_and_get_info(data);
-    short state = reset_sort_info(info);
+    reset_sort_info(info);
     unlock_info(data);
-    return state;
 }
 
 int get_save_array_len(Shared_data data) {

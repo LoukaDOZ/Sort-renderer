@@ -1,5 +1,9 @@
-#ifndef COMMON_H
-#define COMMON_H
+#ifndef SHARED_H
+#define SHARED_H
+
+#include <stdbool.h> // Fix unknown bool
+#include "functions.h" // Fix unknown Sort_Algorithm
+#include "sort.h" // Fix unknown Sort_info
 
 typedef struct Shared_pointer Shared_pointer;
 typedef Shared_pointer** Shared_data;
@@ -28,23 +32,16 @@ unsigned int get_lps(Shared_data data);
 void set_simulation_delay(Shared_data data, unsigned long delay);
 unsigned long get_simulation_delay(Shared_data data);
 
-void add_next_sort_shift(Shared_data data, int shift);
-int get_next_sort_shift(Shared_data data, bool empty);
-
-void set_sort_function(Shared_data data, int shift);
-unsigned int get_sort_function_index(Shared_data data);
-const Sort_function* get_sort_function(Shared_data data);
-char* get_sort_function_name(Shared_data data);
-char* get_sort_function_complexity(Shared_data data);
-short sort_function_init(Shared_data data);
-short sort_function_sort(Shared_data data);
-void sort_function_free(Shared_data data);
+void set_sort_algo_index(Shared_data data, int shift);
+unsigned int get_sort_algo_index(Shared_data data);
+char* get_sort_algo_name(Shared_data data);
+char* get_sort_algo_complexity(Shared_data data);
 
 void lock_info(Shared_data data);
 void unlock_info(Shared_data data);
 Sort_info* lock_and_get_info(Shared_data data);
 Sort_info* get_info(Shared_data data);
-short reset_info(Shared_data data);
+void reset_info(Shared_data data);
 
 int get_save_array_len(Shared_data data);
 int get_array_len(Shared_data data);
