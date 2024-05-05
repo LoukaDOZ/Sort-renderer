@@ -53,18 +53,18 @@ Arguments :
 
 ## Implemented sorts
 
-| Sort                   | Average complexity | Index |
-|------------------------|--------------------|-------|
-| Insertion sort         | Θ(n²)              | 0     |
-| Bubble sort            | Θ(n²)              | 1     |
-| Gnome sort             | Θ(n²)              | 2     |
-| Shaker sort            | Θ(n²)              | 3     |
-| Quick sort             | Θ(n log n)         | 4     |
-| Heap sort              | Θ(n log n)         | 5     |
-| Merge sort (Top-down)  | Θ(n log n)         | 6     |
-| Merge sort (Bottom-up) | Θ(n log n)         | 7     |
-| Bongo sort             | Θ((n + 1)!)        | 8     |
-| Stalin sort            | Θ(n)               | 9     |
+| Sort                   | Worst complexity | Average complexity | Best complexity                                       | Index |
+|------------------------|------------------|--------------------|-------------------------------------------------------|-------|
+| Insertion sort         | Θ(n²)            | Θ(n²)              | Θ(n)                                                  | 0     |
+| Bubble sort            | Θ(n²)            | Θ(n²)              | Θ(n)                                                  | 1     |
+| Gnome sort             | Θ(n²)            | Θ(n²)              | Θ(n)                                                  | 2     |
+| Shaker sort            | Θ(n²)            | Θ(n²)              | Θ(n)                                                  | 3     |
+| Quick sort             | Θ(n²)            | Θ(n log n)         | Θ(n log n)                                            | 4     |
+| Heap sort              | Θ(n log n)       | Θ(n log n)         | If distinct keys : Θ(n log n) or if equal keys : Θ(n) | 5     |
+| Merge sort (Top-down)  | Θ(n log n)       | Θ(n log n)         | Θ(n log n)                                            | 6     |
+| Merge sort (Bottom-up) | Θ(n log n)       | Θ(n log n)         | Θ(n log n)                                            | 7     |
+| Bogo sort              | ∞                | Θ((n + 1)!)        | Θ(n)                                                  | 8     |
+| Stalin sort            | Θ(n)             | Θ(n)               | Θ(n)                                                  | 9     |
 
 ## Procedure to add a sort
 ### Define the source file
