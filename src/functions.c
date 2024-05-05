@@ -8,8 +8,9 @@
 #include "gnome.h"
 #include "shaker.h"
 #include "bogo.h"
+#include "stalin.h"
 
-const int SORT_FUNCTIONS_LEN = 5;
+const int SORT_FUNCTIONS_LEN = 6;
 const Sort_Algorithm SORT_ALGORITHMS[] = {
     {
         "Insertion sort",
@@ -35,6 +36,11 @@ const Sort_Algorithm SORT_ALGORITHMS[] = {
         "Bogo sort",
         "Θ((n + 1)!)",
         &run_bogo_sort
+    },
+    {
+        "Stalin sort",
+        "Θ(n)",
+        &run_stalin_sort
     }
 };
 
