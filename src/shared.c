@@ -284,14 +284,14 @@ char* get_sort_algo_name(Shared_data data) {
     lock_shared_pointer(data[SORT_ALGO_SHARED_POINTER]);
     unsigned int algo_i = *((unsigned int*) data[SORT_ALGO_SHARED_POINTER]->pointer);
     unlock_shared_pointer(data[SORT_ALGO_SHARED_POINTER]);
-    return SORT_FUNCTIONS[algo_i].name;
+    return SORT_ALGORITHMS[algo_i].name;
 }
 
 char* get_sort_algo_complexity(Shared_data data) {
     lock_shared_pointer(data[SORT_ALGO_SHARED_POINTER]);
     unsigned int algo_i = *((unsigned int*) data[SORT_ALGO_SHARED_POINTER]->pointer);
     unlock_shared_pointer(data[SORT_ALGO_SHARED_POINTER]);
-    return SORT_FUNCTIONS[algo_i].complexity;
+    return SORT_ALGORITHMS[algo_i].complexity;
 }
 
 void lock_info(Shared_data data) {

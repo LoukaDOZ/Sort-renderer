@@ -7,7 +7,7 @@
 #include "bubble.h"
 
 const int SORT_FUNCTIONS_LEN = 2;
-const Sort_Algorithm SORT_FUNCTIONS[] = {
+const Sort_Algorithm SORT_ALGORITHMS[] = {
     {
         "Insertion sort",
         "Θ(n²)",

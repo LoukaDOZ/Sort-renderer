@@ -43,10 +43,10 @@ Data* create_simulation_data(Shared_data shared_data) {
     private->simulation_time = 0;
     private->loop_start_time = 0;
     private->corrected_time = 0;
+    private->run = true;
     private->has_quitted = false;
 
     data->cursor = 0;
-    data->run = true;
     data->_private = private;
     return data;
 }
@@ -58,7 +58,6 @@ void reset(Data* data) {
     reset_sort_info(info);
     data->array_len = info->array_len;
     data->cursor = info->cursor;
-    data->run = true;
 
     for(int i = 0; i < info->array_len; i++)
         data->array[i] = info->array[i];
@@ -82,7 +81,7 @@ void shuffle(Data* data) {
     Shared_data shared_data = (Shared_data) private->shared_data;
     set_is_shuffling(shared_data, true);
 
-    for(int i = 0; i < data->array_len && data->run; i++) {
+    for(int i = 0; i < data->array_len && private->run; i++) {
         int rand_i = rand() % data->array_len;
         int current = get_array_value(shared_data, i);
         int random = get_array_value(shared_data, rand_i);
@@ -110,28 +109,25 @@ bool run_simulation(Shared_data shared_data) {
     Private* private = (Private*) data->_private;
     while(!private->has_quitted) {
         private->sort_algo_index = get_sort_algo_index(shared_data);
+        private->run = true;
         reset(data);
 
         usleep(SLEEP_TIME);
         shuffle(data);
 
-        if(!data->run) {
-            if(private->has_quitted)
-                break;
-            
+        if(!private->run)  
             continue;
-        }
 
         usleep(SLEEP_TIME);
         init_simulation(data);
 
-        simulation_res = SORT_FUNCTIONS[private->sort_algo_index].function(data);
+        simulation_res = SORT_ALGORITHMS[private->sort_algo_index].function(data);
         if(simulation_res == SORT_FAILURE) {
             state = false;
             break;
         }
 
-        if(data->run)
+        if(private->run)
             set_sort_algo_index(shared_data, 1);
     }
 

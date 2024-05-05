@@ -28,6 +28,10 @@ void copy_data(Data* data, Shared_data shared_data) {
     unlock_info(shared_data);
 }
 
+bool run(Data* data) {
+    return ((Private*) data->_private)->run;
+}
+
 void tick(Data* data) {
     Private* private = (Private*) data->_private;
     long corrected_duration = us_time() - private->loop_start_time;
@@ -43,13 +47,13 @@ void tick(Data* data) {
         time = 0;
 
         if(private->has_quitted) {
-            data->run = false;
+            private->run = false;
             return;
         }
     }
 
     int tmp = get_sort_algo_index(private->shared_data);
-    data->run = private->sort_algo_index == tmp && !private->has_quitted;
+    private->run = private->sort_algo_index == tmp && !private->has_quitted;
     copy_data(data, private->shared_data);
 
     usleep(get_simulation_delay(private->shared_data));

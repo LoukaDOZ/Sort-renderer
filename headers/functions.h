@@ -12,6 +12,6 @@ typedef struct Sort_Algorithm {
 } Sort_Algorithm;
 
 extern const int SORT_FUNCTIONS_LEN;
-extern const Sort_Algorithm SORT_FUNCTIONS[];
+extern const Sort_Algorithm SORT_ALGORITHMS[];
 
 #endif
