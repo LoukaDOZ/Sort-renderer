@@ -21,13 +21,13 @@ uninstall: clean
 	sudo apt remove libfreetype6-dev libsdl2-ttf-dev libsdl2-ttf-2.0-0 -y
 
 build: $(OFiles)
-	$(CC) -o $(BinFolder)/$(Exec) $(BinFolder)/*.o $(SDLFlags) $(Flags)
+	$(CC) -g -o $(BinFolder)/$(Exec) $(BinFolder)/*.o $(SDLFlags) $(Flags)
 
 run:
 	$(BinFolder)/$(Exec)
 
 %.o: %.c
-	$(CC) -o $(BinFolder)/$(notdir $@) -I $(HeadersFolder) -I $(SortHeadersFolder) -c $< $(SDLFlags) $(Flags)
+	$(CC) -g -o $(BinFolder)/$(notdir $@) -I $(HeadersFolder) -I $(SortHeadersFolder) -c $< $(SDLFlags) $(Flags)
 
 clean:
 	rm -f $(BinFolder)/*.o $(BinFolder)/$(Exec)

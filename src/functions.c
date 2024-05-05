@@ -7,10 +7,11 @@
 #include "bubble.h"
 #include "gnome.h"
 #include "shaker.h"
+#include "quick.h"
 #include "bogo.h"
 #include "stalin.h"
 
-const int SORT_FUNCTIONS_LEN = 6;
+const int SORT_FUNCTIONS_LEN = 7;
 const Sort_Algorithm SORT_ALGORITHMS[] = {
     {
         "Insertion sort",
@@ -31,6 +32,11 @@ const Sort_Algorithm SORT_ALGORITHMS[] = {
         "Shaker sort",
         "Θ(n²)",
         &run_shaker_sort
+    },
+    {
+        "Quick sort",
+        "Θ(n log n)",
+        &run_quick_sort
     },
     {
         "Bogo sort",
