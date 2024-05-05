@@ -10,7 +10,7 @@
 #include "utils.h"
 #include "simulation.h"
 
-#define SLEEP_TIME SEC_US/2
+#define SLEEP_TIME 1
 
 void free_simulation_data(Data* data) {
     free(data->_private);
@@ -110,25 +110,26 @@ bool run_simulation(Shared_data shared_data) {
     while(!private->has_quitted) {
         private->sort_algo_index = get_sort_algo_index(shared_data);
         private->run = true;
-        reset(data);
 
-        usleep(SLEEP_TIME);
+        reset(data);
         shuffle(data);
 
         if(!private->run)  
             continue;
 
-        usleep(SLEEP_TIME);
+        sleep(SLEEP_TIME);
         init_simulation(data);
-
         simulation_res = SORT_ALGORITHMS[private->sort_algo_index].function(data);
+        
         if(simulation_res == SORT_FAILURE) {
             state = false;
             break;
         }
 
-        if(private->run)
+        if(private->run) {
+            sleep(SLEEP_TIME);
             set_sort_algo_index(shared_data, 1);
+        }
     }
 
     free_simulation_data(data);
