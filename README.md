@@ -189,6 +189,12 @@ typedef struct Sort_Algorithm {
 } Sort_Algorithm;
 ```
 
+#### Resolving conflicting function names within sort source file
+
+Some sort algorithms may declare functions with the same signature leading to compilation error, even when they are not declared in the header. To avoid this problem, mark "private" functions as static.
+
+For example, `sorts/src/merge_top_down.c` and `sorts/src/merge_bottom_up.c` both use and declare a `static int* copy_elements(Data* data, int start, int len)`. The `static` keyword prevent conflicts when compiling.
+
 # Example
 
 Default configuration:

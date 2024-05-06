@@ -169,7 +169,7 @@ int get_args(Args* args, int argc, char** argv) {
 
 void* run_thread(void* args) {
     usleep(SEC_US);
-    long res_state = run_simulation((Shared_data) args) ? 0 : 1;
+    long res_state = run_simulation((Shared_data) args);
     pthread_exit((void*) res_state);
 }
 
@@ -218,7 +218,9 @@ int main(int argc, char** argv) {
     if(!display_state)
         fprintf(stderr, "An error occur when running simulation (display) : %s\n", render_error());
 
-    if(thread_res != 0)
+    if(thread_res == ALGORITHM_FAILURE)
+        fprintf(stderr, "An error occur when running simulation : SORT_FAILURE returned\n");
+    else if(thread_res != SIMULATION_SUCCESS)
         fprintf(stderr, "An error occur when running simulation (simulation) : %s\n", render_error());
 
     free_shared_data(shared_data);

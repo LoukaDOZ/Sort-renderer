@@ -4,6 +4,10 @@
 #include <stdbool.h> // Fix unknown bool
 #include "shared.h" // Fix unknown Shared_data
 
+extern const short SIMULATION_SUCCESS;
+extern const short SIMULATION_FAILURE;
+extern const short ALGORITHM_FAILURE;
+
 typedef struct Private {
     Shared_data shared_data;
     unsigned int sort_algo_index;
@@ -11,6 +15,6 @@ typedef struct Private {
     bool run, has_quitted;
 } Private;
 
-bool run_simulation(Shared_data shared_data);
+short run_simulation(Shared_data shared_data);
 
 #endif

@@ -8,10 +8,12 @@
 #include "gnome.h"
 #include "shaker.h"
 #include "quick.h"
+#include "merge_top_down.h"
+#include "merge_bottom_up.h"
 #include "bogo.h"
 #include "stalin.h"
 
-const int SORT_FUNCTIONS_LEN = 7;
+const int SORT_FUNCTIONS_LEN = 9;
 const Sort_Algorithm SORT_ALGORITHMS[] = {
     {
         "Insertion sort",
@@ -37,6 +39,16 @@ const Sort_Algorithm SORT_ALGORITHMS[] = {
         "Quick sort",
         "Θ(n log n)",
         &run_quick_sort
+    },
+    {
+        "Merge sort (Top-down)",
+        "Θ(n log n)",
+        &run_merge_top_down_sort
+    },
+    {
+        "Merge sort (Bottom-up)",
+        "Θ(n log n)",
+        &run_merge_bottom_up_sort
     },
     {
         "Bogo sort",

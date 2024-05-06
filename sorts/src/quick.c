@@ -2,8 +2,8 @@
 #include "api.h"
 #include "quick.h"
 
-void sort_sub_array(Data* data, int start, int end) {
-    if(end - start <= 0)
+static void sort_sub_array(Data* data, int start, int end) {
+    if(end <= start)
         return;
 
     int pivot = data->array[end];

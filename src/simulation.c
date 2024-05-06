@@ -12,6 +12,10 @@
 
 #define SLEEP_TIME 1
 
+const short SIMULATION_SUCCESS = 0;
+const short SIMULATION_FAILURE = 1;
+const short ALGORITHM_FAILURE = 2;
+
 void free_simulation_data(Data* data) {
     free(data->_private);
     free(data->array);
@@ -98,13 +102,13 @@ void shuffle(Data* data) {
     set_is_shuffling(shared_data, false);
 }
 
-bool run_simulation(Shared_data shared_data) {
+short run_simulation(Shared_data shared_data) {
     short simulation_res = SORT_SUCCESS;
-    bool state = true;
+    short state = SIMULATION_SUCCESS;
 
     Data* data = create_simulation_data(shared_data);
     if(data == NULL)
-        return false;
+        return SIMULATION_FAILURE;
 
     Private* private = (Private*) data->_private;
     while(!private->has_quitted) {
@@ -122,7 +126,7 @@ bool run_simulation(Shared_data shared_data) {
         simulation_res = SORT_ALGORITHMS[private->sort_algo_index].function(data);
         
         if(simulation_res == SORT_FAILURE) {
-            state = false;
+            state = ALGORITHM_FAILURE;
             break;
         }
 
