@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include "api.h"
-#include "quick.h"
+#include "sorts.h"
 
 static void sort_sub_array(Data* data, int start, int end) {
     if(end <= start)

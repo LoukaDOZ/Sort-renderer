@@ -1,18 +1,8 @@
 #include <stdlib.h>
 #include "functions.h"
+#include "sorts.h"
 
 //////// Add new sorts here ////////
-
-#include "insertion.h"
-#include "bubble.h"
-#include "gnome.h"
-#include "shaker.h"
-#include "quick.h"
-#include "heap.h"
-#include "merge_top_down.h"
-#include "merge_bottom_up.h"
-#include "bogo.h"
-#include "stalin.h"
 
 const int SORT_FUNCTIONS_LEN = 10;
 const Sort_Algorithm SORT_ALGORITHMS[] = {

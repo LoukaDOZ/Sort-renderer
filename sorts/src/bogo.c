@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "api.h"
-#include "bogo.h"
+#include "sorts.h"
 
 short run_bogo_sort(Data* data) {
     while(run(data)) {

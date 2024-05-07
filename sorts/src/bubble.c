@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include "api.h"
-#include "bubble.h"
+#include "sorts.h"
 
 short run_bubble_sort(Data* data) {
     for(int i = data->array_len - 1; i > 0 && run(data); i--) {

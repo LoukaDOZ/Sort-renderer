@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "api.h"
-#include "merge_bottom_up.h"
+#include "sorts.h"
 
 static int* copy_elements(Data* data, int start, int len) {
     int* copy = (int*) malloc(sizeof(int) * len);

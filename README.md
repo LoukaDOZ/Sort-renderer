@@ -73,7 +73,7 @@ Add the `SORT_NAME.c` source file in the `sorts/src/` folder and copy the follow
 ```c
 #include <stdlib.h>
 #include "api.h"
-#include "SORT_NAME.h"
+#include "sorts.h"
 
 short run_SORT_NAME_sort(Data* data) {
     // Sort algorithm code
@@ -131,14 +131,16 @@ void debug_err(char* message, ...);
 
 :warning: The simulation never checks for out of bounds.
 
-### Define the header file
+### Expose the sort function
 
-Once the source file is ready, create a `SORT_NAME.h` file in `sorts/headers/` folder exposing the previously defined function (replace `SORT_NAME` by the sort algorithm name) :
+Once the source file is ready, open the `sorts/headers/sorts.h` file and expose the previously defined function (replace `SORT_NAME` by the sort algorithm name) :
 ```c
-#ifndef SORT_NAME_H
-#define SORT_NAME_H
+#ifndef SORTS_H
+#define SORTS_H
 
-short run_SORT_NAME_sort(Data* data);
+short run_insertion_sort(Data* data);
+short run_bubble_sort(Data* data);
+short run_SORT_NAME_sort(Data* data); // Expose the sort function
 
 #endif
 ```
@@ -149,12 +151,9 @@ In the `src/functions.c` file, update the following part of the code by adding t
 ```c
 #include <stdlib.h>
 #include "functions.h"
+#include "sorts.h"
 
 //////// Add new sorts here ////////
-
-#include "insertion.h"
-#include "bubble.h"
-#include "SORT_NAME.h" // Include the new sort header
 
 const int SORT_FUNCTIONS_LEN = 3; // Update to match the length of SORT_ALGORITHMS
 const Sort_Algorithm SORT_ALGORITHMS[] = {

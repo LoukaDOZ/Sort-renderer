@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include "api.h"
-#include "stalin.h"
+#include "sorts.h"
 
 short run_stalin_sort(Data* data) {
     for(int i = 1; i < data->array_len && run(data);) {

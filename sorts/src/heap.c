@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "api.h"
-#include "heap.h"
+#include "sorts.h"
 
 typedef struct Node Node;
 struct Node {

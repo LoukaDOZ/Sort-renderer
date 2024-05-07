@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include "api.h"
-#include "gnome.h"
+#include "sorts.h"
 
 short run_gnome_sort(Data* data) {
     for(int i = 0; i < data->array_len && run(data);) {

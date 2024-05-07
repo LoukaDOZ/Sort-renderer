@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "api.h"
-#include "shaker.h"
+#include "sorts.h"
 
 short run_shaker_sort(Data* data) {
     int start = 0, end = data->array_len - 1;
