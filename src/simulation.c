@@ -136,6 +136,7 @@ short run_simulation(Shared_data shared_data) {
         }
     }
 
+    set_has_quitted(shared_data, true);
     free_simulation_data(data);
     return state;
 }
