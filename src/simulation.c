@@ -11,10 +11,12 @@
 #include "simulation.h"
 
 #define SLEEP_TIME 1
+#define TOTAL_TIME SEC_US
 
 const short SIMULATION_SUCCESS = 0;
 const short SIMULATION_FAILURE = 1;
 const short ALGORITHM_FAILURE = 2;
+const short ALGORITHM_USER_FAILURE = 3;
 
 void free_simulation_data(Data* data) {
     free(data->_private);
@@ -41,6 +43,11 @@ Data* create_simulation_data(Shared_data shared_data) {
         return NULL;
     }
 
+    Sort_info* info = lock_and_get_info(shared_data);
+    for(int i = 0; i < info->array_len; i++)
+        data->array[i] = info->array[i];
+    unlock_info(shared_data);
+
     private->shared_data = shared_data;
     private->sort_algo_index = 0;
     private->simulation_start_time = 0;
@@ -53,6 +60,46 @@ Data* create_simulation_data(Shared_data shared_data) {
     data->cursor = 0;
     data->_private = private;
     return data;
+}
+
+void init_simulation(Data* data) {
+    Private* private = (Private*) data->_private;
+    set_time(private->shared_data, 0);
+    set_corrected_time(private->shared_data, 0);
+
+    private->corrected_time = 0;
+    private->simulation_time = 0;
+    private->simulation_start_time = ms_time();
+    private->loop_start_time = us_time();
+}
+
+bool validate(Data* data) {
+    Private* private = (Private*) data->_private;
+    Shared_data shared_data = (Shared_data) private->shared_data;
+
+    unsigned long start_time = get_time(shared_data);
+    unsigned long start_corrected_time = get_corrected_time(shared_data);
+    unsigned long start_delay = get_simulation_delay(shared_data);
+    unsigned long forced_delay = TOTAL_TIME / data->array_len;
+
+    set_is_validating(shared_data, true);
+
+    for(int i = 0; i < data->array_len && private->run; i++) {
+        if(i > 0 && data->array[i - 1] > data->array[i])
+            return false;
+
+        if(get_simulation_delay(shared_data) != forced_delay)
+            set_simulation_delay(shared_data, forced_delay);
+
+        data->cursor = i;
+        tick(data);
+        set_time(private->shared_data, start_time);
+        set_corrected_time(private->shared_data, start_corrected_time);
+    }
+
+    set_is_validating(shared_data, false);
+    set_simulation_delay(shared_data, start_delay);
+    return true;
 }
 
 void reset(Data* data) {
@@ -69,20 +116,13 @@ void reset(Data* data) {
     unlock_info(shared_data);
 }
 
-void init_simulation(Data* data) {
-    Private* private = (Private*) data->_private;
-    set_time(private->shared_data, 0);
-    set_corrected_time(private->shared_data, 0);
-
-    private->corrected_time = 0;
-    private->simulation_time = 0;
-    private->simulation_start_time = ms_time();
-    private->loop_start_time = us_time();
-}
-
 void shuffle(Data* data) {
     Private* private = (Private*) data->_private;
     Shared_data shared_data = (Shared_data) private->shared_data;
+
+    unsigned long start_delay = get_simulation_delay(shared_data);
+    unsigned long forced_delay = TOTAL_TIME / data->array_len;
+
     set_is_shuffling(shared_data, true);
 
     for(int i = 0; i < data->array_len && private->run; i++) {
@@ -94,12 +134,16 @@ void shuffle(Data* data) {
         data->array[rand_i] = current;
         data->cursor = i;
 
+        if(get_simulation_delay(shared_data) != forced_delay)
+            set_simulation_delay(shared_data, forced_delay);
+
         tick(data);
         set_time(shared_data, 0);
         set_corrected_time(shared_data, 0);
     }
 
     set_is_shuffling(shared_data, false);
+    set_simulation_delay(shared_data, start_delay);
 }
 
 short run_simulation(Shared_data shared_data) {
@@ -126,6 +170,12 @@ short run_simulation(Shared_data shared_data) {
         simulation_res = SORT_ALGORITHMS[private->sort_algo_index].function(data);
         
         if(simulation_res == SORT_FAILURE) {
+            state = ALGORITHM_USER_FAILURE;
+            break;
+        }
+
+
+        if(private->run && !validate(data)) {
             state = ALGORITHM_FAILURE;
             break;
         }

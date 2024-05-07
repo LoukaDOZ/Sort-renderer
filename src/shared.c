@@ -7,16 +7,17 @@
 #include "render.h"
 #include "shared.h"
 
-#define NB_SHARED_POINTER 9
+#define NB_SHARED_POINTER 10
 #define INFO_SHARED_POINTER 0
 #define HAS_QUITTED_SHARED_POINTER 1
 #define IS_PAUSED_SHARED_POINTER 2
 #define IS_SHUFFLING_SHARED_POINTER 3
-#define TIME_SHARED_POINTER 4
-#define CORRECTED_TIME_SHARED_POINTER 5
-#define LPS_SHARED_POINTER 6
-#define SIMULATION_DELAY_SHARED_POINTER 7
-#define SORT_ALGO_SHARED_POINTER 8
+#define IS_VALIDATING_SHARED_POINTER 4
+#define TIME_SHARED_POINTER 5
+#define CORRECTED_TIME_SHARED_POINTER 6
+#define LPS_SHARED_POINTER 7
+#define SIMULATION_DELAY_SHARED_POINTER 8
+#define SORT_ALGO_SHARED_POINTER 9
 
 typedef struct Shared_pointer {
     void* pointer;
@@ -112,6 +113,13 @@ Shared_data create_shared_data(int array_size, int simulation_delay, int start_s
     }
     limit++;
 
+    data[IS_VALIDATING_SHARED_POINTER] = create_v_shared_pointer(sizeof(bool));
+    if(data[IS_VALIDATING_SHARED_POINTER] == NULL) {
+        free_incomplete_data(data, limit);
+        return NULL;
+    }
+    limit++;
+
     data[TIME_SHARED_POINTER] = create_v_shared_pointer(sizeof(unsigned int));
     if(data[TIME_SHARED_POINTER] == NULL) {
         free_incomplete_data(data, limit);
@@ -157,6 +165,7 @@ Shared_data create_shared_data(int array_size, int simulation_delay, int start_s
     *((bool*) data[HAS_QUITTED_SHARED_POINTER]->pointer) = false;
     *((bool*) data[IS_PAUSED_SHARED_POINTER]->pointer) = false;
     *((bool*) data[IS_SHUFFLING_SHARED_POINTER]->pointer) = false;
+    *((bool*) data[IS_VALIDATING_SHARED_POINTER]->pointer) = false;
     *((unsigned int*) data[TIME_SHARED_POINTER]->pointer) = 0;
     *((unsigned long*) data[CORRECTED_TIME_SHARED_POINTER]->pointer) = 0;
     *((unsigned int*) data[LPS_SHARED_POINTER]->pointer) = 0;
@@ -211,6 +220,19 @@ bool is_shuffling(Shared_data data) {
     bool shuffling = *((bool*) data[IS_SHUFFLING_SHARED_POINTER]->pointer);
     unlock_shared_pointer(data[IS_SHUFFLING_SHARED_POINTER]);
     return shuffling;
+}
+
+void set_is_validating(Shared_data data, bool validating) {
+    lock_shared_pointer(data[IS_VALIDATING_SHARED_POINTER]);
+    *((bool*) data[IS_VALIDATING_SHARED_POINTER]->pointer) = validating;
+    unlock_shared_pointer(data[IS_VALIDATING_SHARED_POINTER]);
+}
+
+bool is_validating(Shared_data data) {
+    lock_shared_pointer(data[IS_VALIDATING_SHARED_POINTER]);
+    bool validating = *((bool*) data[IS_VALIDATING_SHARED_POINTER]->pointer);
+    unlock_shared_pointer(data[IS_VALIDATING_SHARED_POINTER]);
+    return validating;
 }
 
 void set_time(Shared_data data, unsigned int time) {

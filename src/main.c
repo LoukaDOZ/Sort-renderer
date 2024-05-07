@@ -218,8 +218,10 @@ int main(int argc, char** argv) {
     if(!display_state)
         fprintf(stderr, "An error occur when running simulation (display) : %s\n", render_error());
 
-    if(thread_res == ALGORITHM_FAILURE)
-        fprintf(stderr, "An error occur when running simulation : SORT_FAILURE returned\n");
+    if(thread_res == ALGORITHM_USER_FAILURE)
+        fprintf(stderr, "An error occur when running simulation (simulation) : SORT_FAILURE returned\n");
+    else if(thread_res == ALGORITHM_FAILURE)
+        fprintf(stderr, "An error occur when running simulation (simulation) : the array was not sorted properly\n");
     else if(thread_res != SIMULATION_SUCCESS)
         fprintf(stderr, "An error occur when running simulation (simulation) : %s\n", render_error());
 

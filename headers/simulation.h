@@ -7,6 +7,7 @@
 extern const short SIMULATION_SUCCESS;
 extern const short SIMULATION_FAILURE;
 extern const short ALGORITHM_FAILURE;
+extern const short ALGORITHM_USER_FAILURE;
 
 typedef struct Private {
     Shared_data shared_data;

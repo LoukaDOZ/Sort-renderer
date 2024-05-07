@@ -20,6 +20,9 @@ bool is_paused(Shared_data data);
 void set_is_shuffling(Shared_data data, bool shuffling);
 bool is_shuffling(Shared_data data);
 
+void set_is_validating(Shared_data data, bool validating);
+bool is_validating(Shared_data data);
+
 void set_time(Shared_data data, unsigned int time);
 unsigned int get_time(Shared_data data);
 

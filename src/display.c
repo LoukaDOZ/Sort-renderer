@@ -21,6 +21,9 @@
 #define SHUFFLE_TEXT "Shuffling"
 #define SHUFFLE_TEXT_LEN 9
 
+#define VALIDATE_TEXT "Validating"
+#define VALIDATE_TEXT_LEN 10
+
 #define PAUSE_TEXT "Paused"
 #define PAUSE_TEXT_LEN 6
 
@@ -149,17 +152,22 @@ bool draw_func_info(Render* render, Shared_data shared_data) {
 }
 
 bool draw_program_info(Render* render, Shared_data shared_data, int fps, bool paused, int window_w, int window_h) {
-    bool shuffling_shown = false;
+    bool first_line_taken = false;
     if(is_shuffling(shared_data)) {
-        shuffling_shown = true;
+        first_line_taken = true;
         int w = TEXT_LETTER_W * SHUFFLE_TEXT_LEN;
         if(!draw_one_info(render, SHUFFLE_TEXT, window_w - w, 0, w, TEXT_H))
+            return false;
+    } else if(is_validating(shared_data)) {
+        first_line_taken = true;
+        int w = TEXT_LETTER_W * VALIDATE_TEXT_LEN;
+        if(!draw_one_info(render, VALIDATE_TEXT, window_w - w, 0, w, TEXT_H))
             return false;
     }
 
     if(paused) {
         int w = TEXT_LETTER_W * PAUSE_TEXT_LEN;
-        if(!draw_one_info(render, PAUSE_TEXT, window_w - w, TEXT_H * shuffling_shown, w, TEXT_H))
+        if(!draw_one_info(render, PAUSE_TEXT, window_w - w, TEXT_H * first_line_taken, w, TEXT_H))
             return false;
     }
 
