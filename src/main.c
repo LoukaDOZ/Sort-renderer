@@ -26,7 +26,7 @@
 
 typedef struct Args {
     int w, h, array_size, framerate, looprate, sort;
-    bool fullscreen, show_info, array_size_changed;
+    bool fullscreen, show_info, array_size_changed, validate;
 } Args;
 
 void init_args(Args* args) {
@@ -39,6 +39,7 @@ void init_args(Args* args) {
     args->fullscreen = false;
     args->show_info = true;
     args->array_size_changed = false;
+    args->validate = true;
 }
 
 bool has_next_arg(int argc, char** argv, int i) {
@@ -110,6 +111,7 @@ int get_args(Args* args, int argc, char** argv) {
             printf("\t-a, --array-size <int>\t\tArray size (%d < array size < width) (default: screen width)\n", MIN_ARRAY_SIZE);
             printf("\t-s, --sort <int>\t\tStarting sort index modulo SORT_FUNCTIONS_LEN (%d) (default: 0)\n", SORT_FUNCTIONS_LEN);
             printf("\t-f, --fullscreen\t\tSet fullscreen\n");
+            printf("\t-v, --no-validation\t\tDisable validating the array is properly sorted after execution of an algorithm\n");
             printf("\t-i, --no-info\t\t\tDisable information messages\n");
 
             print_simulation_controls();
@@ -120,6 +122,8 @@ int get_args(Args* args, int argc, char** argv) {
             args->fullscreen = true;
         } else if(strcmp(arg, "--no-info") == 0 || strcmp(arg, "-i") == 0) {
             args->show_info = false;
+        } else if(strcmp(arg, "--no-validation") == 0 || strcmp(arg, "-v") == 0) {
+            args->validate = false;
         } else if(strcmp(arg, "--width") == 0 || strcmp(arg, "-w") == 0) {
             if(!get_int_arg(argc, argv, i, &(args->w)) || !validate_int_min(arg, args->w, MIN_WIDTH))
                 return ARGS_FAILURE;
@@ -168,8 +172,8 @@ int get_args(Args* args, int argc, char** argv) {
 }
 
 void* run_thread(void* args) {
-    usleep(SEC_US);
-    long res_state = run_simulation((Shared_data) args);
+    void** args_array = (void**) args;
+    long res_state = run_simulation((Shared_data) args_array[0], *((bool*) args_array[1]));
     pthread_exit((void*) res_state);
 }
 
@@ -205,7 +209,8 @@ int main(int argc, char** argv) {
 
     pthread_t tid;
     int thread_res = 0;
-    if(pthread_create(&tid, NULL, &run_thread, shared_data) != 0) {
+    void* targs[2] = { (void*) shared_data, (void*) (&(args.validate)) };
+    if(pthread_create(&tid, NULL, &run_thread, targs) != 0) {
         perror("An error occur when starting simulation ");
         free_shared_data(shared_data);
         destroy_render(render);

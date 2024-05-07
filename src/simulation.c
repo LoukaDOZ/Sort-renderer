@@ -146,7 +146,7 @@ void shuffle(Data* data) {
     set_simulation_delay(shared_data, start_delay);
 }
 
-short run_simulation(Shared_data shared_data) {
+short run_simulation(Shared_data shared_data, bool run_validation) {
     short simulation_res = SORT_SUCCESS;
     short state = SIMULATION_SUCCESS;
 
@@ -175,7 +175,7 @@ short run_simulation(Shared_data shared_data) {
         }
 
 
-        if(private->run && !validate(data)) {
+        if(private->run && run_validation && !validate(data)) {
             state = ALGORITHM_FAILURE;
             break;
         }
