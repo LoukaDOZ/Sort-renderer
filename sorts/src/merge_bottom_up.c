@@ -1,95 +1,54 @@
 #include <stdlib.h>
 #include <stdbool.h>
-#include "sort.h"
-#include "merge_bottom_up.h"
+#include "api.h"
+#include "sorts.h"
 
-typedef struct Other_info {
-    int* list1;
-    int* list2;
-    int lists_start, lists_len, list1_cursor, list2_cursor, list1_len, list2_len;
-} Other_info;
+static int* copy_elements(Data* data, int start, int len) {
+    int* copy = (int*) malloc(sizeof(int) * len);
+    if(copy == NULL)
+        return NULL;
 
-int copy_n_elements(Sort_info* info, int* dest, int start, int n) {
-    int size = 0;
+    for(int i = 0; i < len; i++)
+        copy[i] = data->array[start + i];
 
-    for(int i = 0; start + i < info->array_len && i < n; i++) {
-        dest[i] = info->array[start + i];
-        size++;
-    }
-
-    return size;
+    return copy;
 }
 
-short init_merge_bottom_up_sort(Sort_info* info) {
-    Other_info* other_info = (Other_info*) malloc(sizeof(Other_info));
-    if(other_info == NULL)
-        return SORT_FAILURE;
+short run_merge_bottom_up_sort(Data* data) {
+    for(int size = 1; size < data->array_len && run(data); size *= 2) {
+        for(int start = 0; start + size < data->array_len && run(data); start += size * 2) {
+            int start1 = start, len1 = size, cursor1 = 0;
+            int start2 = start + size, len2 = start2 + size <= data->array_len ? size : data->array_len - start2, cursor2 = 0;
 
-    other_info->list1 = (int*) malloc(sizeof(int) * info->array_len);
-    if(other_info->list1 == NULL) {
-        free(other_info);
-        return SORT_FAILURE;
-    }
+            int* list1 = copy_elements(data, start1, len1);
+            if(list1 == NULL)
+                return false;
 
-    other_info->list2 = (int*) malloc(sizeof(int) * info->array_len);
-    if(other_info->list2 == NULL) {
-        free(other_info->list1);
-        free(other_info);
-        return SORT_FAILURE;
-    }
+            int* list2 = copy_elements(data, start2, len2);
+            if(list1 == NULL) {
+                free(list1);
+                return false;
+            }
 
-    other_info->lists_len = 1;
-    other_info->lists_start = 0;
-    other_info->list1_cursor = 0;
-    other_info->list2_cursor = 0;
-    other_info->list1_len = copy_n_elements(info, other_info->list1, other_info->lists_start, other_info->lists_len);
-    other_info->list2_len = copy_n_elements(info, other_info->list2, other_info->lists_start + other_info->lists_len, other_info->lists_len);
+            for(int i = 0; i < len1 + len2 && run(data); i++) {
+                int array_i = start + i;
 
-    info->other = (void*) other_info;
-    info->cursor = other_info->lists_start;
-    return SORT_SUCCESS;
-}
+                if(cursor1 < len1 && (cursor2 >= len2 || list1[cursor1] < list2[cursor2])) {
+                    data->array[array_i] = list1[cursor1];
+                    cursor1++;
+                } else {
+                    data->array[array_i] = list2[cursor2];
+                    cursor2++;
+                }
 
-short merge_bottom_up_sort(Sort_info* info) {
-    Other_info* other_info = (Other_info*) info->other;
+                data->cursor = array_i;
+                tick(data);
+            }
 
-    if(other_info->lists_len >= info->array_len)
-        return SORT_FINISHED;
-
-    bool list1_empty = other_info->list1_cursor >= other_info->list1_len;
-    bool list2_empty = other_info->list2_cursor >= other_info->list2_len;
-    if(!list1_empty || !list2_empty) {
-        int l1 = other_info->list1_cursor, l2 = other_info->list2_cursor;
-        if(!list1_empty && (list2_empty || other_info->list1[other_info->list1_cursor] < other_info->list2[other_info->list2_cursor])) {
-            info->array[info->cursor] = other_info->list1[other_info->list1_cursor];
-            other_info->list1_cursor++;
-        } else {
-            info->array[info->cursor] = other_info->list2[other_info->list2_cursor];
-            other_info->list2_cursor++;
+            free(list1);
+            free(list2);
         }
-        
-        info->cursor++;
-    } else {
-        other_info->lists_start += other_info->lists_len * 2;
-
-        if(other_info->lists_start + other_info->lists_len > info->array_len) {
-            other_info->lists_start = 0;
-            other_info->lists_len *= 2;
-        }
-
-        info->cursor = other_info->lists_start;
-        other_info->list1_cursor = 0;
-        other_info->list2_cursor = 0;
-        other_info->list1_len = copy_n_elements(info, other_info->list1, other_info->lists_start, other_info->lists_len);
-        other_info->list2_len = copy_n_elements(info, other_info->list2, other_info->lists_start + other_info->lists_len, other_info->lists_len);
     }
 
     return SORT_SUCCESS;
-}
-
-void free_merge_bottom_up_sort(Sort_info* info) {
-    Other_info* other_info = (Other_info*) info->other;
-    free(other_info->list1);
-    free(other_info->list2);
-    free(other_info);
 }

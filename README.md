@@ -22,7 +22,7 @@ A C program to graphically show how different sorting algorithms work. Made with
 ```bash
 make install
 make build
-./build/exec
+./bin/executable
 ```
 
 Arguments :
@@ -53,154 +53,160 @@ Arguments :
 
 ## Implemented sorts
 
-| Sort                   | Average complexity | Index |
-|------------------------|--------------------|-------|
-| Insertion sort         | Θ(n²)              | 0     |
-| Bubble sort            | Θ(n²)              | 1     |
-| Gnome sort             | Θ(n²)              | 2     |
-| Shaker sort            | Θ(n²)              | 3     |
-| Quick sort             | Θ(n log n)         | 4     |
-| Heap sort              | Θ(n log n)         | 5     |
-| Merge sort (Top-down)  | Θ(n log n)         | 6     |
-| Merge sort (Bottom-up) | Θ(n log n)         | 7     |
-| Bongo sort             | Θ((n + 1)!)        | 8     |
-| Stalin sort            | Θ(n)               | 9     |
+| Sort                   | Worst complexity | Average complexity | Best complexity                                       | Index |
+|------------------------|------------------|--------------------|-------------------------------------------------------|-------|
+| Insertion sort         | Θ(n²)            | Θ(n²)              | Θ(n)                                                  | 0     |
+| Bubble sort            | Θ(n²)            | Θ(n²)              | Θ(n)                                                  | 1     |
+| Gnome sort             | Θ(n²)            | Θ(n²)              | Θ(n)                                                  | 2     |
+| Shaker sort            | Θ(n²)            | Θ(n²)              | Θ(n)                                                  | 3     |
+| Quick sort             | Θ(n²)            | Θ(n log n)         | Θ(n log n)                                            | 4     |
+| Heap sort              | Θ(n log n)       | Θ(n log n)         | If distinct keys : Θ(n log n) or if equal keys : Θ(n) | 5     |
+| Merge sort (Top-down)  | Θ(n log n)       | Θ(n log n)         | Θ(n log n)                                            | 6     |
+| Merge sort (Bottom-up) | Θ(n log n)       | Θ(n log n)         | Θ(n log n)                                            | 7     |
+| Bogo sort              | ∞                | Θ((n + 1)!)        | Θ(n)                                                  | 8     |
+| Stalin sort            | Θ(n)             | Θ(n)               | Θ(n)                                                  | 9     |
 
 ## Procedure to add a sort
-### Define source file
+### Define the source file
 
 Add the `SORT_NAME.c` source file in the `sorts/src/` folder and copy the following sample code (replace `SORT_NAME` by the sort algorithm name) :
 ```c
 #include <stdlib.h>
-#include "sort.h"
-#include "SORT_NAME.h"
+#include "api.h"
+#include "sorts.h"
 
-short init_SORT_NAME_sort(Sort_info* info) {
-    // Init values and allocate needed memory
+short run_SORT_NAME_sort(Data* data) {
+    // Sort algorithm code
     return SORT_SUCCESS;
-}
-
-short SORT_NAME_sort(Sort_info* info) {
-    // Run one iteration
-    return SORT_SUCCESS;
-}
-
-void free_SORT_NAME_sort(Sort_info* info) {
-    // Free potential manually allocated memory in init
 }
 ```
+:warning: You do not need to instantiate or free the Data argument.
 
-:warning: You do not need to instantiate or free the Sort_info.
-
-#### The Sort_info structure
+#### The Data structure
 
 ```c
-typedef struct Sort_info {
-    int cursor, array_len, save_array_len;
+typedef struct Data {
     int* array;
-    void* other;
-} Sort_info;
+    int cursor, array_len;
+    void* _private; // Do not touch
+} Data;
 ```
 
-| Field                  | Description                                                                                                                                         |
-|------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
-| `info->array_len`      | Array values length                                                                                                                                 |
-| `info->array`          | Array values of `info->array_len` values                                                                                                            |
-| `info->cursor`         | Defines "where" we are in the array at the current iteration. Mainly used for rendering but also useful to store a data                             |
-| `info->other`          | Use it to store whatever other data needed. Must be allocated in the `init_SORT_NAME_sort` function and freed in the `free_SORT_NAME_sort` function |
-| `info->save_array_len` | Should never be changed                                                                                                                             |
+| Field             | Description                                                                                                         |
+|-------------------|---------------------------------------------------------------------------------------------------------------------|
+| `data->array_len` | Array values length                                                                                                 |
+| `data->array`     | Array of values to sort with a `data->array_len` length                                                             |
+| `data->cursor`    | Defines "where" we are in the array at the current iteration. Used for rendering. Must be an index of `data->array` |
+| `data->_private`  | Data for the simulation. Should not be touched                                                                      |
 
 #### Return values
 
-The `init_SORT_NAME_sort` and `SORT_NAME_sort` functions must return a value depending on the success or not of theses functions :
-| Return value    | Functions             | Description                                           |
-|-----------------|-----------------------|-------------------------------------------------------|
-| `SORT_SUCCESS`  | Both                  | Everything is OK                                      |
-| `SORT_FAILURE`  | Both                  | Something went wrong (unable to allocate memory, ...) |
-| `SORT_FINISHED` | `SORT_NAME_sort` only | Sort function finished : the array should be sorted   |
+The `run_SORT_NAME_sort` function must return a `short` value depending on the success to run the algorithm :
+| Return value   | Description                                             |
+|----------------|---------------------------------------------------------|
+| `SORT_SUCCESS` | Exit on success                                         |
+| `SORT_FAILURE` | Exit on failure (unable to allocate memory for example) |
 
-### Define header file
+### The API
 
-Once the source file is ready, create a `SORT_NAME.h` (replace `SORT_NAME` by the sort algorithm name) file in `sorts/headers/` folder exposing the 3 functions defined previously :
+The `api.h` file describes helper functions for the sort algorithm :
+
 ```c
-#ifndef SORT_NAME_H
-#define SORT_NAME_H
+bool run(Data* data);
+void tick(Data* data);
+void swap(Data* data, int a, int b);
+void debug(char* message, ...);
+void debug_warn(char* message, ...);
+void debug_err(char* message, ...);
+```
 
-short init_SORT_NAME_sort(Sort_info* info);
-short SORT_NAME_sort(Sort_info* info);
-void free_SORT_NAME_sort(Sort_info* info);
+| Function                         | Description                                                                                                                                              |
+|----------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `run(Data* data)`                | Returns a boolean telling whether the algorithm should keep running or not. When false, the algorithm should exit                                        |
+| `tick(Data* data)`               | This function is designed to be used after each iteration. It manages the looprate, when the simulation is paused or quitted, and it renders the changes |
+| `swap(Data* data, int a, int b)` | Helps to swap to array values defined by their indexes `a` and `b`                                                                                       |
+| `debug(char* message, ...)`      | Prints a log message. Works as printf with a new line                                                                                                    |
+| `debug_warn(char* message, ...)` | Prints a warning message. Works as printf with a new line                                                                                                |
+| `debug_err(char* message, ...)`  | Prints an error message. Works as printf with a new line                                                                                                 |
+
+:warning: The simulation never checks for out of bounds.
+
+### Expose the sort function
+
+Once the source file is ready, open the `sorts/headers/sorts.h` file and expose the previously defined function (replace `SORT_NAME` by the sort algorithm name) :
+```c
+#ifndef SORTS_H
+#define SORTS_H
+
+short run_insertion_sort(Data* data);
+short run_bubble_sort(Data* data);
+short run_SORT_NAME_sort(Data* data); // Expose the sort function
 
 #endif
 ```
 
-### The swap helper
+### Add the algorithm
 
-The `sort.h` file describes a swap function to help swapping 2 array values :
-
+In the `src/functions.c` file, update the following part of the code by adding the new sort information :
 ```c
-void swap(Sort_info* info, unsigned int i, unsigned int j)
-```
+#include <stdlib.h>
+#include "functions.h"
+#include "sorts.h"
 
-:warning: Your are responsible for giving in bounds `i` and `j` indexes.
+//////// Add new sorts here ////////
 
-### Tell to the program to use the sort algorithm
-
-In the `src/sort.c` file, update the following part of the code by adding the new sort information :
-```c
-#include "bubble.h"
-#include "insertion.h"
-#include "SORT_NAME.h" // Import the sort
-
-const int SORT_FUNCTIONS_LEN = 3; // Update to match the length of SORT_FUNCTIONS
-const Sort_function SORT_FUNCTIONS[] = {
+const int SORT_FUNCTIONS_LEN = 3; // Update to match the length of SORT_ALGORITHMS
+const Sort_Algorithm SORT_ALGORITHMS[] = {
     {
         "Insertion sort",
         "Θ(n²)",
-        &init_insertion_sort,
-        &insertion_sort,
-        &free_insertion_sort
+        &run_insertion_sort
     },
     {
         "Bubble sort",
         "Θ(n²)",
-        &init_bubble_sort,
-        &bubble_sort,
-        &free_bubble_sort
+        &run_bubble_sort
     },
     { // Add the sort
         "SORT_NAME sort", // Name
         "SORT_COMPLEXITY", // Average complexity
-        &init_SORT_NAME_sort, // Init function reference
-        &SORT_NAME_sort, // Sort function reference
-        &free_SORT_NAME_sort // Free function reference
+        &run_SORT_NAME_sort // Sort function reference
     }
 };
+
+////////////////////////////////////
 ```
 
-#### Sort_function structure
+#### Sort_Algorithm structure
 ```c
-typedef struct Sort_function {
+typedef short (*Sort_function)(Data* data);
+
+typedef struct Sort_Algorithm {
     char* name;
     char* complexity;
-    short (*init)(Sort_info* info);
-    short (*sort)(Sort_info* info);
-    void (*free)(Sort_info* info);
-} Sort_function;
+    Sort_function function;
+} Sort_Algorithm;
 ```
+
+#### Resolving conflicting function names within sort source file
+
+Some sort algorithms may declare functions with the same signature leading to compilation error, even when they are not declared in the header. To avoid this problem, mark "private" functions as static.
+
+For example, `sorts/src/merge_top_down.c` and `sorts/src/merge_bottom_up.c` both use and declare a `static int* copy_elements(Data* data, int start, int len)`. The `static` keyword prevent conflicts when compiling.
 
 # Example
 
 Default configuration:
 ```bash
-./build/exec
+./bin/executable
 ```
 
-All arguments with a window size of 1000x700:
+All arguments with a window size of 1000x700 and starting with the 3rd sort :
 ```bash
-./build/exec -w 1000 -e 700 -r 30 -l 1000 -a 500 -s 2 -i
+./bin/executable -w 1000 -e 700 -r 30 -l 1000 -a 500 -s 2 -i
 ```
 
-All arguments with fullscreen:
+All arguments with fullscreen and starting with the 2nd sort from the end :
 ```bash
-./build/exec -w 1000 -e 700 -r 30 -l 1000 -a 500 -s 2 -i -f
+./bin/executable -w 1000 -e 700 -r 30 -l 1000 -a 500 -s -2 -i -f
 ```

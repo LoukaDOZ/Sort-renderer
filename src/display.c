@@ -45,7 +45,7 @@ int add_by_until(long* delay, int nb_add, long min, long max, long step) {
     return nb_add - count;
 }
 
-void handle_render_events(Render* render, Shared_data shared_data, bool* quitted, bool* paused, bool* show_info) {
+void handle_render_events(Render* render, Shared_data shared_data, bool* paused, bool* show_info) {
     handle_events(render);
 
     int nb_up = was_pressed(render, MOUSE_WHEEL_UP) + was_pressed(render, KEY_ARROW_UP);
@@ -53,8 +53,7 @@ void handle_render_events(Render* render, Shared_data shared_data, bool* quitted
     int nb_next = was_pressed(render, KEY_ARROW_RIGHT) - was_pressed(render, KEY_ARROW_LEFT);
 
     if(do_quit(render) || was_pressed(render, KEY_Q) > 0) {
-        *quitted = true;
-        set_has_quitted(shared_data, *quitted);
+        set_has_quitted(shared_data, true);
         return;
     }
 
@@ -62,7 +61,7 @@ void handle_render_events(Render* render, Shared_data shared_data, bool* quitted
         *show_info = inverse_bool(*show_info);
 
     if(nb_next != 0)
-        add_next_sort_shift(shared_data, nb_next);
+        set_sort_algo_index(shared_data, nb_next);
 
     if(was_pressed(render, KEY_P) % 2 > 0) {
         *paused = inverse_bool(is_paused(shared_data));
@@ -135,10 +134,10 @@ bool draw_func_info(Render* render, Shared_data shared_data) {
     decompose_ms(get_time(shared_data), &min, &sec, &ms);
     decompose_us(get_corrected_time(shared_data), &corrected_min, &corrected_sec, &corrected_ms, &corrected_us);
 
-    if(!draw_one_func_info(render, NAME_TEXT, get_sort_function_name(shared_data), 0))
+    if(!draw_one_func_info(render, NAME_TEXT, get_sort_algo_name(shared_data), 0))
         return false;
 
-    if(!draw_one_func_info(render, COMPLEXITY_TEXT, get_sort_function_complexity(shared_data), 1))
+    if(!draw_one_func_info(render, COMPLEXITY_TEXT, get_sort_algo_complexity(shared_data), 1))
         return false;
 
     sprintf(TIME_BUFFER, "%02dmin  %02ds  %03dms", min, sec, ms);
@@ -175,11 +174,11 @@ bool draw_program_info(Render* render, Shared_data shared_data, int fps, bool pa
 bool run_display(Render* render, Shared_data shared_data, bool show_info) {
     long fps = 0;
     int ww, wh;
-    bool quitted = has_quitted(shared_data), paused = is_paused(shared_data);
+    bool paused = is_paused(shared_data);
 
     get_window_size(render, &ww, &wh);
 
-    while(!quitted) {
+    while(!has_quitted(shared_data)) {
         long fps_start_time = us_time();
 
         if(!fill_background(render, BLACK_COLOR) || !draw_array(render, shared_data, ww, wh))
@@ -189,7 +188,7 @@ bool run_display(Render* render, Shared_data shared_data, bool show_info) {
             return false;
 
         refresh(render);
-        handle_render_events(render, shared_data, &quitted, &paused, &show_info);
+        handle_render_events(render, shared_data, &paused, &show_info);
         usleep(SEC_US / render->framerate);
 
         long time_diff = us_time() - fps_start_time;

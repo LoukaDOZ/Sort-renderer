@@ -1,104 +1,34 @@
 #include <stdlib.h>
-#include <stdbool.h>
-#include "sort.h"
-#include "quick.h"
+#include "api.h"
+#include "sorts.h"
 
-typedef struct Sub_list Sub_list;
-struct Sub_list {
-    Sub_list* next;
-    int start, end;
-};
+static void sort_sub_array(Data* data, int start, int end) {
+    if(end <= start)
+        return;
 
-typedef struct Other_info {
-    Sub_list* heap;
-    Sub_list* current;
-    int pivot, last_i;
-} Other_info;
+    int pivot = data->array[end];
+    int last_changed = start;
 
-void free_heap(Sub_list* heap) {
-    Sub_list* current = heap;
+    for(int i = start; i < end; i++) {
+        if(!run(data))
+            return;
 
-    while(current != NULL) {
-        Sub_list* tmp = current->next;
-        free(current);
-        current = tmp;
+        if(data->array[i] <= pivot) {
+            swap(data, i, last_changed);
+            last_changed++;
+        }
+
+        data->cursor = i;
+        tick(data);
     }
+
+    swap(data, last_changed, end);
+    sort_sub_array(data, start, last_changed - 1);
+    sort_sub_array(data, last_changed + 1, end);
 }
 
-bool add_to_heap(Other_info* other_info, int start, int end) {
-    Sub_list* subl = (Sub_list*) malloc(sizeof(Sub_list));
-    if(subl == NULL)
-        return false;
-
-    subl->next = NULL;
-    subl->start = start;
-    subl->end = end;
-
-    if(other_info->heap == NULL) {
-        other_info->heap = subl;
-        return true;
-    }
-
-    Sub_list* tmp = other_info->current->next;
-    other_info->current->next = subl;
-    subl->next = tmp;
-    return true;
-}
-
-short init_quick_sort(Sort_info* info) {
-    Other_info* other_info = (Other_info*) malloc(sizeof(Other_info));
-    if(other_info == NULL)
-        return SORT_FAILURE;
-
-    other_info->heap = NULL;
-    other_info->current = NULL;
-    if(!add_to_heap(other_info, 0, info->array_len - 1)) {
-        free(other_info);
-        return SORT_FAILURE;
-    }
-
-    other_info->current = other_info->heap;
-    other_info->pivot = other_info->current->end;
-    other_info->last_i = other_info->current->start;
-    info->other = (void*) other_info;
-    info->cursor = 0;
+short run_quick_sort(Data* data) {
+    sort_sub_array(data, 0, data->array_len - 1);
+    tick(data);
     return SORT_SUCCESS;
-}
-
-short quick_sort(Sort_info* info) {
-    Other_info* other_info = (Other_info*) info->other;
-    Sub_list* current = other_info->current;
-
-    if(info->cursor >= current->end) {
-        swap(info, other_info->last_i, other_info->pivot);
-
-        if(other_info->last_i < current->end && !add_to_heap(other_info, other_info->last_i + 1, current->end))
-            return SORT_FAILURE;
-
-        if(other_info->last_i > current->start && !add_to_heap(other_info, current->start, other_info->last_i - 1))
-            return SORT_FAILURE;
-
-        if(other_info->current->next == NULL)
-            return SORT_FINISHED;
-
-        other_info->current = other_info->current->next;
-        other_info->pivot = other_info->current->end;
-        other_info->last_i = other_info->current->start;
-        info->cursor = other_info->current->start;
-        return SORT_SUCCESS;
-    }
-
-    if(info->array[info->cursor] <= info->array[other_info->pivot]) {
-        swap(info, info->cursor, other_info->last_i);
-        other_info->last_i++;
-    }
-
-    info->cursor++;
-    return SORT_SUCCESS;
-}
-
-void free_quick_sort(Sort_info* info) {
-    Other_info* other_info = (Other_info*) info->other;
-    free_heap(other_info->heap);
-    free(other_info);
 }

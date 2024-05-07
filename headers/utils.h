@@ -1,5 +1,7 @@
-#ifndef SHARED_H
-#define SHARED_H
+#ifndef UTILS_H
+#define UTILS_H
+
+#include <stdbool.h> // Fix unknown bool
 
 extern const long SEC_US;
 extern const long SEC_MS;

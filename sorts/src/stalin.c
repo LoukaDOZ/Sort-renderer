@@ -1,36 +1,20 @@
 #include <stdlib.h>
-#include "sort.h"
-#include "stalin.h"
+#include "api.h"
+#include "sorts.h"
 
-short init_stalin_sort(Sort_info* info) {
-    info->cursor = 1;
-    return SORT_SUCCESS;
-}
+short run_stalin_sort(Data* data) {
+    for(int i = 1; i < data->array_len && run(data);) {
+        if(data->array[i - 1] > data->array[i]) {
+            for(int j = i + 1; j < data->array_len; j++)
+                data->array[j - 1] = data->array[j];
 
-short stalin_sort(Sort_info* info) {
-    if(info->array[info->cursor - 1] > info->array[info->cursor]) {
-        int* new_array = (int*) malloc(sizeof(int) * info->array_len - 1);
+            data->array_len--;
+        } else
+             i++;
 
-        for(int i = 0, j = 0; i < info->array_len; i++) {
-            if(i == info->cursor)
-                continue;
-
-            new_array[j] = info->array[i];
-            j++;
-        }
-
-        free(info->array);
-        info->array = new_array;
-        info->array_len--;
-    } else
-        info->cursor++;
-    
-    if(info->cursor >= info->array_len)
-        return SORT_FINISHED;
+        data->cursor = i;
+        tick(data);
+    }
 
     return SORT_SUCCESS;
-}
-
-void free_stalin_sort(Sort_info* info) {
-    // Ignore
 }
