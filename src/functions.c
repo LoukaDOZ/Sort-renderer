@@ -4,7 +4,7 @@
 
 //////// Add new sorts here ////////
 
-const int SORT_FUNCTIONS_LEN = 13;
+const int SORT_FUNCTIONS_LEN = 14;
 const Sort_Algorithm SORT_ALGORITHMS[] = {
     {
         "Insertion sort",
@@ -25,6 +25,11 @@ const Sort_Algorithm SORT_ALGORITHMS[] = {
         "Shaker sort",
         "Θ(n²)",
         &run_shaker_sort
+    },
+    {
+        "Odd-even sort",
+        "Θ(n²)",
+        &run_odd_even_sort
     },
     {
         "Quick sort",

@@ -60,8 +60,9 @@ Arguments :
 | Bubble sort            | Θ(n²)            | Θ(n²)              | Θ(n)                                                  | 1     |
 | Gnome sort             | Θ(n²)            | Θ(n²)              | Θ(n)                                                  | 2     |
 | Shaker sort            | Θ(n²)            | Θ(n²)              | Θ(n)                                                  | 3     |
-| Quick sort             | Θ(n²)            | Θ(n log n)         | Θ(n log n)                                            | 4     |
-| Heap sort              | Θ(n log n)       | Θ(n log n)         | If distinct keys : Θ(n log n) or if equal keys : Θ(n) | 5     |
+| Odd-even sort          | Θ(n²)            | Θ(n²)              | Θ(n)                                                  | 4     |
+| Quick sort             | Θ(n²)            | Θ(n log n)         | Θ(n log n)                                            | 5     |
+| Heap sort              | Θ(n log n)       | Θ(n log n)         | If distinct keys : Θ(n log n) or if equal keys : Θ(n) | 6     |
 | Merge sort (Top-down)  | Θ(n log n)       | Θ(n log n)         | Θ(n log n)                                            | 7     |
 | Merge sort (Bottom-up) | Θ(n log n)       | Θ(n log n)         | Θ(n log n)                                            | 8     |
 | Weave merge sort       | Θ(n²)            | Θ(n²)              | Θ(n²)                                                 | 9     |
