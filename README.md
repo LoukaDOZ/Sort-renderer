@@ -64,9 +64,10 @@ Arguments :
 | Heap sort              | Θ(n log n)       | Θ(n log n)         | If distinct keys : Θ(n log n) or if equal keys : Θ(n) | 5     |
 | Merge sort (Top-down)  | Θ(n log n)       | Θ(n log n)         | Θ(n log n)                                            | 7     |
 | Merge sort (Bottom-up) | Θ(n log n)       | Θ(n log n)         | Θ(n log n)                                            | 8     |
-| Pancake sorting        | Θ(n²)            | Θ(n²)              | Θ(n)                                                  | 9     |
-| Bogo sort              | ∞                | Θ((n + 1)!)        | Θ(n)                                                  | 10    |
-| Stalin sort            | Θ(n)             | Θ(n)               | Θ(n)                                                  | 11    |
+| Weave merge sort       | Θ(n²)            | Θ(n²)              | Θ(n²)                                                 | 9     |
+| Pancake sorting        | Θ(n²)            | Θ(n²)              | Θ(n)                                                  | 10    |
+| Bogo sort              | ∞                | Θ((n + 1)!)        | Θ(n)                                                  | 11    |
+| Stalin sort            | Θ(n)             | Θ(n)               | Θ(n)                                                  | 12    |
 
 ## Procedure to add a sort
 ### Define the source file

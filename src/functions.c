@@ -47,6 +47,11 @@ const Sort_Algorithm SORT_ALGORITHMS[] = {
         &run_merge_bottom_up_sort
     },
     {
+        "Weave merge sort",
+        "Θ(n²)",
+        &run_weave_sort
+    },
+    {
         "Pancake sorting",
         "Θ(n²)",
         &run_pancake_sort

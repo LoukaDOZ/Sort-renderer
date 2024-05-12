@@ -2,7 +2,7 @@
 #include "api.h"
 #include "sorts.h"
 
-int find_max_index(Data* data, int limit) {
+static int find_max_index(Data* data, int limit) {
     int max_i = 0;
 
     for(int i = 1; i < limit && run(data); i++) {
@@ -16,7 +16,7 @@ int find_max_index(Data* data, int limit) {
     return max_i;
 }
 
-void flip(Data* data, int limit) {
+static void flip(Data* data, int limit) {
     for(int i = 0; i < limit && run(data); i++, limit--) {
         swap(data, i, limit);
         data->cursor = i;
