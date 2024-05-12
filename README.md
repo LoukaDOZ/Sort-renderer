@@ -26,17 +26,18 @@ make build
 ```
 
 Arguments :
-| Argument                 | Description                                     | Type                           | Default        |
-|--------------------------|-------------------------------------------------|--------------------------------|----------------|
-| `-h, --help`             | Show help                                       |                                |                |
-| `-w, --width <int>`      | Screen width in pixels                          | int (>= 2)                     | 500px          |
-| `-e, --height <int>`     | Screen height in pixels                         | int (>= 2)                     | 500px          |
-| `-r, --framerate <int>`  | Display max frames per seconds                  | int (>= 1 and <= 1000000)      | 60/s           |
-| `-l, --looprate <int>`   | Simulation max loops per seconds                | int (>= 1 and <= 1000000)      | 500/s          |
-| `-a, --array-size <int>` | Array size                                      | int (>= 2 and <= screen width) | Screen width   |
-| `-s, --sort <int>`       | Start sort function modulo `SORT_FUNCTIONS_LEN` | int stating at 0               | 0 (first)      |
-| `-f, --fullscreen`       | Set fullscreen                                  |                                | Not fullscreen |
-| `-i, --no-info`          | Disable information messages                    |                                | Shown          |
+| Argument                 | Description                                                                     | Type                           | Default         |
+|--------------------------|---------------------------------------------------------------------------------|--------------------------------|-----------------|
+| `-h, --help`             | Show help                                                                       |                                |                 |
+| `-w, --width <int>`      | Screen width in pixels                                                          | int (>= 2)                     | 500px           |
+| `-e, --height <int>`     | Screen height in pixels                                                         | int (>= 2)                     | 500px           |
+| `-r, --framerate <int>`  | Display max frames per seconds                                                  | int (>= 1 and <= 1000000)      | 60/s            |
+| `-l, --looprate <int>`   | Simulation max loops per seconds                                                | int (>= 1 and <= 1000000)      | 500/s           |
+| `-a, --array-size <int>` | Array size                                                                      | int (>= 2 and <= screen width) | Screen width    |
+| `-s, --sort <int>`       | Start sort function modulo `SORT_FUNCTIONS_LEN`                                 | int stating at 0               | 0 (first)       |
+| `-f, --fullscreen`       | Set fullscreen                                                                  |                                | Not fullscreen  |
+| `-v, --no-validation`    | Disable validating the array is properly sorted after execution of an algorithm |                                | Always validate |
+| `-i, --no-info`          | Disable information messages                                                    |                                | Shown           |
 
 
 ### In game controls
@@ -61,10 +62,11 @@ Arguments :
 | Shaker sort            | Θ(n²)            | Θ(n²)              | Θ(n)                                                  | 3     |
 | Quick sort             | Θ(n²)            | Θ(n log n)         | Θ(n log n)                                            | 4     |
 | Heap sort              | Θ(n log n)       | Θ(n log n)         | If distinct keys : Θ(n log n) or if equal keys : Θ(n) | 5     |
-| Merge sort (Top-down)  | Θ(n log n)       | Θ(n log n)         | Θ(n log n)                                            | 6     |
-| Merge sort (Bottom-up) | Θ(n log n)       | Θ(n log n)         | Θ(n log n)                                            | 7     |
-| Bogo sort              | ∞                | Θ((n + 1)!)        | Θ(n)                                                  | 8     |
-| Stalin sort            | Θ(n)             | Θ(n)               | Θ(n)                                                  | 9     |
+| Merge sort (Top-down)  | Θ(n log n)       | Θ(n log n)         | Θ(n log n)                                            | 7     |
+| Merge sort (Bottom-up) | Θ(n log n)       | Θ(n log n)         | Θ(n log n)                                            | 8     |
+| Pancake sorting        | Θ(n²)            | Θ(n²)              | Θ(n)                                                  | 9     |
+| Bogo sort              | ∞                | Θ((n + 1)!)        | Θ(n)                                                  | 10    |
+| Stalin sort            | Θ(n)             | Θ(n)               | Θ(n)                                                  | 11    |
 
 ## Procedure to add a sort
 ### Define the source file

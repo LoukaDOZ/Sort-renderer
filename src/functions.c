@@ -4,7 +4,7 @@
 
 //////// Add new sorts here ////////
 
-const int SORT_FUNCTIONS_LEN = 10;
+const int SORT_FUNCTIONS_LEN = 11;
 const Sort_Algorithm SORT_ALGORITHMS[] = {
     {
         "Insertion sort",
@@ -45,6 +45,11 @@ const Sort_Algorithm SORT_ALGORITHMS[] = {
         "Merge sort (Bottom-up)",
         "Θ(n log n)",
         &run_merge_bottom_up_sort
+    },
+    {
+        "Pancake sorting",
+        "Θ(n²)",
+        &run_pancake_sort
     },
     {
         "Bogo sort",
