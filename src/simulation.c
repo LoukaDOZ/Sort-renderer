@@ -174,7 +174,6 @@ short run_simulation(Shared_data shared_data, bool run_validation) {
             break;
         }
 
-
         if(private->run && run_validation && !validate(data)) {
             state = ALGORITHM_FAILURE;
             break;

@@ -228,7 +228,7 @@ int main(int argc, char** argv) {
     else if(thread_res == ALGORITHM_FAILURE)
         fprintf(stderr, "An error occur when running simulation (simulation) : the array was not sorted properly\n");
     else if(thread_res != SIMULATION_SUCCESS)
-        fprintf(stderr, "An error occur when running simulation (simulation) : %s\n", render_error());
+        fprintf(stderr, "An error occur when running simulation (simulation)\n");
 
     free_shared_data(shared_data);
     destroy_render(render);

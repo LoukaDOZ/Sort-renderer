@@ -63,13 +63,14 @@ Arguments :
 | Odd-even sort          | Θ(n²)            | Θ(n²)              | Θ(n)                                                  | 4     |
 | Quick sort             | Θ(n²)            | Θ(n log n)         | Θ(n log n)                                            | 5     |
 | Heap sort              | Θ(n log n)       | Θ(n log n)         | If distinct keys : Θ(n log n) or if equal keys : Θ(n) | 6     |
-| Merge sort (Top-down)  | Θ(n log n)       | Θ(n log n)         | Θ(n log n)                                            | 7     |
-| Merge sort (Bottom-up) | Θ(n log n)       | Θ(n log n)         | Θ(n log n)                                            | 8     |
-| Weave merge sort       | Θ(n²)            | Θ(n²)              | Θ(n²)                                                 | 9     |
-| Timsort                | Θ(n log n)       | Θ(n log n)         | Θ(n)                                                  | 10    |
-| Pancake sorting        | Θ(n²)            | Θ(n²)              | Θ(n)                                                  | 11    |
-| Bogo sort              | ∞                | Θ((n + 1)!)        | Θ(n)                                                  | 12    |
-| Stalin sort            | Θ(n)             | Θ(n)               | Θ(n)                                                  | 13    |
+| Bitonic sort           | Θ(log²(n))       | Θ(log²(n))         | Θ(log²(n))                                            | 7     |
+| Merge sort (Top-down)  | Θ(n log n)       | Θ(n log n)         | Θ(n log n)                                            | 8     |
+| Merge sort (Bottom-up) | Θ(n log n)       | Θ(n log n)         | Θ(n log n)                                            | 9     |
+| Weave merge sort       | Θ(n²)            | Θ(n²)              | Θ(n²)                                                 | 10    |
+| Timsort                | Θ(n log n)       | Θ(n log n)         | Θ(n)                                                  | 11    |
+| Pancake sorting        | Θ(n²)            | Θ(n²)              | Θ(n)                                                  | 12    |
+| Bogo sort              | ∞                | Θ((n + 1)!)        | Θ(n)                                                  | 13    |
+| Stalin sort            | Θ(n)             | Θ(n)               | Θ(n)                                                  | 14    |
 
 ## Procedure to add a sort
 ### Define the source file
