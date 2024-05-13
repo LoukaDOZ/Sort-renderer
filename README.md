@@ -210,10 +210,10 @@ Default configuration:
 
 All arguments with a window size of 1000x700 and starting with the 3rd sort :
 ```bash
-./bin/executable -w 1000 -e 700 -r 30 -l 1000 -a 500 -s 2 -i
+./bin/executable -w 1000 -e 700 -r 30 -l 1000 -a 500 -s 2 -m -i
 ```
 
 All arguments with fullscreen and starting with the 2nd sort from the end :
 ```bash
-./bin/executable -w 1000 -e 700 -r 30 -l 1000 -a 500 -s -2 -i -f
+./bin/executable -w 1000 -e 700 -r 30 -l 1000 -a 500 -s -2 -m -i -f
 ```
