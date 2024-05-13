@@ -18,6 +18,8 @@ const short SIMULATION_FAILURE = 1;
 const short ALGORITHM_FAILURE = 2;
 const short ALGORITHM_USER_FAILURE = 3;
 
+typedef void (Shuffle_function)(Data* data, int* shuffle_array, int i);
+
 void free_simulation_data(Data* data) {
     free(data->_private);
     free(data->array);
@@ -116,7 +118,37 @@ void reset(Data* data) {
     unlock_info(shared_data);
 }
 
-void shuffle(Data* data) {
+int* create_shuffle_array(Data* data) {
+    Shared_data shared_data = (Shared_data) ((Private*) data->_private)->shared_data;
+
+    int* shuffle_array = (int*) malloc(sizeof(int) * data->array_len);
+    if(shuffle_array == NULL)
+        return NULL;
+
+    for(int i = 0; i < data->array_len; i++)
+        shuffle_array[i] = get_array_value(shared_data, i);
+
+    for(int i = 0; i < data->array_len; i++) {
+        int rand_i = rand() % data->array_len;
+
+        int tmp = shuffle_array[i];
+        shuffle_array[i] = shuffle_array[rand_i];
+        shuffle_array[rand_i] = tmp;
+    }
+
+    return shuffle_array;
+}
+
+void classic_shuffle(Data* data, int* shuffle_array, int i) {
+    int rand_i = rand() % data->array_len;
+    swap(data, i, rand_i);
+}
+
+void same_shuffle(Data* data, int* shuffle_array, int i) {
+    data->array[i] = shuffle_array[i];
+}
+
+void shuffle(Data* data, int* shuffle_array, Shuffle_function shuffle_function) {
     Private* private = (Private*) data->_private;
     Shared_data shared_data = (Shared_data) private->shared_data;
 
@@ -126,12 +158,7 @@ void shuffle(Data* data) {
     set_is_shuffling(shared_data, true);
 
     for(int i = 0; i < data->array_len && private->run; i++) {
-        int rand_i = rand() % data->array_len;
-        int current = get_array_value(shared_data, i);
-        int random = get_array_value(shared_data, rand_i);
-
-        data->array[i] = random;
-        data->array[rand_i] = current;
+        shuffle_function(data, shuffle_array, i);
         data->cursor = i;
 
         if(get_simulation_delay(shared_data) != forced_delay)
@@ -146,13 +173,29 @@ void shuffle(Data* data) {
     set_simulation_delay(shared_data, start_delay);
 }
 
-short run_simulation(Shared_data shared_data, bool run_validation) {
+short run_simulation(Shared_data shared_data, bool run_validation, bool use_same_shuffle) {
     short simulation_res = SORT_SUCCESS;
     short state = SIMULATION_SUCCESS;
 
+    Shuffle_function* shuffle_function = classic_shuffle;
+    int* shuffle_array = NULL;
+
     Data* data = create_simulation_data(shared_data);
-    if(data == NULL)
+    if(data == NULL) {
+        set_has_quitted(shared_data, true);
         return SIMULATION_FAILURE;
+    }
+
+    if(use_same_shuffle) {
+        shuffle_array = create_shuffle_array(data);
+        shuffle_function = same_shuffle;
+
+        if(shuffle_array == NULL) {
+            set_has_quitted(shared_data, true);
+            free_simulation_data(data);
+            return SIMULATION_FAILURE;
+        }
+    }
 
     Private* private = (Private*) data->_private;
     while(!private->has_quitted) {
@@ -160,7 +203,7 @@ short run_simulation(Shared_data shared_data, bool run_validation) {
         private->run = true;
 
         reset(data);
-        shuffle(data);
+        shuffle(data, shuffle_array, shuffle_function);
 
         if(!private->run)  
             continue;
@@ -187,5 +230,6 @@ short run_simulation(Shared_data shared_data, bool run_validation) {
 
     set_has_quitted(shared_data, true);
     free_simulation_data(data);
+    free(shuffle_array);
     return state;
 }
