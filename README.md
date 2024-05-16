@@ -71,8 +71,9 @@ Arguments :
 | Timsort                | Θ(n log n)       | Θ(n log n)         | Θ(n)                                                  | 11    |
 | Sqrt block sort        | Θ(n log n)       | Θ(n log n)         | Θ(n)                                                  | 12    |
 | Pancake sorting        | Θ(n²)            | Θ(n²)              | Θ(n)                                                  | 13    |
-| Bogo sort              | ∞                | Θ((n + 1)!)        | Θ(n)                                                  | 14    |
-| Stalin sort            | Θ(n)             | Θ(n)               | Θ(n)                                                  | 15    |
+| Stooge sort            | Θ(n^2.7095)      | Θ(n^2.7095)        | Θ(n^2.7095)                                           | 14    |
+| Bogo sort              | ∞                | Θ((n + 1)!)        | Θ(n)                                                  | 15    |
+| Stalin sort            | Θ(n)             | Θ(n)               | Θ(n)                                                  | 16    |
 
 ## Procedure to add a sort
 ### Define the source file
