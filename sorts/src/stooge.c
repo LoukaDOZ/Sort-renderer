@@ -3,7 +3,7 @@
 #include "api.h"
 #include "sorts.h"
 
-static void sort_sub_list(Data* data, int start, int len) {
+static void stooge_sort(Data* data, int start, int len) {
     if(start >= start + len - 1 || !run(data))
         return;
 
@@ -18,12 +18,12 @@ static void sort_sub_list(Data* data, int start, int len) {
 
     int two_thirds = (int) ceil(((double) len) * (2.0 / 3.0));
 
-    sort_sub_list(data, start, two_thirds);
-    sort_sub_list(data, start + len - two_thirds, two_thirds);
-    sort_sub_list(data, start, two_thirds);
+    stooge_sort(data, start, two_thirds);
+    stooge_sort(data, start + len - two_thirds, two_thirds);
+    stooge_sort(data, start, two_thirds);
 }
 
 short run_stooge_sort(Data* data) {
-    sort_sub_list(data, 0, data->array_len);
+    stooge_sort(data, 0, data->array_len);
     return SORT_SUCCESS;
 }
