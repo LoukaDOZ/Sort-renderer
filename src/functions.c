@@ -4,7 +4,7 @@
 
 //////// Add new sorts here ////////
 
-const int SORT_FUNCTIONS_LEN = 18;
+const int SORT_FUNCTIONS_LEN = 19;
 const Sort_Algorithm SORT_ALGORITHMS[] = {
     {
         "Insertion sort",
@@ -85,6 +85,11 @@ const Sort_Algorithm SORT_ALGORITHMS[] = {
         "Stooge sort",
         "Θ(n^2.7095)",
         &run_stooge_sort
+    },
+    {
+        "Slow sort",
+        "Θ(n^(log n / (2 + ε))) for ε > 0",
+        &run_slow_sort
     },
     {
         "Bogo sort",
