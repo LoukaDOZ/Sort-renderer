@@ -62,7 +62,7 @@ Arguments :
 | Gnome sort             | Θ(n²)                            | Θ(n²)                            | Θ(n)                                                  | 2     |
 | Shaker sort            | Θ(n²)                            | Θ(n²)                            | Θ(n)                                                  | 3     |
 | Selection sort         | Θ(n²)                            | Θ(n²)                            | Θ(n²)                                                 | 4     |
-| Cycle sort             | Θ(n²)                            | Θ(n²)                            | Θ(n)                                                  | 5     |
+| Cycle sort             | Θ(n²)                            | Θ(n²)                            | Θ(n²)                                                 | 5     |
 | Odd-even sort          | Θ(n²)                            | Θ(n²)                            | Θ(n)                                                  | 6     |
 | Quick sort             | Θ(n²)                            | Θ(n log n)                       | Θ(n log n)                                            | 7     |
 | Heap sort              | Θ(n log n)                       | Θ(n log n)                       | If distinct keys : Θ(n log n) or if equal keys : Θ(n) | 8     |
