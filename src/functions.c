@@ -4,7 +4,7 @@
 
 //////// Add new sorts here ////////
 
-const int SORT_FUNCTIONS_LEN = 20;
+const int SORT_FUNCTIONS_LEN = 21;
 const Sort_Algorithm SORT_ALGORITHMS[] = {
     {
         "Insertion sort",
@@ -80,6 +80,11 @@ const Sort_Algorithm SORT_ALGORITHMS[] = {
         "Sqrt block sort",
         "Θ(n log n)",
         &run_sqrt_block_sort
+    },
+    {
+        "Patience sorting",
+        "Θ(n log n)",
+        &run_patience_sort
     },
     {
         "Pancake sorting",

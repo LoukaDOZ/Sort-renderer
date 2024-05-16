@@ -16,6 +16,7 @@ short run_merge_bottom_up_sort(Data* data);
 short run_weave_sort(Data* data);
 short run_tim_sort(Data* data);
 short run_sqrt_block_sort(Data* data);
+short run_patience_sort(Data* data);
 short run_pancake_sort(Data* data);
 short run_slow_sort(Data* data);
 short run_stooge_sort(Data* data);

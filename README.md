@@ -72,11 +72,12 @@ Arguments :
 | Weave merge sort       | Θ(n²)                            | Θ(n²)                            | Θ(n²)                                                 | 12    |
 | Timsort                | Θ(n log n)                       | Θ(n log n)                       | Θ(n)                                                  | 13    |
 | Sqrt block sort        | Θ(n log n)                       | Θ(n log n)                       | Θ(n)                                                  | 14    |
-| Pancake sorting        | Θ(n²)                            | Θ(n²)                            | Θ(n)                                                  | 15    |
-| Stooge sort            | Θ(n^2.7095)                      | Θ(n^2.7095)                      | Θ(n^2.7095)                                           | 16    |
-| Slow sort              | Θ(n^(log n / (2 + ε))) for ε > 0 | Θ(n^(log n / (2 + ε))) for ε > 0 | Θ(n^(log n / (2 + ε))) for ε > 0                      | 17    |
-| Bogo sort              | ∞                                | Θ((n + 1)!)                      | Θ(n)                                                  | 18    |
-| Stalin sort            | Θ(n)                             | Θ(n)                             | Θ(n)                                                  | 19    |
+| Patience sorting       | Θ(n log n)                       | Θ(n log n)                       | Θ(n)                                                  | 15    |
+| Pancake sorting        | Θ(n²)                            | Θ(n²)                            | Θ(n)                                                  | 16    |
+| Stooge sort            | Θ(n^2.7095)                      | Θ(n^2.7095)                      | Θ(n^2.7095)                                           | 17    |
+| Slow sort              | Θ(n^(log n / (2 + ε))) for ε > 0 | Θ(n^(log n / (2 + ε))) for ε > 0 | Θ(n^(log n / (2 + ε))) for ε > 0                      | 18    |
+| Bogo sort              | ∞                                | Θ((n + 1)!)                      | Θ(n)                                                  | 19    |
+| Stalin sort            | Θ(n)                             | Θ(n)                             | Θ(n)                                                  | 20    |
 
 ## Procedure to add a sort
 ### Define the source file
