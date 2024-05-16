@@ -69,9 +69,10 @@ Arguments :
 | Merge sort (Bottom-up) | Θ(n log n)       | Θ(n log n)         | Θ(n log n)                                            | 9     |
 | Weave merge sort       | Θ(n²)            | Θ(n²)              | Θ(n²)                                                 | 10    |
 | Timsort                | Θ(n log n)       | Θ(n log n)         | Θ(n)                                                  | 11    |
-| Pancake sorting        | Θ(n²)            | Θ(n²)              | Θ(n)                                                  | 12    |
-| Bogo sort              | ∞                | Θ((n + 1)!)        | Θ(n)                                                  | 13    |
-| Stalin sort            | Θ(n)             | Θ(n)               | Θ(n)                                                  | 14    |
+| Sqrt block sort        | Θ(n log n)       | Θ(n log n)         | Θ(n)                                                  | 12    |
+| Pancake sorting        | Θ(n²)            | Θ(n²)              | Θ(n)                                                  | 13    |
+| Bogo sort              | ∞                | Θ((n + 1)!)        | Θ(n)                                                  | 14    |
+| Stalin sort            | Θ(n)             | Θ(n)               | Θ(n)                                                  | 15    |
 
 ## Procedure to add a sort
 ### Define the source file
