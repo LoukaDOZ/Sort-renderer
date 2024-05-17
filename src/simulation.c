@@ -173,7 +173,7 @@ void shuffle(Data* data, int* shuffle_array, Shuffle_function shuffle_function) 
     set_simulation_delay(shared_data, start_delay);
 }
 
-short run_simulation(Shared_data shared_data, bool run_validation, bool use_same_shuffle) {
+short run_simulation(Shared_data shared_data, bool run_validation, bool use_same_shuffle, bool auto_change_sort) {
     short simulation_res = SORT_SUCCESS;
     short state = SIMULATION_SUCCESS;
 
@@ -224,7 +224,20 @@ short run_simulation(Shared_data shared_data, bool run_validation, bool use_same
 
         if(private->run) {
             sleep(SLEEP_TIME);
-            set_sort_algo_index(shared_data, 1);
+
+            if(auto_change_sort)
+                set_sort_algo_index(shared_data, 1);
+            else {
+                unsigned long time = get_time(shared_data);
+                unsigned long corrected_time = get_corrected_time(shared_data);
+
+                while(private->sort_algo_index == get_sort_algo_index(shared_data) && !private->has_quitted) {
+                    tick(data);
+                    set_time(shared_data, time);
+                    set_corrected_time(shared_data, corrected_time);
+                    set_lps(shared_data, 0);
+                }
+            }
         }
     }
 

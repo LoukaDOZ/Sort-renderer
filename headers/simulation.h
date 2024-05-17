@@ -16,6 +16,6 @@ typedef struct Private {
     bool run, has_quitted;
 } Private;
 
-short run_simulation(Shared_data shared_data, bool run_validation, bool use_same_shuffle);
+short run_simulation(Shared_data shared_data, bool run_validation, bool use_same_shuffle, bool auto_change_sort);
 
 #endif
