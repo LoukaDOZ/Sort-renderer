@@ -20,6 +20,7 @@ short run_patience_sort(Data* data);
 short run_pancake_sort(Data* data);
 short run_slow_sort(Data* data);
 short run_stooge_sort(Data* data);
+short run_sleep_sort(Data* data);
 short run_bogo_sort(Data* data);
 short run_stalin_sort(Data* data);
 

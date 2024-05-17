@@ -76,8 +76,9 @@ Arguments :
 | Pancake sorting        | Θ(n²)                            | Θ(n²)                            | Θ(n)                                                  | 16    |
 | Stooge sort            | Θ(n^2.7095)                      | Θ(n^2.7095)                      | Θ(n^2.7095)                                           | 17    |
 | Slow sort              | Θ(n^(log n / (2 + ε))) for ε > 0 | Θ(n^(log n / (2 + ε))) for ε > 0 | Θ(n^(log n / (2 + ε))) for ε > 0                      | 18    |
-| Bogo sort              | ∞                                | Θ((n + 1)!)                      | Θ(n)                                                  | 19    |
-| Stalin sort            | Θ(n)                             | Θ(n)                             | Θ(n)                                                  | 20    |
+| Sleep sort             | Θ(n log n + max(input))          | Θ(n log n + max(input))          | Θ(n log n + max(input))                               | 19    |
+| Bogo sort              | ∞                                | Θ((n + 1)!)                      | Θ(n)                                                  | 20    |
+| Stalin sort            | Θ(n)                             | Θ(n)                             | Θ(n)                                                  | 21    |
 
 ## Procedure to add a sort
 ### Define the source file
