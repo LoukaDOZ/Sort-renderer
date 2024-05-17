@@ -4,7 +4,7 @@
 
 //////// Add new sorts here ////////
 
-const int SORT_FUNCTIONS_LEN = 22;
+const int SORT_FUNCTIONS_LEN = 23;
 const Sort_Algorithm SORT_ALGORITHMS[] = {
     {
         "Insertion sort",
@@ -30,6 +30,11 @@ const Sort_Algorithm SORT_ALGORITHMS[] = {
         "Selection sort",
         "Θ(n²)",
         &run_selection_sort
+    },
+    {
+        "Comb sort",
+        "Θ(n^2 / 2^p) (p = number of increments)",
+        &run_comb_sort
     },
     {
         "Cycle sort",
