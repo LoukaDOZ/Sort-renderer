@@ -62,24 +62,25 @@ Arguments :
 | Gnome sort             | Θ(n²)                            | Θ(n²)                                   | Θ(n)                                                  | 2     |
 | Shaker sort            | Θ(n²)                            | Θ(n²)                                   | Θ(n)                                                  | 3     |
 | Selection sort         | Θ(n²)                            | Θ(n²)                                   | Θ(n²)                                                 | 4     |
-| Comb sort              | Θ(n²)                            | Θ(n^2 / 2^p) (p = number of increments) | Θ(n log n)                                            | 5     |
-| Cycle sort             | Θ(n²)                            | Θ(n²)                                   | Θ(n²)                                                 | 6     |
-| Odd-even sort          | Θ(n²)                            | Θ(n²)                                   | Θ(n)                                                  | 7     |
-| Quick sort             | Θ(n²)                            | Θ(n log n)                              | Θ(n log n)                                            | 8     |
-| Heap sort              | Θ(n log n)                       | Θ(n log n)                              | If distinct keys : Θ(n log n) or if equal keys : Θ(n) | 9     |
-| Bitonic sort           | Θ(log²(n))                       | Θ(log²(n))                              | Θ(log²(n))                                            | 10    |
-| Merge sort (Top-down)  | Θ(n log n)                       | Θ(n log n)                              | Θ(n log n)                                            | 11    |
-| Merge sort (Bottom-up) | Θ(n log n)                       | Θ(n log n)                              | Θ(n log n)                                            | 12    |
-| Weave merge sort       | Θ(n²)                            | Θ(n²)                                   | Θ(n²)                                                 | 13    |
-| Timsort                | Θ(n log n)                       | Θ(n log n)                              | Θ(n)                                                  | 14    |
-| Sqrt block sort        | Θ(n log n)                       | Θ(n log n)                              | Θ(n)                                                  | 15    |
-| Patience sorting       | Θ(n log n)                       | Θ(n log n)                              | Θ(n)                                                  | 16    |
-| Pancake sorting        | Θ(n²)                            | Θ(n²)                                   | Θ(n)                                                  | 17    |
-| Stooge sort            | Θ(n^2.7095)                      | Θ(n^2.7095)                             | Θ(n^2.7095)                                           | 18    |
-| Slow sort              | Θ(n^(log n / (2 + ε))) for ε > 0 | Θ(n^(log n / (2 + ε))) for ε > 0        | Θ(n^(log n / (2 + ε))) for ε > 0                      | 19    |
-| Sleep sort             | Θ(n log n + max(input))          | Θ(n log n + max(input))                 | Θ(n log n + max(input))                               | 20    |
-| Bogo sort              | ∞                                | Θ((n + 1)!)                             | Θ(n)                                                  | 21    |
-| Stalin sort            | Θ(n)                             | Θ(n)                                    | Θ(n)                                                  | 22    |
+| Shell sort             | Θ(n²)                            | Θ(n^1.25)                               | Θ(n log n)                                            | 5     |
+| Comb sort              | Θ(n²)                            | Θ(n^2 / 2^p) (p = number of increments) | Θ(n log n)                                            | 6     |
+| Cycle sort             | Θ(n²)                            | Θ(n²)                                   | Θ(n²)                                                 | 7     |
+| Odd-even sort          | Θ(n²)                            | Θ(n²)                                   | Θ(n)                                                  | 8     |
+| Quick sort             | Θ(n²)                            | Θ(n log n)                              | Θ(n log n)                                            | 9     |
+| Heap sort              | Θ(n log n)                       | Θ(n log n)                              | If distinct keys : Θ(n log n) or if equal keys : Θ(n) | 10    |
+| Bitonic sort           | Θ(log²(n))                       | Θ(log²(n))                              | Θ(log²(n))                                            | 11    |
+| Merge sort (Top-down)  | Θ(n log n)                       | Θ(n log n)                              | Θ(n log n)                                            | 12    |
+| Merge sort (Bottom-up) | Θ(n log n)                       | Θ(n log n)                              | Θ(n log n)                                            | 13    |
+| Weave merge sort       | Θ(n²)                            | Θ(n²)                                   | Θ(n²)                                                 | 14    |
+| Timsort                | Θ(n log n)                       | Θ(n log n)                              | Θ(n)                                                  | 15    |
+| Sqrt block sort        | Θ(n log n)                       | Θ(n log n)                              | Θ(n)                                                  | 16    |
+| Patience sorting       | Θ(n log n)                       | Θ(n log n)                              | Θ(n)                                                  | 17    |
+| Pancake sorting        | Θ(n²)                            | Θ(n²)                                   | Θ(n)                                                  | 18    |
+| Stooge sort            | Θ(n^2.7095)                      | Θ(n^2.7095)                             | Θ(n^2.7095)                                           | 19    |
+| Slow sort              | Θ(n^(log n / (2 + ε))) for ε > 0 | Θ(n^(log n / (2 + ε))) for ε > 0        | Θ(n^(log n / (2 + ε))) for ε > 0                      | 20    |
+| Sleep sort             | Θ(n log n + max(input))          | Θ(n log n + max(input))                 | Θ(n log n + max(input))                               | 21    |
+| Bogo sort              | ∞                                | Θ((n + 1)!)                             | Θ(n)                                                  | 22    |
+| Stalin sort            | Θ(n)                             | Θ(n)                                    | Θ(n)                                                  | 23    |
 
 ## Procedure to add a sort
 ### Define the source file
