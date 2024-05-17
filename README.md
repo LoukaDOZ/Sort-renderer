@@ -48,6 +48,7 @@ Arguments :
 |---------------------------------|--------------------------------|
 | `Q`                             | Quit                           |
 | `P`                             | Pause/resume simulation        |
+| `R`                             | Restart current sort           |
 | `I`                             | Show/hide information messages |
 | `Left arrow`                    | Previous sort                  |
 | `Right arrow`                   | Next sort                      |

@@ -8,18 +8,19 @@
 #include <SDL2/SDL_ttf.h>
 #include "render.h"
 
-#define NB_EVENTS 10
+#define NB_EVENTS 11
 
 const short WINDOW_QUIT = 0;
 const short KEY_Q = 1;
 const short KEY_P = 2;
-const short KEY_I = 3;
-const short KEY_ARROW_UP = 4;
-const short KEY_ARROW_DOWN = 5;
-const short KEY_ARROW_LEFT = 6;
-const short KEY_ARROW_RIGHT = 7;
-const short MOUSE_WHEEL_UP = 8;
-const short MOUSE_WHEEL_DOWN = 9;
+const short KEY_R = 3;
+const short KEY_I = 4;
+const short KEY_ARROW_UP = 5;
+const short KEY_ARROW_DOWN = 6;
+const short KEY_ARROW_LEFT = 7;
+const short KEY_ARROW_RIGHT = 8;
+const short MOUSE_WHEEL_UP = 9;
+const short MOUSE_WHEEL_DOWN = 10;
 
 const SDL_Color BLACK_COLOR = {0, 0, 0, 255};
 const SDL_Color WHITE_COLOR = {255, 255, 255, 255};
@@ -186,6 +187,9 @@ void handle_events(Render* render) {
                         break;
                     case SDL_SCANCODE_P:
                         render->events[KEY_P]++;
+                        break;
+                    case SDL_SCANCODE_R:
+                        render->events[KEY_R]++;
                         break;
                     case SDL_SCANCODE_I:
                         render->events[KEY_I]++;

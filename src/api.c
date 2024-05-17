@@ -53,7 +53,7 @@ void tick(Data* data) {
     }
 
     int tmp = get_sort_algo_index(private->shared_data);
-    private->run = private->sort_algo_index == tmp && !private->has_quitted;
+    private->run = private->sort_algo_index == tmp && !private->has_quitted && !has_restarted(private->shared_data);
     copy_data(data, private->shared_data);
 
     usleep(get_simulation_delay(private->shared_data));

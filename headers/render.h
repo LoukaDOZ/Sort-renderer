@@ -6,6 +6,7 @@
 extern const short WINDOW_QUIT;
 extern const short KEY_Q;
 extern const short KEY_P;
+extern const short KEY_R;
 extern const short KEY_I;
 extern const short KEY_ARROW_UP;
 extern const short KEY_ARROW_DOWN;

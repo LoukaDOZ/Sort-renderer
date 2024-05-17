@@ -7,7 +7,7 @@
 #include "render.h"
 #include "shared.h"
 
-#define NB_SHARED_POINTER 10
+#define NB_SHARED_POINTER 11
 #define INFO_SHARED_POINTER 0
 #define HAS_QUITTED_SHARED_POINTER 1
 #define IS_PAUSED_SHARED_POINTER 2
@@ -18,6 +18,7 @@
 #define LPS_SHARED_POINTER 7
 #define SIMULATION_DELAY_SHARED_POINTER 8
 #define SORT_ALGO_SHARED_POINTER 9
+#define RESTART_ALGO_SHARED_POINTER 10
 
 typedef struct Shared_pointer {
     void* pointer;
@@ -155,6 +156,13 @@ Shared_data create_shared_data(int array_size, int simulation_delay, int start_s
     }
     limit++;
 
+    data[RESTART_ALGO_SHARED_POINTER] = create_v_shared_pointer(sizeof(bool));
+    if(data[RESTART_ALGO_SHARED_POINTER] == NULL) {
+        free_incomplete_data(data, limit);
+        return NULL;
+    }
+    limit++;
+
     Sort_info* info = create_sort_info(array_size);
     if(info == NULL) {
         free_incomplete_data(data, limit);
@@ -171,6 +179,7 @@ Shared_data create_shared_data(int array_size, int simulation_delay, int start_s
     *((unsigned int*) data[LPS_SHARED_POINTER]->pointer) = 0;
     *((unsigned long*) data[SIMULATION_DELAY_SHARED_POINTER]->pointer) = simulation_delay;
     *((unsigned int*) data[SORT_ALGO_SHARED_POINTER]->pointer) = 0;
+    *((bool*) data[RESTART_ALGO_SHARED_POINTER]->pointer) = false;
     set_sort_algo_index(data, start_sort);
     return data;
 }
@@ -207,6 +216,19 @@ bool is_paused(Shared_data data) {
     bool pause = *((bool*) data[IS_PAUSED_SHARED_POINTER]->pointer);
     unlock_shared_pointer(data[IS_PAUSED_SHARED_POINTER]);
     return pause;
+}
+
+void set_has_restarted(Shared_data data, bool restart) {
+    lock_shared_pointer(data[RESTART_ALGO_SHARED_POINTER]);
+    *((bool*) data[RESTART_ALGO_SHARED_POINTER]->pointer) = restart;
+    unlock_shared_pointer(data[RESTART_ALGO_SHARED_POINTER]);
+}
+
+bool has_restarted(Shared_data data) {
+    lock_shared_pointer(data[RESTART_ALGO_SHARED_POINTER]);
+    bool restart = *((bool*) data[RESTART_ALGO_SHARED_POINTER]->pointer);
+    unlock_shared_pointer(data[RESTART_ALGO_SHARED_POINTER]);
+    return restart;
 }
 
 void set_is_shuffling(Shared_data data, bool shuffling) {

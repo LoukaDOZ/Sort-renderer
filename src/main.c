@@ -88,6 +88,7 @@ void print_simulation_controls(void) {
     printf("\nIn simulation controls :\n");
     printf("\tQ\t\t\t\tQuit\n");
     printf("\tP\t\t\t\tPause\n");
+    printf("\tR\t\t\t\tRestart current sort\n");
     printf("\tI\t\t\t\tToggle information\n");
     printf("\tLeft arrow\t\t\tPrevious sort\n");
     printf("\tRight arrow\t\t\tNext sort\n");

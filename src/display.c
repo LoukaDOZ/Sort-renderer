@@ -60,6 +60,9 @@ void handle_render_events(Render* render, Shared_data shared_data, bool* paused,
         return;
     }
 
+    if(was_pressed(render, KEY_R) > 0)
+        set_has_restarted(shared_data, true);
+
     if(was_pressed(render, KEY_I) % 2 > 0)
         *show_info = inverse_bool(*show_info);
 

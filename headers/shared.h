@@ -17,6 +17,9 @@ bool has_quitted(Shared_data data);
 void set_is_paused(Shared_data data, bool paused);
 bool is_paused(Shared_data data);
 
+void set_has_restarted(Shared_data data, bool restart);
+bool has_restarted(Shared_data data);
+
 void set_is_shuffling(Shared_data data, bool shuffling);
 bool is_shuffling(Shared_data data);
 

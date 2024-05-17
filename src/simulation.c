@@ -116,6 +116,7 @@ void reset(Data* data) {
         data->array[i] = info->array[i];
 
     unlock_info(shared_data);
+    set_has_restarted(shared_data, false);
 }
 
 int* create_shuffle_array(Data* data) {
@@ -231,7 +232,7 @@ short run_simulation(Shared_data shared_data, bool run_validation, bool use_same
                 unsigned long time = get_time(shared_data);
                 unsigned long corrected_time = get_corrected_time(shared_data);
 
-                while(private->sort_algo_index == get_sort_algo_index(shared_data) && !private->has_quitted) {
+                while(private->sort_algo_index == get_sort_algo_index(shared_data) && private->run) {
                     tick(data);
                     set_time(shared_data, time);
                     set_corrected_time(shared_data, corrected_time);
