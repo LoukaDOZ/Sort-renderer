@@ -1,6 +1,13 @@
 #include <stdlib.h>
+#include <stdbool.h>
 #include "api.h"
 #include "sorts.h"
+
+#define NO_VALUE -1
+
+typedef struct Work_element {
+    int work_value, real_value;
+} Work_element;
 
 typedef struct Count Count;
 struct Count {
@@ -69,11 +76,11 @@ static void free_counts(Count* start) {
     }
 }
 
-static Count* count(Data* data) {
+static Count* count(Data* data, Work_element* work_array) {
     Count* counts = NULL;
 
     for(int i = 0; i < data->array_len && run(data); i++) {
-        Count* res = add_count(counts, data->array[i]);
+        Count* res = add_count(counts, work_array[i].work_value);
 
         if(res == NULL) {
             free_counts(counts);
@@ -97,21 +104,17 @@ static Count* count(Data* data) {
     return counts;
 }
 
-short run_counting_sort(Data* data) {
-    Count* counts = count(data);
+static bool counting_sort(Data* data, Work_element* work_array) {
+    Count* counts = count(data, work_array);
     if(counts == NULL)
-        return SORT_FAILURE;
-
-    int copy[data->array_len];
-    for(int i = 0; i < data->array_len && run(data); i++)
-        copy[i] = data->array[i];
+        return false;
 
     if(!run(data))
-        return SORT_SUCCESS;
+        return true;
 
     for(int i = data->array_len - 1; i >= 0 && run(data); i--) {
-        Count* found = find_count(counts, copy[i]);
-        data->array[found->count - 1] = copy[i];
+        Count* found = find_count(counts, work_array[i].work_value);
+        data->array[found->count - 1] = work_array[i].real_value;
         found->count--;
 
         data->cursor = found->count - 1;
@@ -119,5 +122,42 @@ short run_counting_sort(Data* data) {
     }
 
     free_counts(counts);
+    return true;
+}
+
+static int get_digit(int value, int n) {
+    for(int i = 0; i < n; i++)
+        value = value / 10;
+
+    return value <= 0 ? NO_VALUE : value % 10;
+}
+
+short run_radix_sort(Data* data) {
+    int max = data->array[0];
+
+    for(int i = 1; i < data->array_len; i++) {
+        if(!run(data))
+            return SORT_SUCCESS;
+
+        if(data->array[i] > max)
+            max = data->array[i];
+
+        data->cursor = i;
+        tick(data);
+    }
+
+    Work_element work_array[data->array_len];
+    for(int i = 0, current_max = max; current_max > 0; i++, current_max /= 10) {
+        for(int j = 0; j < data->array_len; j++) {
+            if(!run(data))
+                return SORT_SUCCESS;
+
+            work_array[j].work_value = get_digit(data->array[j], i);
+            work_array[j].real_value = data->array[j];
+        }
+
+        counting_sort(data, work_array);
+    }
+
     return SORT_SUCCESS;
 }

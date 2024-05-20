@@ -77,13 +77,14 @@ Arguments :
 | Timsort                | Θ(n log n)                       | Θ(n log n)                              | Θ(n)                                                  | 15    |
 | Sqrt block sort        | Θ(n log n)                       | Θ(n log n)                              | Θ(n)                                                  | 16    |
 | Counting sort          | Θ(n + m) (m = count array)       | Θ(n + m)  (m = count array)             | Θ(n + m)  (m = count array)                           | 17    |
-| Patience sorting       | Θ(n log n)                       | Θ(n log n)                              | Θ(n)                                                  | 18    |
-| Pancake sorting        | Θ(n²)                            | Θ(n²)                                   | Θ(n)                                                  | 19    |
-| Stooge sort            | Θ(n^2.7095)                      | Θ(n^2.7095)                             | Θ(n^2.7095)                                           | 20    |
-| Slow sort              | Θ(n^(log n / (2 + ε))) for ε > 0 | Θ(n^(log n / (2 + ε))) for ε > 0        | Θ(n^(log n / (2 + ε))) for ε > 0                      | 21    |
-| Sleep sort             | Θ(n log n + max(input))          | Θ(n log n + max(input))                 | Θ(n log n + max(input))                               | 22    |
-| Bogo sort              | ∞                                | Θ((n + 1)!)                             | Θ(n)                                                  | 23    |
-| Stalin sort            | Θ(n)                             | Θ(n)                                    | Θ(n)                                                  | 24    |
+| Radix sort             | Θ(l * (n + m)) (l = key length)  | Θ(l * (n + m)) (l = key length)         | Θ(l * (n + m)) (l = key length)                       | 18    |
+| Patience sorting       | Θ(n log n)                       | Θ(n log n)                              | Θ(n)                                                  | 19    |
+| Pancake sorting        | Θ(n²)                            | Θ(n²)                                   | Θ(n)                                                  | 20    |
+| Stooge sort            | Θ(n^2.7095)                      | Θ(n^2.7095)                             | Θ(n^2.7095)                                           | 21    |
+| Slow sort              | Θ(n^(log n / (2 + ε))) for ε > 0 | Θ(n^(log n / (2 + ε))) for ε > 0        | Θ(n^(log n / (2 + ε))) for ε > 0                      | 22    |
+| Sleep sort             | Θ(n log n + max(input))          | Θ(n log n + max(input))                 | Θ(n log n + max(input))                               | 23    |
+| Bogo sort              | ∞                                | Θ((n + 1)!)                             | Θ(n)                                                  | 24    |
+| Stalin sort            | Θ(n)                             | Θ(n)                                    | Θ(n)                                                  | 25    |
 
 ## Procedure to add a sort
 ### Define the source file
