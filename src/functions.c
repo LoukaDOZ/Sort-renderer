@@ -4,7 +4,7 @@
 
 //////// Add new sorts here ////////
 
-const int SORT_FUNCTIONS_LEN = 26;
+const int SORT_FUNCTIONS_LEN = 27;
 const Sort_Algorithm SORT_ALGORITHMS[] = {
     {
         "Insertion sort",
@@ -60,6 +60,11 @@ const Sort_Algorithm SORT_ALGORITHMS[] = {
         "Heap sort",
         "Θ(n log n)",
         &run_heap_sort
+    },
+    {
+        "Smooth sort",
+        "Θ(n²)",
+        &run_smooth_sort
     },
     {
         "Bitonic sort",
