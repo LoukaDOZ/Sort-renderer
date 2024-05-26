@@ -3,8 +3,6 @@
 #include "api.h"
 #include "sorts.h"
 
-#define OOB -1
-
 const int leonardo_len = 46;
 const int leonardo[] = {
     1, 1, 3, 5, 9, 15, 25, 41, 67, 109, 177, 287, 465, 753, 

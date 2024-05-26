@@ -17,6 +17,7 @@ short run_bitonic_sort(Data* data);
 short run_merge_top_down_sort(Data* data);
 short run_merge_bottom_up_sort(Data* data);
 short run_weave_sort(Data* data);
+short run_strand_sort(Data* data);
 short run_tim_sort(Data* data);
 short run_sqrt_block_sort(Data* data);
 short run_counting_sort(Data* data);
