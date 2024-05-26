@@ -116,10 +116,10 @@ typedef struct Data {
 
 | Field             | Description                                                                                                         |
 |-------------------|---------------------------------------------------------------------------------------------------------------------|
-| `data->array_len` | Array values length                                                                                                 |
-| `data->array`     | Array of values to sort with a `data->array_len` length                                                             |
-| `data->cursor`    | Defines "where" we are in the array at the current iteration. Used for rendering. Must be an index of `data->array` |
-| `data->_private`  | Data for the simulation. Should not be touched                                                                      |
+| `data->array_len` | Array length                                                                                                 |
+| `data->array`     | Array of integers to sort with a `data->array_len` length                                                             |
+| `data->cursor`    | Defines "where" we are in the array at the current iteration. Used for rendering. Must be an index between `0` and `data->array_len - 1` |
+| `data->_private`  | Data for the simulation. Must not be touched                                                                      |
 
 #### Return values
 
