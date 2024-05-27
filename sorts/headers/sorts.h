@@ -6,6 +6,7 @@ short run_bubble_sort(Data* data);
 short run_gnome_sort(Data* data);
 short run_shaker_sort(Data* data);
 short run_selection_sort(Data* data);
+short run_double_selection_sort(Data* data);
 short run_shell_sort(Data* data);
 short run_comb_sort(Data* data);
 short run_cycle_sort(Data* data);
