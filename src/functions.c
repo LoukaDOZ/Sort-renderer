@@ -4,12 +4,17 @@
 
 //////// Add new sorts here ////////
 
-const int SORT_FUNCTIONS_LEN = 29;
+const int SORT_FUNCTIONS_LEN = 30;
 const Sort_Algorithm SORT_ALGORITHMS[] = {
     {
         "Insertion sort",
         "Θ(n²)",
         &run_insertion_sort
+    },
+    {
+        "Binary insertion sort",
+        "Θ(n^1.25)",
+        &run_binary_insertion_sort
     },
     {
         "Bubble sort",

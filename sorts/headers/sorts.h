@@ -2,6 +2,7 @@
 #define SORTS_H
 
 short run_insertion_sort(Data* data);
+short run_binary_insertion_sort(Data* data);
 short run_bubble_sort(Data* data);
 short run_gnome_sort(Data* data);
 short run_shaker_sort(Data* data);
