@@ -4,7 +4,7 @@
 
 //////// Add new sorts here ////////
 
-const int SORT_FUNCTIONS_LEN = 33;
+const int SORT_FUNCTIONS_LEN = 34;
 const Sort_Algorithm SORT_ALGORITHMS[] = {
     {
         "Insertion sort",
@@ -162,14 +162,19 @@ const Sort_Algorithm SORT_ALGORITHMS[] = {
         &run_sleep_sort
     },
     {
+        "Stalin sort",
+        "Θ(n)",
+        &run_stalin_sort
+    },
+    {
         "Bogo sort",
         "Θ((n + 1)!)",
         &run_bogo_sort
     },
     {
-        "Stalin sort",
-        "Θ(n)",
-        &run_stalin_sort
+        "Miracle sort",
+        "Θ(n * m) (m = expected number of checks)",
+        &run_miracle_sort
     }
 };
 
