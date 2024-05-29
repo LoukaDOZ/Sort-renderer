@@ -92,7 +92,8 @@ Arguments :
 | Sleep sort             | Θ(n log n + max(input))          | Θ(n log n + max(input))                  | Θ(n log n + max(input))                               | Θ(n)                   | 30    |
 | Stalin sort            | Θ(n)                             | Θ(n)                                     | Θ(n)                                                  | Θ(1)                   | 31    |
 | Bogo sort              | ∞                                | Θ((n + 1)!)                              | Θ(n)                                                  | Θ(1)                   | 32    |
-| Miracle sort           | ∞                                | Θ(n * m) (m = expected number of checks) | Θ(n)                                                  | Θ(1)                   | 33    |
+| Bozo sort              | ∞                                | Θ(n!)                                    | Θ(n)                                                  | Θ(1)                   | 33    |
+| Miracle sort           | ∞                                | Θ(n * m) (m = expected number of checks) | Θ(n)                                                  | Θ(1)                   | 34    |
 
 ## Procedure to add a sort
 ### Define the source file

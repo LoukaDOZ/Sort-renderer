@@ -172,6 +172,11 @@ const Sort_Algorithm SORT_ALGORITHMS[] = {
         &run_bogo_sort
     },
     {
+        "Bozo sort",
+        "Θ((n + 1)!)",
+        &run_bozo_sort
+    },
+    {
         "Miracle sort",
         "Θ(n * m) (m = expected number of checks)",
         &run_miracle_sort

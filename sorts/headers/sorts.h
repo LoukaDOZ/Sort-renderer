@@ -34,6 +34,7 @@ short run_spaghetti_sort(Data* data);
 short run_sleep_sort(Data* data);
 short run_stalin_sort(Data* data);
 short run_bogo_sort(Data* data);
+short run_bozo_sort(Data* data);
 short run_miracle_sort(Data* data);
 
 #endif
