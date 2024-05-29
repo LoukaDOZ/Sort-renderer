@@ -16,6 +16,7 @@ short run_odd_even_sort(Data* data);
 short run_quick_sort(Data* data);
 short run_heap_sort(Data* data);
 short run_smooth_sort(Data* data);
+short run_tournament_sort(Data* data);
 short run_bitonic_sort(Data* data);
 short run_merge_top_down_sort(Data* data);
 short run_merge_bottom_up_sort(Data* data);
