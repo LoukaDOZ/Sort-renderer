@@ -25,8 +25,8 @@
 #define ARGS_NO_RUN 2
 
 typedef struct Args {
-    int w, h, array_size, framerate, looprate, sort;
-    bool fullscreen, show_info, array_size_changed, validate, same_shuffle, auto_change_sort;
+    int w, h, array_size, framerate, looprate, sort, array_size_changed_index;
+    bool fullscreen, show_info, validate, same_shuffle, auto_change_sort;
 } Args;
 
 void init_args(Args* args) {
@@ -38,10 +38,10 @@ void init_args(Args* args) {
     args->sort = 0;
     args->fullscreen = false;
     args->show_info = true;
-    args->array_size_changed = false;
     args->validate = true;
     args->same_shuffle = false;
     args->auto_change_sort = true;
+    args->array_size_changed_index = -1;
 }
 
 bool has_next_arg(int argc, char** argv, int i) {
@@ -98,7 +98,6 @@ void print_simulation_controls(void) {
 
 int get_args(Args* args, int argc, char** argv) {
     init_args(args);
-    int array_size_changed_index = -1;
 
     for(int i = 1; i < argc; i++) {
         char* arg = argv[i];
@@ -157,7 +156,7 @@ int get_args(Args* args, int argc, char** argv) {
             if(!get_int_arg(argc, argv, i, &(args->array_size)))
                 return ARGS_FAILURE;
 
-            array_size_changed_index = i;
+            args->array_size_changed_index = i;
             i++;
         } else if(strcmp(arg, "--sort") == 0 || strcmp(arg, "-s") == 0) {
             if(!get_int_arg(argc, argv, i, &(args->sort)))
@@ -168,13 +167,6 @@ int get_args(Args* args, int argc, char** argv) {
             fprintf(stderr, "Invalid option : '%s', use --help for help\n", arg);
             return ARGS_FAILURE;
         }
-    }
-
-    if(array_size_changed_index != -1) {
-        if(!validate_int(argv[array_size_changed_index], args->array_size, MIN_ARRAY_SIZE, args->w))
-            return ARGS_FAILURE;
-        
-        args->array_size_changed = true;
     }
     
     return ARGS_SUCCESS;
@@ -209,7 +201,17 @@ int main(int argc, char** argv) {
     show_window(render);
     get_window_size(render, &w, &h);
 
-    Shared_data shared_data = create_shared_data(args.array_size_changed ? args.array_size : w, SEC_US / args.looprate, args.sort);
+    bool array_size_changed = false;
+    if(args.array_size_changed_index >= 0) {
+        if(!validate_int(argv[args.array_size_changed_index], args.array_size, MIN_ARRAY_SIZE, w)) {
+            destroy_render(render);
+            return EXIT_FAILURE;
+        }
+        
+        array_size_changed = true;
+    }
+
+    Shared_data shared_data = create_shared_data(array_size_changed ? args.array_size : w, SEC_US / args.looprate, args.sort);
     if(shared_data == NULL) {
         fprintf(stderr, "An error occur when inititalizing simulation data : %s\n", render_error());
         destroy_render(render);
