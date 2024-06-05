@@ -78,7 +78,7 @@ const Sort_Algorithm SORT_ALGORITHMS[] = {
     },
     {
         "Smooth sort",
-        "Θ(n²)",
+        "Θ(n log n)",
         &run_smooth_sort
     },
     {
