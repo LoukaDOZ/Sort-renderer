@@ -34,6 +34,12 @@ char TEXT_BUFFER[TEXT_BUFFER_SIZE];
 #define TIME_BUFFER_SIZE 50
 char TIME_BUFFER[TIME_BUFFER_SIZE];
 
+typedef bool (*Draw_array_function)(Render* render, Shared_data shared_data, int window_w, int window_h, bool colorized);
+
+const short BAR_DRAWING = 0;
+const short DOT_DRAWING = 1;
+const short CIRCLE_DRAWING = 2;
+
 int add_by_until(long* delay, int nb_add, long min, long max, long step) {
     if(*delay != min && *delay != max && *delay % max == 0)
         return nb_add;
@@ -118,7 +124,7 @@ SDL_Color get_color(float ratio) {
     return color;
 }
 
-bool draw_array(Render* render, Shared_data shared_data, int window_w, int window_h, bool colorized) {
+bool bar_plot(Render* render, Shared_data shared_data, int window_w, int window_h, bool colorized) {
     int save_array_len = get_save_array_len(shared_data);
     int array_len = get_array_len(shared_data);
     int cursor = get_cursor(shared_data);
@@ -141,9 +147,43 @@ bool draw_array(Render* render, Shared_data shared_data, int window_w, int windo
             color = i == cursor ? RED_COLOR : WHITE_COLOR;
 
         bar.w = w_unit;
-        bar.h = window_h * ratio;
+        bar.h = (int) round(((float) window_h) * ratio);
         bar.x = w_offset + w_unit * i;
         bar.y = window_h - bar.h;
+
+        if(!draw_rect(render, &bar, color))
+            return false;
+    }
+
+    return true;
+}
+
+bool dot_plot(Render* render, Shared_data shared_data, int window_w, int window_h, bool colorized) {
+    int save_array_len = get_save_array_len(shared_data);
+    int array_len = get_array_len(shared_data);
+    int cursor = get_cursor(shared_data);
+    SDL_Rect bar = {0, 0, 0, 0};
+
+    int w_unit = window_w / array_len;
+    w_unit = w_unit > 0 ? w_unit : 1;
+
+    int w_offset = (window_w - w_unit * array_len) / 2;
+    w_offset = w_offset >= 0 ? w_offset : 0;
+
+    for(int i = 0; i < array_len; i++) {
+        int val = get_array_value(shared_data, i);
+        float ratio = ((float) val) / ((float) save_array_len);
+        SDL_Color color;
+
+        if(colorized)
+            color = i == cursor ? WHITE_COLOR : get_color(ratio);
+        else
+            color = i == cursor ? RED_COLOR : WHITE_COLOR;
+
+        bar.w = w_unit;
+        bar.h = w_unit;
+        bar.x = w_offset + w_unit * i;
+        bar.y = (int) round(((float) window_h) - ((float) window_h) * ratio);
 
         if(!draw_rect(render, &bar, color))
             return false;
@@ -212,10 +252,15 @@ bool draw_program_info(Render* render, Shared_data shared_data, int fps, bool pa
     return draw_one_info(render, TEXT_BUFFER, 0, window_h - TEXT_H, TEXT_LETTER_W * strlen(TEXT_BUFFER), TEXT_H, color);
 }
 
-bool run_display(Render* render, Shared_data shared_data, bool show_info, bool colorized) {
+bool run_display(Render* render, Shared_data shared_data, short drawing_mode, bool show_info, bool colorized) {
     long fps = 0;
     int ww, wh;
     bool paused = is_paused(shared_data);
+    Draw_array_function draw_array;
+
+    if(drawing_mode == DOT_PLOT) draw_array = &dot_plot;
+    else if(drawing_mode == CIRCLE_PLOT) draw_array = &bar_plot;
+    else draw_array = &bar_plot;
 
     get_window_size(render, &ww, &wh);
 

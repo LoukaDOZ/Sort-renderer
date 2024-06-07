@@ -24,8 +24,12 @@
 #define ARGS_FAILURE 1
 #define ARGS_NO_RUN 2
 
+#define DRAW_TYPE_ARG_BAR "BAR"
+#define DRAW_TYPE_ARG_DOT "DOT"
+#define DRAW_TYPE_ARG_CIRCLE "CIRCLE"
+
 typedef struct Args {
-    int w, h, array_size, framerate, looprate, sort, array_size_changed_index;
+    int w, h, array_size, framerate, looprate, sort, array_size_changed_index, drawing_mode;
     bool fullscreen, show_info, validate, same_shuffle, auto_change_sort, colorized;
 } Args;
 
@@ -43,10 +47,29 @@ void init_args(Args* args) {
     args->auto_change_sort = true;
     args->colorized = false;
     args->array_size_changed_index = -1;
+    args->drawing_mode = BAR_DRAWING;
 }
 
 bool has_next_arg(int argc, char** argv, int i) {
     return i >= argc - 1 ? false : true;
+}
+
+bool get_enum_arg(int argc, char** argv, int i, char** enum_values, int enum_values_len, int* value_index) {
+    if(!has_next_arg(argc, argv, i)) {
+        fprintf(stderr, "Missing value for '%s'\n", argv[i]);
+        return false;
+    }
+
+    char* arg = argv[i + 1];
+    for(int i = 0; i < enum_values_len; i++) {
+        if(strcasecmp(arg, enum_values[i]) == 0) {
+            *value_index = i;
+            return true;
+        }
+    }
+    
+    fprintf(stderr, "Invalid value for '%s' : %s\n", argv[i], arg);
+    return false;
 }
 
 bool get_int_arg(int argc, char** argv, int i, int* value) {
@@ -83,7 +106,7 @@ bool validate_int_min(char* arg, int value, int min) {
     }
 
     return true;
-}
+}git commit -m "dot plot and drawing mode"
 
 void print_simulation_controls(void) {
     printf("\nIn simulation controls :\n");
@@ -113,6 +136,7 @@ int get_args(Args* args, int argc, char** argv) {
             printf("\t-l, --looprate <int>\t\tSimulation max loops per seconds (%d < looprate < %ld) (default: 500/s)\n", MIN_LOOPRATE, MAX_LOOPRATE);
             printf("\t-a, --array-size <int>\t\tArray size (%d < array size < width) (default: screen width)\n", MIN_ARRAY_SIZE);
             printf("\t-s, --sort <int>\t\tStarting sort index modulo SORT_FUNCTIONS_LEN (%d) (default: 0)\n", SORT_FUNCTIONS_LEN);
+            printf("\t-d, --drawing-mode <str>\t\tWay to render the array : 'BAR' or 'DOT' (default: 'BAR')\n");
             printf("\t-f, --fullscreen\t\tSet fullscreen\n");
             printf("\t-c, --colorized\t\t\tColorize display\n");
             printf("\t-n, --manual-next-sort\t\tDisable launching next sort automatically\n");
@@ -165,6 +189,28 @@ int get_args(Args* args, int argc, char** argv) {
         } else if(strcmp(arg, "--sort") == 0 || strcmp(arg, "-s") == 0) {
             if(!get_int_arg(argc, argv, i, &(args->sort)))
                 return ARGS_FAILURE;
+
+            i++;
+        } else if(strcmp(arg, "--draw-type") == 0 || strcmp(arg, "-d") == 0) {
+            char* enum_values[3] = {DRAW_TYPE_ARG_BAR, DRAW_TYPE_ARG_DOT, DRAW_TYPE_ARG_CIRCLE};
+            int value_index;
+
+            if(!get_enum_arg(argc, argv, i, enum_values, 3, &value_index))
+                return ARGS_FAILURE;
+
+            switch(value_index) {
+                case 0:
+                    args->drawing_mode = BAR_DRAWING;
+                    break;
+
+                case 1:
+                    args->drawing_mode = DOT_DRAWING;
+                    break;
+
+                case 2:
+                    args->drawing_mode = CIRCLE_DRAWING;
+                    break;
+            }
 
             i++;
         } else {
@@ -232,7 +278,7 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
     
-    bool display_state = run_display(render, shared_data, args.show_info, args.colorized);
+    bool display_state = run_display(render, shared_data, args.drawing_mode, args.show_info, args.colorized);
     pthread_join(tid, (void**) &thread_res);
 
     if(!display_state)

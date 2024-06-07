@@ -3,6 +3,10 @@
 
 #include "shared.h" // Fix unknown Shared_data
 
-bool run_display(Render* render, Shared_data shared_data, bool show_info, bool colorized);
+extern const short BAR_DRAWING;
+extern const short DOT_DRAWING;
+extern const short CIRCLE_DRAWING;
+
+bool run_display(Render* render, Shared_data shared_data, short drawing_mode, bool show_info, bool colorized);
 
 #endif
