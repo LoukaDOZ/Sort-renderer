@@ -126,20 +126,16 @@ void refresh(Render* render) {
 }
 
 bool fill_background(Render* render, SDL_Color color) {
-    if(SDL_SetRenderDrawColor(render->renderer, color.r, color.g, color.b, color.a) != 0
-            || SDL_RenderClear(render->renderer) != 0) {
-        return false;
-    }
-
-    return true;
+    return SDL_SetRenderDrawColor(render->renderer, color.r, color.g, color.b, color.a) == 0 && SDL_RenderClear(render->renderer) == 0;
 }
 
 bool draw_rect(Render* render, SDL_Rect* rect, SDL_Color color) {
-    if(SDL_SetRenderDrawColor(render->renderer, color.r, color.g, color.b, color.a) != 0 
-            || SDL_RenderFillRect(render->renderer, rect) != 0)
-        return false;
+    return SDL_SetRenderDrawColor(render->renderer, color.r, color.g, color.b, color.a) == 0 && SDL_RenderFillRect(render->renderer, rect) == 0;
+}
 
-    return true;
+bool draw_triangle(Render* render, SDL_Vertex a, SDL_Vertex b, SDL_Vertex c, SDL_Color color) {
+    SDL_Vertex vertices[3] = {a, b, c};
+    return SDL_SetRenderDrawColor(render->renderer, color.r, color.g, color.b, color.a) == 0 && SDL_RenderGeometry(render->renderer, NULL, vertices, 3, NULL, 0) == 0;
 }
 
 bool draw_text(Render* render, char* text, SDL_Rect* r, SDL_Color color) {

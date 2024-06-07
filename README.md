@@ -26,22 +26,22 @@ make build
 ```
 
 Arguments :
-| Argument                   | Description                                                                     | Type                           | Default                    |
-|----------------------------|---------------------------------------------------------------------------------|--------------------------------|----------------------------|
-| `-h, --help`               | Show help                                                                       |                                |                            |
-| `-w, --width <int>`        | Screen width in pixels                                                          | int (>= 2)                     | 500px                      |
-| `-e, --height <int>`       | Screen height in pixels                                                         | int (>= 2)                     | 500px                      |
-| `-r, --framerate <int>`    | Display max frames per seconds                                                  | int (>= 1 and <= 1000000)      | 60/s                       |
-| `-l, --looprate <int>`     | Simulation max loops per seconds                                                | int (>= 1 and <= 1000000)      | 500/s                      |
-| `-a, --array-size <int>`   | Array size                                                                      | int (>= 2 and <= screen width) | Screen width               |
-| `-s, --sort <int>`         | Start sort function modulo `SORT_FUNCTIONS_LEN`                                 | int stating at 0               | 0 (first)                  |
-| `-d, --drawing-mode <str>` | Way to render the array                                                         | `BAR` or `DOT`                 | `BAR`                      |
-| `-f, --fullscreen`         | Set fullscreen                                                                  |                                | Not fullscreen             |
-| `-c, --colorized`          | Colorize display                                                                |                                | All white                  |
-| `-n, --manual-next-sort`   | Disable launching next sort automatically                                       |                                | Automatic                  |
-| `-m, --same-shuffle`       | Set the output array after shuffling to always be the same                      |                                | Different shuffling output |
-| `-v, --no-validation`      | Disable validating the array is properly sorted after execution of an algorithm |                                | Always validate            |
-| `-i, --no-info`            | Disable information messages                                                    |                                | Shown                      |
+| Argument                   | Description                                                                     | Type                                                     | Default                    |
+|----------------------------|---------------------------------------------------------------------------------|----------------------------------------------------------|----------------------------|
+| `-h, --help`               | Show help                                                                       |                                                          |                            |
+| `-w, --width <int>`        | Screen width in pixels                                                          | int (>= 2)                                               | 500px                      |
+| `-e, --height <int>`       | Screen height in pixels                                                         | int (>= 2)                                               | 500px                      |
+| `-r, --framerate <int>`    | Display max frames per seconds                                                  | int (>= 1 and <= 1000000)                                | 60/s                       |
+| `-l, --looprate <int>`     | Simulation max loops per seconds                                                | int (>= 1 and <= 1000000)                                | 500/s                      |
+| `-a, --array-size <int>`   | Array size                                                                      | int (>= 2 and <= screen width)                           | Screen width               |
+| `-s, --sort <int>`         | Start sort function modulo `SORT_FUNCTIONS_LEN`                                 | int stating at 0                                         | 0 (first)                  |
+| `-d, --drawing-mode <str>` | Way to render the array                                                         | `BAR`, `DOT` or `CIRCLE`. (`CIRCLE` is always colorized) | `BAR`                      |
+| `-f, --fullscreen`         | Set fullscreen                                                                  |                                                          | Not fullscreen             |
+| `-c, --colorized`          | Colorize display                                                                |                                                          | All white                  |
+| `-n, --manual-next-sort`   | Disable launching next sort automatically                                       |                                                          | Automatic                  |
+| `-m, --same-shuffle`       | Set the output array after shuffling to always be the same                      |                                                          | Different shuffling output |
+| `-v, --no-validation`      | Disable validating the array is properly sorted after execution of an algorithm |                                                          | Always validate            |
+| `-i, --no-info`            | Disable information messages                                                    |                                                          | Shown                      |
 
 
 ### In game controls

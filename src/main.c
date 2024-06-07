@@ -106,7 +106,7 @@ bool validate_int_min(char* arg, int value, int min) {
     }
 
     return true;
-}git commit -m "dot plot and drawing mode"
+}
 
 void print_simulation_controls(void) {
     printf("\nIn simulation controls :\n");
@@ -136,7 +136,7 @@ int get_args(Args* args, int argc, char** argv) {
             printf("\t-l, --looprate <int>\t\tSimulation max loops per seconds (%d < looprate < %ld) (default: 500/s)\n", MIN_LOOPRATE, MAX_LOOPRATE);
             printf("\t-a, --array-size <int>\t\tArray size (%d < array size < width) (default: screen width)\n", MIN_ARRAY_SIZE);
             printf("\t-s, --sort <int>\t\tStarting sort index modulo SORT_FUNCTIONS_LEN (%d) (default: 0)\n", SORT_FUNCTIONS_LEN);
-            printf("\t-d, --drawing-mode <str>\t\tWay to render the array : 'BAR' or 'DOT' (default: 'BAR')\n");
+            printf("\t-d, --drawing-mode <str>\tWay to render the array : 'BAR', 'DOT' or 'CIRCLE' (default: 'BAR') ('CIRCLE' is always colorized)\n");
             printf("\t-f, --fullscreen\t\tSet fullscreen\n");
             printf("\t-c, --colorized\t\t\tColorize display\n");
             printf("\t-n, --manual-next-sort\t\tDisable launching next sort automatically\n");

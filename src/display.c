@@ -124,7 +124,7 @@ SDL_Color get_color(float ratio) {
     return color;
 }
 
-bool bar_plot(Render* render, Shared_data shared_data, int window_w, int window_h, bool colorized) {
+bool bar_drawing(Render* render, Shared_data shared_data, int window_w, int window_h, bool colorized) {
     int save_array_len = get_save_array_len(shared_data);
     int array_len = get_array_len(shared_data);
     int cursor = get_cursor(shared_data);
@@ -158,7 +158,7 @@ bool bar_plot(Render* render, Shared_data shared_data, int window_w, int window_
     return true;
 }
 
-bool dot_plot(Render* render, Shared_data shared_data, int window_w, int window_h, bool colorized) {
+bool dot_drawing(Render* render, Shared_data shared_data, int window_w, int window_h, bool colorized) {
     int save_array_len = get_save_array_len(shared_data);
     int array_len = get_array_len(shared_data);
     int cursor = get_cursor(shared_data);
@@ -186,6 +186,39 @@ bool dot_plot(Render* render, Shared_data shared_data, int window_w, int window_
         bar.y = (int) round(((float) window_h) - ((float) window_h) * ratio);
 
         if(!draw_rect(render, &bar, color))
+            return false;
+    }
+
+    return true;
+}
+
+bool circle_drawing(Render* render, Shared_data shared_data, int window_w, int window_h, bool colorized) {
+    int save_array_len = get_save_array_len(shared_data);
+    int array_len = get_array_len(shared_data);
+    int cursor = get_cursor(shared_data);
+    
+    int center_x = window_w / 2, center_y = window_h / 2;
+    int radius = window_w < window_h ? window_w / 2 : window_h / 2;
+
+    float half_pi = (float) (M_PI * 2);
+    float step = half_pi / ((float) array_len);
+    for(int i = 0; i < array_len; i++) {
+        int val = get_array_value(shared_data, i);
+        float ratio = ((float) val) / ((float) save_array_len);
+        SDL_Color color = i == cursor ? WHITE_COLOR : get_color(ratio);
+
+        float angle1 = step * ((float) i);
+        float angle2 = step * ((float) (i + 1));
+        int x1 = radius * cosf(angle1);
+        int y1 = radius * sinf(angle1);
+        int x2 = radius * cosf(angle2);
+        int y2 = radius * sinf(angle2);
+
+        SDL_Vertex center = {{center_x, center_y}, color, {1, 1}};
+        SDL_Vertex a = {{center_x + x1, center_y + y1}, color, {1, 1}};
+        SDL_Vertex b = {{center_x + x2, center_y + y2}, color, {1, 1}};
+
+        if(!draw_triangle(render, center, a, b, color))
             return false;
     }
 
@@ -258,9 +291,9 @@ bool run_display(Render* render, Shared_data shared_data, short drawing_mode, bo
     bool paused = is_paused(shared_data);
     Draw_array_function draw_array;
 
-    if(drawing_mode == DOT_PLOT) draw_array = &dot_plot;
-    else if(drawing_mode == CIRCLE_PLOT) draw_array = &bar_plot;
-    else draw_array = &bar_plot;
+    if(drawing_mode == DOT_DRAWING) draw_array = &dot_drawing;
+    else if(drawing_mode == CIRCLE_DRAWING) draw_array = &circle_drawing;
+    else draw_array = &bar_drawing;
 
     get_window_size(render, &ww, &wh);
 

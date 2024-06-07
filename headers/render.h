@@ -39,6 +39,7 @@ void get_window_size(Render* render, int* w, int* y);
 void refresh(Render* render);
 bool fill_background(Render* render, SDL_Color color);
 bool draw_rect(Render* render, SDL_Rect* rect, SDL_Color color);
+bool draw_triangle(Render* render, SDL_Vertex a, SDL_Vertex b, SDL_Vertex c, SDL_Color color);
 bool draw_text(Render* render, char* text, SDL_Rect* r, SDL_Color color);
 
 void handle_events(Render* render);
