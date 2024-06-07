@@ -11,6 +11,7 @@
 
 #define DELAY_STEP 10000
 
+#define CIRCLE_MIN_TRIANGLES 36
 #define SNAIL_DRAWING_CORRECTION_ANGLE 0.01f
 
 #define NAME_TEXT "Sort"
@@ -202,12 +203,14 @@ bool circle_drawing(Render* render, Shared_data shared_data, int window_w, int w
     
     int center_x = window_w / 2, center_y = window_h / 2;
     int radius = window_w < window_h ? window_w / 2 : window_h / 2;
+    int nb_triangles = array_len < CIRCLE_MIN_TRIANGLES ? CIRCLE_MIN_TRIANGLES : array_len;
 
-    float step = ((float) (M_PI * 2)) / ((float) array_len);
-    for(int i = 0; i < array_len; i++) {
-        int val = get_array_value(shared_data, i);
+    float step = ((float) (M_PI * 2)) / ((float) nb_triangles);
+    for(int i = 0; i < nb_triangles; i++) {
+        int current = (int) floor(((float) i) / ((float) nb_triangles) * ((float) array_len));
+        int val = get_array_value(shared_data, current);
         float ratio = ((float) val) / ((float) save_array_len);
-        SDL_Color color = i == cursor ? WHITE_COLOR : get_color(ratio);
+        SDL_Color color = current == cursor ? WHITE_COLOR : get_color(ratio);
 
         float angle1 = step * ((float) i);
         float angle2 = step * ((float) (i + 1));
