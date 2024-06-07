@@ -11,6 +11,8 @@
 
 #define DELAY_STEP 10000
 
+#define SNAIL_DRAWING_CORRECTION_ANGLE 0.01f
+
 #define NAME_TEXT "Sort"
 #define COMPLEXITY_TEXT "Average complexity"
 #define TIME_TEXT "Time"
@@ -39,6 +41,7 @@ typedef bool (*Draw_array_function)(Render* render, Shared_data shared_data, int
 const short BAR_DRAWING = 0;
 const short DOT_DRAWING = 1;
 const short CIRCLE_DRAWING = 2;
+const short SNAIL_DRAWING = 3;
 
 int add_by_until(long* delay, int nb_add, long min, long max, long step) {
     if(*delay != min && *delay != max && *delay % max == 0)
@@ -200,8 +203,7 @@ bool circle_drawing(Render* render, Shared_data shared_data, int window_w, int w
     int center_x = window_w / 2, center_y = window_h / 2;
     int radius = window_w < window_h ? window_w / 2 : window_h / 2;
 
-    float half_pi = (float) (M_PI * 2);
-    float step = half_pi / ((float) array_len);
+    float step = ((float) (M_PI * 2)) / ((float) array_len);
     for(int i = 0; i < array_len; i++) {
         int val = get_array_value(shared_data, i);
         float ratio = ((float) val) / ((float) save_array_len);
@@ -213,6 +215,46 @@ bool circle_drawing(Render* render, Shared_data shared_data, int window_w, int w
         int y1 = radius * sinf(angle1);
         int x2 = radius * cosf(angle2);
         int y2 = radius * sinf(angle2);
+
+        SDL_Vertex center = {{center_x, center_y}, color, {1, 1}};
+        SDL_Vertex a = {{center_x + x1, center_y + y1}, color, {1, 1}};
+        SDL_Vertex b = {{center_x + x2, center_y + y2}, color, {1, 1}};
+
+        if(!draw_triangle(render, center, a, b, color))
+            return false;
+    }
+
+    return true;
+}
+
+bool snail_drawing(Render* render, Shared_data shared_data, int window_w, int window_h, bool colorized) {
+    int save_array_len = get_save_array_len(shared_data);
+    int array_len = get_array_len(shared_data);
+    int cursor = get_cursor(shared_data);
+
+    int center_x = window_w / 2, center_y = window_h / 2;
+    int radius = window_w < window_h ? window_w / 2 : window_h / 2;
+
+    float step = ((float) (M_PI * 2)) / ((float) array_len);
+    for(int i = 0; i < array_len; i++) {
+        int val = get_array_value(shared_data, i);
+        float ratio = ((float) val) / ((float) save_array_len);
+        SDL_Color color;
+
+        if(colorized)
+            color = i == cursor ? WHITE_COLOR : get_color(ratio);
+        else
+            color = i == cursor ? RED_COLOR : WHITE_COLOR;
+
+        float ratio_radius = ((float) radius) * ratio;
+        if(ratio_radius <= 0) ratio_radius = 1;
+
+        float angle1 = step * ((float) i) - SNAIL_DRAWING_CORRECTION_ANGLE;
+        float angle2 = step * ((float) (i + 1)) + SNAIL_DRAWING_CORRECTION_ANGLE;
+        int x1 = ratio_radius * cosf(angle1);
+        int y1 = ratio_radius * sinf(angle1);
+        int x2 = ratio_radius * cosf(angle2);
+        int y2 = ratio_radius * sinf(angle2);
 
         SDL_Vertex center = {{center_x, center_y}, color, {1, 1}};
         SDL_Vertex a = {{center_x + x1, center_y + y1}, color, {1, 1}};
@@ -291,9 +333,15 @@ bool run_display(Render* render, Shared_data shared_data, short drawing_mode, bo
     bool paused = is_paused(shared_data);
     Draw_array_function draw_array;
 
-    if(drawing_mode == DOT_DRAWING) draw_array = &dot_drawing;
-    else if(drawing_mode == CIRCLE_DRAWING) draw_array = &circle_drawing;
-    else draw_array = &bar_drawing;
+    if(drawing_mode == DOT_DRAWING)
+        draw_array = &dot_drawing;
+    else if(drawing_mode == CIRCLE_DRAWING) {
+        draw_array = &circle_drawing;
+        colorized = true;
+    } else if(drawing_mode == SNAIL_DRAWING)
+        draw_array = &snail_drawing;
+    else
+        draw_array = &bar_drawing;
 
     get_window_size(render, &ww, &wh);
 

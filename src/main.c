@@ -18,15 +18,16 @@
 #define MAX_FRAMERATE SEC_US
 #define MIN_LOOPRATE 1
 #define MAX_LOOPRATE SEC_US
-#define MIN_ARRAY_SIZE 2
+#define MIN_ARRAY_SIZE 3
 
 #define ARGS_SUCCESS 0
 #define ARGS_FAILURE 1
 #define ARGS_NO_RUN 2
 
-#define DRAW_TYPE_ARG_BAR "BAR"
-#define DRAW_TYPE_ARG_DOT "DOT"
-#define DRAW_TYPE_ARG_CIRCLE "CIRCLE"
+#define DRAWING_MODE_ARG_BAR "BAR"
+#define DRAWING_MODE_ARG_DOT "DOT"
+#define DRAWING_MODE_ARG_CIRCLE "CIRCLE"
+#define DRAWING_MODE_ARG_SNAIL "SNAIL"
 
 typedef struct Args {
     int w, h, array_size, framerate, looprate, sort, array_size_changed_index, drawing_mode;
@@ -136,7 +137,7 @@ int get_args(Args* args, int argc, char** argv) {
             printf("\t-l, --looprate <int>\t\tSimulation max loops per seconds (%d < looprate < %ld) (default: 500/s)\n", MIN_LOOPRATE, MAX_LOOPRATE);
             printf("\t-a, --array-size <int>\t\tArray size (%d < array size < width) (default: screen width)\n", MIN_ARRAY_SIZE);
             printf("\t-s, --sort <int>\t\tStarting sort index modulo SORT_FUNCTIONS_LEN (%d) (default: 0)\n", SORT_FUNCTIONS_LEN);
-            printf("\t-d, --drawing-mode <str>\tWay to render the array : 'BAR', 'DOT' or 'CIRCLE' (default: 'BAR') ('CIRCLE' is always colorized)\n");
+            printf("\t-d, --drawing-mode <str>\tWay to render the array : 'BAR', 'DOT', 'CIRCLE' or 'SNAIL' (default: 'BAR') ('CIRCLE' is always colorized)\n");
             printf("\t-f, --fullscreen\t\tSet fullscreen\n");
             printf("\t-c, --colorized\t\t\tColorize display\n");
             printf("\t-n, --manual-next-sort\t\tDisable launching next sort automatically\n");
@@ -192,23 +193,28 @@ int get_args(Args* args, int argc, char** argv) {
 
             i++;
         } else if(strcmp(arg, "--draw-type") == 0 || strcmp(arg, "-d") == 0) {
-            char* enum_values[3] = {DRAW_TYPE_ARG_BAR, DRAW_TYPE_ARG_DOT, DRAW_TYPE_ARG_CIRCLE};
+            char* enum_values[4] = {DRAWING_MODE_ARG_BAR, DRAWING_MODE_ARG_DOT, DRAWING_MODE_ARG_CIRCLE, DRAWING_MODE_ARG_SNAIL};
             int value_index;
 
-            if(!get_enum_arg(argc, argv, i, enum_values, 3, &value_index))
+            if(!get_enum_arg(argc, argv, i, enum_values, 4, &value_index))
                 return ARGS_FAILURE;
 
             switch(value_index) {
-                case 0:
-                    args->drawing_mode = BAR_DRAWING;
-                    break;
-
                 case 1:
                     args->drawing_mode = DOT_DRAWING;
                     break;
 
                 case 2:
                     args->drawing_mode = CIRCLE_DRAWING;
+                    break;
+
+                case 3:
+                    args->drawing_mode = SNAIL_DRAWING;
+                    break;
+                
+                default:
+                case 0:
+                    args->drawing_mode = BAR_DRAWING;
                     break;
             }
 
