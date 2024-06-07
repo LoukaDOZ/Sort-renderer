@@ -8,6 +8,9 @@ extern const long SEC_MS;
 extern const long MS_US;
 extern const long MIN_SEC;
 
+extern const unsigned long MIN_SIMULATION_DELAY;
+extern const unsigned long MAX_SIMULATION_DELAY;
+
 bool inverse_bool(bool b);
 
 int max(int a, int b);

@@ -26,7 +26,7 @@
 
 typedef struct Args {
     int w, h, array_size, framerate, looprate, sort, array_size_changed_index;
-    bool fullscreen, show_info, validate, same_shuffle, auto_change_sort;
+    bool fullscreen, show_info, validate, same_shuffle, auto_change_sort, colorized;
 } Args;
 
 void init_args(Args* args) {
@@ -41,6 +41,7 @@ void init_args(Args* args) {
     args->validate = true;
     args->same_shuffle = false;
     args->auto_change_sort = true;
+    args->colorized = false;
     args->array_size_changed_index = -1;
 }
 
@@ -113,6 +114,7 @@ int get_args(Args* args, int argc, char** argv) {
             printf("\t-a, --array-size <int>\t\tArray size (%d < array size < width) (default: screen width)\n", MIN_ARRAY_SIZE);
             printf("\t-s, --sort <int>\t\tStarting sort index modulo SORT_FUNCTIONS_LEN (%d) (default: 0)\n", SORT_FUNCTIONS_LEN);
             printf("\t-f, --fullscreen\t\tSet fullscreen\n");
+            printf("\t-c, --colorized\t\t\tColorize display\n");
             printf("\t-n, --manual-next-sort\t\tDisable launching next sort automatically\n");
             printf("\t-m, --same-shuffle\t\tSet the output array after shuffling to always be the same\n");
             printf("\t-v, --no-validation\t\tDisable validating the array is properly sorted after execution of an algorithm\n");
@@ -132,6 +134,8 @@ int get_args(Args* args, int argc, char** argv) {
             args->auto_change_sort = false;
         } else if(strcmp(arg, "--same-shuffle") == 0 || strcmp(arg, "-m") == 0) {
             args->same_shuffle = true;
+        } else if(strcmp(arg, "--colorized") == 0 || strcmp(arg, "-c") == 0) {
+            args->colorized = true;
         } else if(strcmp(arg, "--width") == 0 || strcmp(arg, "-w") == 0) {
             if(!get_int_arg(argc, argv, i, &(args->w)) || !validate_int_min(arg, args->w, MIN_WIDTH))
                 return ARGS_FAILURE;
@@ -228,7 +232,7 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
     
-    bool display_state = run_display(render, shared_data, args.show_info);
+    bool display_state = run_display(render, shared_data, args.show_info, args.colorized);
     pthread_join(tid, (void**) &thread_res);
 
     if(!display_state)

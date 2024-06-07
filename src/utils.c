@@ -8,6 +8,9 @@ const long SEC_MS = 1000;
 const long MS_US = 1000;
 const long MIN_SEC = 60;
 
+const unsigned long MIN_SIMULATION_DELAY = 0;
+const unsigned long MAX_SIMULATION_DELAY = SEC_US;
+
 bool inverse_bool(bool b) {
     return (b + 1) % 2;
 }

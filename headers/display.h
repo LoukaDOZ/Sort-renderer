@@ -3,6 +3,6 @@
 
 #include "shared.h" // Fix unknown Shared_data
 
-bool run_display(Render* render, Shared_data shared_data, bool show_info);
+bool run_display(Render* render, Shared_data shared_data, bool show_info, bool colorized);
 
 #endif

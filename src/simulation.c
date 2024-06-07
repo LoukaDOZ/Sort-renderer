@@ -75,6 +75,25 @@ void init_simulation(Data* data) {
     private->loop_start_time = us_time();
 }
 
+unsigned long set_forced_delay(Shared_data shared_data, unsigned long forced_delay, unsigned long saved_delay) {
+    unsigned long current_delay = get_simulation_delay(shared_data);
+
+    if(current_delay != forced_delay) {
+        int diff = current_delay > forced_delay ? current_delay / forced_delay : forced_delay / current_delay;
+
+        if(saved_delay == MIN_SIMULATION_DELAY) {
+            saved_delay = 1;
+            diff = current_delay > forced_delay ? diff / 2 : diff * 2;
+        }
+
+        saved_delay = current_delay > forced_delay ? saved_delay * diff : saved_delay / diff;
+        saved_delay = saved_delay > MAX_SIMULATION_DELAY ? MAX_SIMULATION_DELAY : saved_delay;
+        set_simulation_delay(shared_data, forced_delay);
+    }
+
+    return saved_delay;
+}
+
 bool validate(Data* data) {
     Private* private = (Private*) data->_private;
     Shared_data shared_data = (Shared_data) private->shared_data;
@@ -84,16 +103,16 @@ bool validate(Data* data) {
     unsigned long start_delay = get_simulation_delay(shared_data);
     unsigned long forced_delay = TOTAL_TIME / data->array_len;
 
+    set_simulation_delay(shared_data, forced_delay);
     set_is_validating(shared_data, true);
 
     for(int i = 0; i < data->array_len && private->run; i++) {
         if(i > 0 && data->array[i - 1] > data->array[i])
             return false;
 
-        if(get_simulation_delay(shared_data) != forced_delay)
-            set_simulation_delay(shared_data, forced_delay);
-
+        start_delay = set_forced_delay(shared_data, forced_delay, start_delay);
         data->cursor = i;
+
         tick(data);
         set_time(private->shared_data, start_time);
         set_corrected_time(private->shared_data, start_corrected_time);
@@ -156,14 +175,13 @@ void shuffle(Data* data, int* shuffle_array, Shuffle_function shuffle_function) 
     unsigned long start_delay = get_simulation_delay(shared_data);
     unsigned long forced_delay = TOTAL_TIME / data->array_len;
 
+    set_simulation_delay(shared_data, forced_delay);
     set_is_shuffling(shared_data, true);
 
     for(int i = 0; i < data->array_len && private->run; i++) {
         shuffle_function(data, shuffle_array, i);
+        start_delay = set_forced_delay(shared_data, forced_delay, start_delay);
         data->cursor = i;
-
-        if(get_simulation_delay(shared_data) != forced_delay)
-            set_simulation_delay(shared_data, forced_delay);
 
         tick(data);
         set_time(shared_data, 0);

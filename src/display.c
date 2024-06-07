@@ -9,8 +9,6 @@
 #include "utils.h"
 #include "display.h"
 
-#define MIN_DELAY 0
-#define MAX_DELAY SEC_US
 #define DELAY_STEP 10000
 
 #define NAME_TEXT "Sort"
@@ -88,16 +86,39 @@ void handle_render_events(Render* render, Shared_data shared_data, bool* paused,
         } else
             for(; nb_add < 0; nb_add++) delay /= 2;
 
-        if(delay < MIN_DELAY)
-            delay = MIN_DELAY;
-        else if(delay > MAX_DELAY)
-            delay = MAX_DELAY;
+        if(delay < MIN_SIMULATION_DELAY)
+            delay = MIN_SIMULATION_DELAY;
+        else if(delay > MAX_SIMULATION_DELAY)
+            delay = MAX_SIMULATION_DELAY;
 
         set_simulation_delay(shared_data, delay);
     }
 }
 
-bool draw_array(Render* render, Shared_data shared_data, int window_w, int window_h) {
+SDL_Color get_color(float ratio) {
+    SDL_Color color = {0, 0, 0, 255};
+
+    if(ratio < 0.2f) {
+        color.r = 255;
+        color.g = (int) round(255.0 * ratio / 0.2);
+    } else if(ratio < 0.4f) {
+        color.r = (int) round(255.0 * (1 - (ratio - 0.2) / 0.2));
+        color.g = 255;
+    } else if(ratio < 0.6f) {
+        color.g = 255;
+        color.b = (int) round(255.0 * (ratio - 0.4) / 0.2);
+    } else if(ratio < 0.8f) {
+        color.g = (int) round(255.0 * (1 - (ratio - 0.6) / 0.2));
+        color.b = 255;
+    } else {
+        color.r = (int) round(255.0 * (ratio - 0.8) / 0.2);
+        color.b = 255;
+    }
+
+    return color;
+}
+
+bool draw_array(Render* render, Shared_data shared_data, int window_w, int window_h, bool colorized) {
     int save_array_len = get_save_array_len(shared_data);
     int array_len = get_array_len(shared_data);
     int cursor = get_cursor(shared_data);
@@ -110,11 +131,17 @@ bool draw_array(Render* render, Shared_data shared_data, int window_w, int windo
     w_offset = w_offset >= 0 ? w_offset : 0;
 
     for(int i = 0; i < array_len; i++) {
-        SDL_Color color = i == cursor ? RED_COLOR : WHITE_COLOR;
         int val = get_array_value(shared_data, i);
+        float ratio = ((float) val) / ((float) save_array_len);
+        SDL_Color color;
+
+        if(colorized)
+            color = i == cursor ? WHITE_COLOR : get_color(ratio);
+        else
+            color = i == cursor ? RED_COLOR : WHITE_COLOR;
 
         bar.w = w_unit;
-        bar.h = window_h * (((float) val) / ((float) save_array_len));
+        bar.h = window_h * ratio;
         bar.x = w_offset + w_unit * i;
         bar.y = window_h - bar.h;
 
@@ -125,64 +152,67 @@ bool draw_array(Render* render, Shared_data shared_data, int window_w, int windo
     return true;
 }
 
-bool draw_one_info(Render* render, char* text, int x, int y, int w, int h) {
+bool draw_one_info(Render* render, char* text, int x, int y, int w, int h, SDL_Color color) {
     SDL_Rect text_rect = {x, y, w, h};
-    return draw_text(render, text, &text_rect, ORANGE_COLOR);
+    return draw_text(render, text, &text_rect, color);
 }
 
-bool draw_one_func_info(Render* render, char* title, char* content, int line) {
+bool draw_one_func_info(Render* render, char* title, char* content, int line, SDL_Color color) {
     sprintf(TEXT_BUFFER, "%s: %s", title, content);
-    return draw_one_info(render, TEXT_BUFFER, 0, TEXT_H * line, TEXT_LETTER_W * strlen(TEXT_BUFFER), TEXT_H);
+    return draw_one_info(render, TEXT_BUFFER, 0, TEXT_H * line, TEXT_LETTER_W * strlen(TEXT_BUFFER), TEXT_H, color);
 }
 
-bool draw_func_info(Render* render, Shared_data shared_data) {
+bool draw_func_info(Render* render, Shared_data shared_data, bool colorized) {
+    SDL_Color color = colorized ? WHITE_COLOR : ORANGE_COLOR;
     int min, sec, ms, corrected_min, corrected_sec, corrected_ms, corrected_us;
     decompose_ms(get_time(shared_data), &min, &sec, &ms);
     decompose_us(get_corrected_time(shared_data), &corrected_min, &corrected_sec, &corrected_ms, &corrected_us);
 
-    if(!draw_one_func_info(render, NAME_TEXT, get_sort_algo_name(shared_data), 0))
+    if(!draw_one_func_info(render, NAME_TEXT, get_sort_algo_name(shared_data), 0, color))
         return false;
 
-    if(!draw_one_func_info(render, COMPLEXITY_TEXT, get_sort_algo_complexity(shared_data), 1))
+    if(!draw_one_func_info(render, COMPLEXITY_TEXT, get_sort_algo_complexity(shared_data), 1, color))
         return false;
 
     sprintf(TIME_BUFFER, "%02dmin  %02ds  %03dms", min, sec, ms);
-    if(!draw_one_func_info(render, TIME_TEXT, TIME_BUFFER, 2))
+    if(!draw_one_func_info(render, TIME_TEXT, TIME_BUFFER, 2, color))
         return false;
 
     sprintf(TIME_BUFFER, "%02dmin  %02ds  %03dms %03dµs", corrected_min, corrected_sec, corrected_ms, corrected_us);
-    return draw_one_func_info(render, CORRECTED_TIME_TEXT, TIME_BUFFER, 3);
+    return draw_one_func_info(render, CORRECTED_TIME_TEXT, TIME_BUFFER, 3, color);
 }
 
-bool draw_program_info(Render* render, Shared_data shared_data, int fps, bool paused, int window_w, int window_h) {
+bool draw_program_info(Render* render, Shared_data shared_data, int fps, bool paused, int window_w, int window_h, bool colorized) {
+    SDL_Color color = colorized ? WHITE_COLOR : ORANGE_COLOR;
     bool first_line_taken = false;
+
     if(is_shuffling(shared_data)) {
         first_line_taken = true;
         int w = TEXT_LETTER_W * SHUFFLE_TEXT_LEN;
-        if(!draw_one_info(render, SHUFFLE_TEXT, window_w - w, 0, w, TEXT_H))
+        if(!draw_one_info(render, SHUFFLE_TEXT, window_w - w, 0, w, TEXT_H, color))
             return false;
     } else if(is_validating(shared_data)) {
         first_line_taken = true;
         int w = TEXT_LETTER_W * VALIDATE_TEXT_LEN;
-        if(!draw_one_info(render, VALIDATE_TEXT, window_w - w, 0, w, TEXT_H))
+        if(!draw_one_info(render, VALIDATE_TEXT, window_w - w, 0, w, TEXT_H, color))
             return false;
     }
 
     if(paused) {
         int w = TEXT_LETTER_W * PAUSE_TEXT_LEN;
-        if(!draw_one_info(render, PAUSE_TEXT, window_w - w, TEXT_H * first_line_taken, w, TEXT_H))
+        if(!draw_one_info(render, PAUSE_TEXT, window_w - w, TEXT_H * first_line_taken, w, TEXT_H, color))
             return false;
     }
 
     sprintf(TEXT_BUFFER, "%u LPS", get_lps(shared_data));
-    if(!draw_one_info(render, TEXT_BUFFER, 0, window_h - TEXT_H * 2, TEXT_LETTER_W * strlen(TEXT_BUFFER), TEXT_H))
+    if(!draw_one_info(render, TEXT_BUFFER, 0, window_h - TEXT_H * 2, TEXT_LETTER_W * strlen(TEXT_BUFFER), TEXT_H, color))
         return false;
 
     sprintf(TEXT_BUFFER, "%d FPS", fps);
-    return draw_one_info(render, TEXT_BUFFER, 0, window_h - TEXT_H, TEXT_LETTER_W * strlen(TEXT_BUFFER), TEXT_H);
+    return draw_one_info(render, TEXT_BUFFER, 0, window_h - TEXT_H, TEXT_LETTER_W * strlen(TEXT_BUFFER), TEXT_H, color);
 }
 
-bool run_display(Render* render, Shared_data shared_data, bool show_info) {
+bool run_display(Render* render, Shared_data shared_data, bool show_info, bool colorized) {
     long fps = 0;
     int ww, wh;
     bool paused = is_paused(shared_data);
@@ -192,10 +222,10 @@ bool run_display(Render* render, Shared_data shared_data, bool show_info) {
     while(!has_quitted(shared_data)) {
         long fps_start_time = us_time();
 
-        if(!fill_background(render, BLACK_COLOR) || !draw_array(render, shared_data, ww, wh))
+        if(!fill_background(render, BLACK_COLOR) || !draw_array(render, shared_data, ww, wh, colorized))
             return false;
 
-        if(show_info && (!draw_func_info(render, shared_data) || !draw_program_info(render, shared_data, fps, paused, ww, wh)))
+        if(show_info && (!draw_func_info(render, shared_data, colorized) || !draw_program_info(render, shared_data, fps, paused, ww, wh, colorized)))
             return false;
 
         refresh(render);
