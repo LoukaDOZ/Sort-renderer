@@ -6,6 +6,7 @@
 #include <SDL2/SDL.h>
 #include "sort.h"
 #include "render.h"
+#include "functions.h"
 #include "utils.h"
 #include "display.h"
 
@@ -304,21 +305,26 @@ bool draw_program_info(Render* render, Shared_data shared_data, int fps, bool pa
     SDL_Color color = colorized ? WHITE_COLOR : ORANGE_COLOR;
     bool first_line_taken = false;
 
+    sprintf(TEXT_BUFFER, "%d/%d", get_sort_algo_index(shared_data) + 1, SORT_FUNCTIONS_LEN);
+    int w = TEXT_LETTER_W * strlen(TEXT_BUFFER);
+    if(!draw_one_info(render, TEXT_BUFFER, window_w - w, 0, w, TEXT_H, color))
+        return false;
+
     if(is_shuffling(shared_data)) {
         first_line_taken = true;
-        int w = TEXT_LETTER_W * SHUFFLE_TEXT_LEN;
-        if(!draw_one_info(render, SHUFFLE_TEXT, window_w - w, 0, w, TEXT_H, color))
+        w = TEXT_LETTER_W * SHUFFLE_TEXT_LEN;
+        if(!draw_one_info(render, SHUFFLE_TEXT, window_w - w, TEXT_H, w, TEXT_H, color))
             return false;
     } else if(is_validating(shared_data)) {
         first_line_taken = true;
-        int w = TEXT_LETTER_W * VALIDATE_TEXT_LEN;
-        if(!draw_one_info(render, VALIDATE_TEXT, window_w - w, 0, w, TEXT_H, color))
+        w = TEXT_LETTER_W * VALIDATE_TEXT_LEN;
+        if(!draw_one_info(render, VALIDATE_TEXT, window_w - w, TEXT_H, w, TEXT_H, color))
             return false;
     }
 
     if(paused) {
-        int w = TEXT_LETTER_W * PAUSE_TEXT_LEN;
-        if(!draw_one_info(render, PAUSE_TEXT, window_w - w, TEXT_H * first_line_taken, w, TEXT_H, color))
+        w = TEXT_LETTER_W * PAUSE_TEXT_LEN;
+        if(!draw_one_info(render, PAUSE_TEXT, window_w - w, TEXT_H * (1 + first_line_taken), w, TEXT_H, color))
             return false;
     }
 
