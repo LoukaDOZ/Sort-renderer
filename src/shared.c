@@ -312,8 +312,8 @@ unsigned long get_simulation_delay(Shared_data data) {
 void set_sort_algo_index(Shared_data data, int shift) {
     lock_shared_pointer(data[SORT_ALGO_SHARED_POINTER]);
     unsigned int* value = (unsigned int*) data[SORT_ALGO_SHARED_POINTER]->pointer;
-    int shifted = (((int) *value) + shift) % SORT_FUNCTIONS_LEN;
-    *value = shifted < 0 ? SORT_FUNCTIONS_LEN + shifted : shifted;
+    int shifted = (((int) *value) + shift) % SORT_ALGORITHMS_LEN;
+    *value = shifted < 0 ? SORT_ALGORITHMS_LEN + shifted : shifted;
     unlock_shared_pointer(data[SORT_ALGO_SHARED_POINTER]);
 }
 

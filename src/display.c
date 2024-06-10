@@ -213,8 +213,8 @@ bool circle_drawing(Render* render, Shared_data shared_data, int window_w, int w
         float ratio = ((float) val) / ((float) save_array_len);
         SDL_Color color = current == cursor ? WHITE_COLOR : get_color(ratio);
 
-        float angle1 = step * ((float) i);
-        float angle2 = step * ((float) (i + 1));
+        float angle1 = step * ((float) i) - M_PI / 2;
+        float angle2 = step * ((float) (i + 1)) - M_PI / 2;
         int x1 = radius * cosf(angle1);
         int y1 = radius * sinf(angle1);
         int x2 = radius * cosf(angle2);
@@ -305,7 +305,7 @@ bool draw_program_info(Render* render, Shared_data shared_data, int fps, bool pa
     SDL_Color color = colorized ? WHITE_COLOR : ORANGE_COLOR;
     bool first_line_taken = false;
 
-    sprintf(TEXT_BUFFER, "%d/%d", get_sort_algo_index(shared_data) + 1, SORT_FUNCTIONS_LEN);
+    sprintf(TEXT_BUFFER, "%d/%d", get_sort_algo_index(shared_data) + 1, SORT_ALGORITHMS_LEN);
     int w = TEXT_LETTER_W * strlen(TEXT_BUFFER);
     if(!draw_one_info(render, TEXT_BUFFER, window_w - w, 0, w, TEXT_H, color))
         return false;

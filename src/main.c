@@ -136,7 +136,7 @@ int get_args(Args* args, int argc, char** argv) {
             printf("\t-r, --framerate <int>\t\tDisplay max frames per seconds (%d < framerate < %ld) (default: 60/s)\n", MIN_FRAMERATE, MAX_FRAMERATE);
             printf("\t-l, --looprate <int>\t\tSimulation max loops per seconds (%d < looprate < %ld) (default: 500/s)\n", MIN_LOOPRATE, MAX_LOOPRATE);
             printf("\t-a, --array-size <int>\t\tArray size (%d < array size < width) (default: screen width)\n", MIN_ARRAY_SIZE);
-            printf("\t-s, --sort <int>\t\tStarting sort index modulo SORT_FUNCTIONS_LEN (%d) (default: 0)\n", SORT_FUNCTIONS_LEN);
+            printf("\t-s, --sort <int>\t\tStarting sort index modulo SORT_ALGORITHMS_LEN (%d) (default: 0)\n", SORT_ALGORITHMS_LEN);
             printf("\t-d, --drawing-mode <str>\tWay to render the array : 'BAR', 'DOT', 'CIRCLE' or 'SNAIL' (default: 'BAR') ('CIRCLE' is always colorized)\n");
             printf("\t-f, --fullscreen\t\tSet fullscreen\n");
             printf("\t-c, --colorized\t\t\tColorize display\n");

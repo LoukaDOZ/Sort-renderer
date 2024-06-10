@@ -4,7 +4,7 @@
 
 //////// Add new sorts here ////////
 
-const int SORT_FUNCTIONS_LEN = 35;
+const int SORT_ALGORITHMS_LEN = 35;
 const Sort_Algorithm SORT_ALGORITHMS[] = {
     {
         "Insertion sort",
