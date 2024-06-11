@@ -108,21 +108,49 @@ void handle_render_events(Render* render, Shared_data shared_data, bool* paused,
 
 SDL_Color get_color(float ratio) {
     SDL_Color color = {0, 0, 0, 255};
+    float step = 1.f/6.f;
 
-    if(ratio < 0.2f) {
+    if(ratio < step) {
         color.r = 255;
-        color.g = (int) round(255.0 * ratio / 0.2);
-    } else if(ratio < 0.4f) {
-        color.r = (int) round(255.0 * (1 - (ratio - 0.2) / 0.2));
+        color.g = (int) round(255.0 * ratio / step);
+    } else if(ratio < step * 2) {
+        color.r = (int) round(255.0 * (1 - (ratio - step) / step));
         color.g = 255;
-    } else if(ratio < 0.6f) {
+    } else if(ratio < step * 3) {
         color.g = 255;
-        color.b = (int) round(255.0 * (ratio - 0.4) / 0.2);
-    } else if(ratio < 0.8f) {
-        color.g = (int) round(255.0 * (1 - (ratio - 0.6) / 0.2));
+        color.b = (int) round(255.0 * (ratio - step * 2) / step);
+    } else if(ratio < step * 4) {
+        color.g = (int) round(255.0 * (1 - (ratio - step * 3) / step));
+        color.b = 255;
+    } else if(ratio < step * 5) {
+        color.r = (int) round(255.0 * (ratio - step * 4) / step);
         color.b = 255;
     } else {
-        color.r = (int) round(255.0 * (ratio - 0.8) / 0.2);
+        color.r = 255;
+        color.b = (int) round(255.0 * (1 - (ratio - step * 5) / step));
+    }
+
+    return color;
+}
+
+SDL_Color get_color_distinct(float ratio) {
+    SDL_Color color = {0, 0, 0, 255};
+    float a = 1.f/5.f;
+
+    if(ratio < a) {
+        color.r = 255;
+        color.g = (int) round(255.0 * ratio / a);
+    } else if(ratio < a * 2) {
+        color.r = (int) round(255.0 * (1 - (ratio - a) / a));
+        color.g = 255;
+    } else if(ratio < a * 3) {
+        color.g = 255;
+        color.b = (int) round(255.0 * (ratio - a * 2) / a);
+    } else if(ratio < a * 4) {
+        color.g = (int) round(255.0 * (1 - (ratio - a * 3) / a));
+        color.b = 255;
+    } else {
+        color.r = (int) round(255.0 * (ratio - a * 4) / a);
         color.b = 255;
     }
 
@@ -147,7 +175,7 @@ bool bar_drawing(Render* render, Shared_data shared_data, int window_w, int wind
         SDL_Color color;
 
         if(colorized)
-            color = i == cursor ? WHITE_COLOR : get_color(ratio);
+            color = i == cursor ? WHITE_COLOR : get_color_distinct(ratio);
         else
             color = i == cursor ? RED_COLOR : WHITE_COLOR;
 
@@ -181,7 +209,7 @@ bool dot_drawing(Render* render, Shared_data shared_data, int window_w, int wind
         SDL_Color color;
 
         if(colorized)
-            color = i == cursor ? WHITE_COLOR : get_color(ratio);
+            color = i == cursor ? WHITE_COLOR : get_color_distinct(ratio);
         else
             color = i == cursor ? RED_COLOR : WHITE_COLOR;
 
@@ -246,7 +274,7 @@ bool snail_drawing(Render* render, Shared_data shared_data, int window_w, int wi
         SDL_Color color;
 
         if(colorized)
-            color = i == cursor ? WHITE_COLOR : get_color(ratio);
+            color = i == cursor ? WHITE_COLOR : get_color_distinct(ratio);
         else
             color = i == cursor ? RED_COLOR : WHITE_COLOR;
 
