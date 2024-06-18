@@ -26,22 +26,22 @@ make build
 ```
 
 Arguments :
-| Argument                   | Description                                                                     | Type                                                              | Default                    |
-|----------------------------|---------------------------------------------------------------------------------|-------------------------------------------------------------------|----------------------------|
-| `-h, --help`               | Show help                                                                       |                                                                   |                            |
-| `-w, --width <int>`        | Screen width in pixels                                                          | int (>= 2)                                                        | 500px                      |
-| `-e, --height <int>`       | Screen height in pixels                                                         | int (>= 2)                                                        | 500px                      |
-| `-r, --framerate <int>`    | Display max frames per seconds                                                  | int (>= 1 and <= 1000000)                                         | 60/s                       |
-| `-l, --looprate <int>`     | Simulation max loops per seconds                                                | int (>= 1 and <= 1000000)                                         | 500/s                      |
-| `-a, --array-size <int>`   | Array size                                                                      | int (>= 3 and <= screen width)                                    | Screen width               |
-| `-s, --sort <int>`         | Start sort function modulo `SORT_ALGORITHMS_LEN`                                 | int stating at 0                                                  | 0 (first)                  |
-| `-d, --drawing-mode <str>` | Way to render the array                                                         | `BAR`, `DOT`, `CIRCLE` or `SNAIL`. (`CIRCLE` is always colorized) | `BAR`                      |
-| `-f, --fullscreen`         | Set fullscreen                                                                  |                                                                   | Not fullscreen             |
-| `-c, --colorized`          | Colorize display                                                                |                                                                   | All white                  |
-| `-n, --manual-next-sort`   | Disable launching next sort automatically                                       |                                                                   | Automatic                  |
-| `-m, --same-shuffle`       | Set the output array after shuffling to always be the same                      |                                                                   | Different shuffling output |
-| `-v, --no-validation`      | Disable validating the array is properly sorted after execution of an algorithm |                                                                   | Always validate            |
-| `-i, --no-info`            | Disable information messages                                                    |                                                                   | Shown                      |
+| Argument                 | Description                                                                                      | Type                                  | Default                    |
+|--------------------------|--------------------------------------------------------------------------------------------------|---------------------------------------|----------------------------|
+| `-h, --help`             | Show help                                                                                        |                                       |                            |
+| `-w, --width <int>`      | Screen width in pixels                                                                           | int (>= 2)                            | 500px                      |
+| `-e, --height <int>`     | Screen height in pixels                                                                          | int (>= 2)                            | 500px                      |
+| `-r, --framerate <int>`  | Display max frames per seconds                                                                   | int (>= 1 and <= 1000000)             | 60/s                       |
+| `-l, --looprate <int>`   | Simulation max loops per seconds                                                                 | int (>= 1 and <= 1000000)             | 500/s                      |
+| `-a, --array-size <int>` | Array size                                                                                       | int (>= 3 and <= screen width)        | Screen width               |
+| `-s, --sort <int>`       | Start sort function (modulo `SORT_ALGORITHMS_LEN`) (See [Implemented sorts](#implemented-sorts)) | int stating at 0                      | 0 (first)                  |
+| `-d, --draw-mode <int>`  | Way to render the array (See [draw modes](#draw-modes))                                          | int (>= 0 and < `DRAW_FUNCTIONS_LEN`) | 0 (bar)                    |
+| `-f, --fullscreen`       | Set fullscreen                                                                                   |                                       | Not fullscreen             |
+| `-c, --colorized`        | Colorize display                                                                                 |                                       | All white                  |
+| `-n, --manual-next-sort` | Disable launching next sort automatically                                                        |                                       | Automatic                  |
+| `-m, --same-shuffle`     | Set the output array after shuffling to always be the same                                       |                                       | Different shuffling output |
+| `-v, --no-validation`    | Disable validating the array is properly sorted after execution of an algorithm                  |                                       | Always validate            |
+| `-i, --no-info`          | Disable information messages                                                                     |                                       | Shown                      |
 
 
 ### In game controls
@@ -97,13 +97,38 @@ Arguments :
 | Bozo sort              | ∞                                | Θ(n!)                                    | Θ(n)                                                  | Θ(1)                   | 33    |
 | Miracle sort           | ∞                                | Θ(n * m) (m = expected number of checks) | Θ(n)                                                  | Θ(1)                   | 34    |
 
-## Procedure to add a sort
-### Define the source file
+## Draw modes
 
-Add the `SORT_NAME.c` source file in the `sorts/src/` folder and copy the following sample code (replace `SORT_NAME` by the sort algorithm name) :
+| Draw   | Color mode       | Index |
+|--------|------------------|-------|
+| Bar    | All              | 0     |
+| Dot    | All              | 1     |
+| Circle | Always colorized | 2     |
+| Snail  | All              | 3     |
+
+# Example
+
+Default configuration:
+```bash
+./bin/executable
+```
+
+All arguments with a window size of 1000x700, starting with the 3rd sort, and rendering with a dot draw mode :
+```bash
+./bin/executable -w 1000 -e 700 -r 30 -l 1000 -a 500 -d 1 -s 2 -m -i -c
+```
+
+All arguments with fullscreen, starting with the 2nd sort from the end, and rendering with a dot draw mode :
+```bash
+./bin/executable -w 1000 -e 700 -r 30 -l 1000 -a 500 -d 1 -s -2 -m -i -c -f
+```
+
+# Procedure to add a sort
+## Define the source file
+
+Add the `SORT_NAME.c` source file in the `app/sorts/src/` folder and copy the following sample code (replace `SORT_NAME` by the sort algorithm name) :
 ```c
 #include <stdlib.h>
-#include "api.h"
 #include "sorts.h"
 
 short run_SORT_NAME_sort(Data* data) {
@@ -111,26 +136,11 @@ short run_SORT_NAME_sort(Data* data) {
     return SORT_SUCCESS;
 }
 ```
+`sorts.h` auto includes [`sort_api.h`](#sort-api).
+
 :warning: You do not need to instantiate or free the Data argument.
 
-#### The Data structure
-
-```c
-typedef struct Data {
-    int* array;
-    int cursor, array_len;
-    void* _private; // Do not touch
-} Data;
-```
-
-| Field             | Description                                                                                                                              |
-|-------------------|------------------------------------------------------------------------------------------------------------------------------------------|
-| `data->array_len` | Array length                                                                                                                             |
-| `data->array`     | Array of integers to sort with a `data->array_len` length                                                                                |
-| `data->cursor`    | Defines "where" we are in the array at the current iteration. Used for rendering. Must be an index between `0` and `data->array_len - 1` |
-| `data->_private`  | Data for the simulation. Must not be touched                                                                                             |
-
-#### Return values
+### Return values
 
 The `run_SORT_NAME_sort` function must return a `short` value depending on the success to run the algorithm :
 | Return value   | Description                                             |
@@ -138,36 +148,14 @@ The `run_SORT_NAME_sort` function must return a `short` value depending on the s
 | `SORT_SUCCESS` | Exit on success                                         |
 | `SORT_FAILURE` | Exit on failure (unable to allocate memory for example) |
 
-### The API
+## Expose the sort function
 
-The `api.h` file describes helper functions for the sort algorithm :
-
-```c
-bool run(Data* data);
-void tick(Data* data);
-void swap(Data* data, int a, int b);
-void debug(char* message, ...);
-void debug_warn(char* message, ...);
-void debug_err(char* message, ...);
-```
-
-| Function                         | Description                                                                                                                                              |
-|----------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `run(Data* data)`                | Returns a boolean telling whether the algorithm should keep running or not. When false, the algorithm should exit                                        |
-| `tick(Data* data)`               | This function is designed to be used after each iteration. It manages the looprate, when the simulation is paused or quitted, and it renders the changes |
-| `swap(Data* data, int a, int b)` | Helps to swap to array values defined by their indexes `a` and `b`                                                                                       |
-| `debug(char* message, ...)`      | Prints a log message. Works as printf with a new line                                                                                                    |
-| `debug_warn(char* message, ...)` | Prints a warning message. Works as printf with a new line                                                                                                |
-| `debug_err(char* message, ...)`  | Prints an error message. Works as printf with a new line                                                                                                 |
-
-:warning: The simulation never checks for out of bounds.
-
-### Expose the sort function
-
-Once the source file is ready, open the `sorts/headers/sorts.h` file and expose the previously defined function (replace `SORT_NAME` by the sort algorithm name) :
+Once the source file is ready, open the `app/sorts/headers/sorts.h` file and expose the previously defined function (replace `SORT_NAME` by the sort algorithm name) :
 ```c
 #ifndef SORTS_H
 #define SORTS_H
+
+#include "sort_api.h"
 
 short run_insertion_sort(Data* data);
 short run_bubble_sort(Data* data);
@@ -176,13 +164,13 @@ short run_SORT_NAME_sort(Data* data); // Expose the sort function
 #endif
 ```
 
-### Add the algorithm
+## Add the algorithm
 
-In the `src/functions.c` file, update the following part of the code by adding the new sort information :
+In the `app/functions/src/sort_functions.c` file, update the following part of the code by adding the new sort information :
 ```c
 #include <stdlib.h>
-#include "functions.h"
 #include "sorts.h"
+#include "sort_functions.h"
 
 //////// Add new sorts here ////////
 
@@ -204,11 +192,9 @@ const Sort_Algorithm SORT_ALGORITHMS[] = {
         &run_SORT_NAME_sort // Sort function reference
     }
 };
-
-////////////////////////////////////
 ```
 
-#### Sort_Algorithm structure
+### The Sort_Algorithm structure
 ```c
 typedef short (*Sort_function)(Data* data);
 
@@ -219,25 +205,239 @@ typedef struct Sort_Algorithm {
 } Sort_Algorithm;
 ```
 
-#### Resolving conflicting function names within sort source file
+# Procedure to add a draw mode
+## Define the source file
+
+Add the `DRAW_NAME.c` source file in the `app/draw/src/` folder and copy the following sample code (replace `DRAW_NAME` by the drawing name) :
+```c
+#include <stdlib.h>
+#include "draw.h"
+
+bool DRAW_NAME_drawing(Draw_data* data) {
+    // Draw function code
+    return true;
+}
+```
+`draw.h` auto includes [`draw_api.h`](#draw-api).
+
+:warning: You do not need to instantiate or free the Draw_data argument.
+
+### Return values
+
+The `DRAW_NAME_drawing` function must return a `bool` value depending on the success (`true`) or the failure (`false`).
+
+## Expose the draw function
+
+Once the source file is ready, open the `app/draw/headers/draw.h` file and expose the previously defined function (replace `DRAW_NAME` by the drawing name) :
+```c
+#ifndef DRAW_H
+#define DRAW_H
+
+#include "draw_api.h"
+
+bool bar_drawing(Draw_data* data);
+bool dot_drawing(Draw_data* data);
+bool circle_drawing(Draw_data* data);
+bool snail_drawing(Draw_data* data);
+bool DRAW_NAME_drawing(Draw_data* data); // Expose the draw function 
+```
+
+## Add the draw mode
+
+In the `app/functions/src/draw_functions.c` file, update the following part of the code by adding the new sort information :
+```c
+#include <stdlib.h>
+#include "draw.h"
+#include "draw_functions.h"
+
+const short COLOR_MODE_ALL = 0;
+const short COLOR_MODE_DEFAULT = 1;
+const short COLOR_MODE_COLORIZED = 2;
+
+//////// Add new draw functions here ////////
+
+const int DRAW_FUNCTIONS_LEN = 4;
+const Draw_function_info DRAW_FUNCTIONS[] = {
+    {
+        bar_drawing,
+        COLOR_MODE_ALL
+    },
+    {
+        dot_drawing,
+        COLOR_MODE_ALL
+    },
+    {
+        circle_drawing,
+        COLOR_MODE_COLORIZED
+    },
+    {
+        snail_drawing,
+        COLOR_MODE_ALL
+    },
+    { // Add the draw mode
+        DRAW_NAME_drawing,
+        COLOR_MODE_ALL /* Possible coloring :
+                            COLOR_MODE_ALL :        normal and colorized
+                            COLOR_MODE_DEFAULT :    normal only
+                            COLOR_MODE_COLORIZED :  colorized only
+                        */
+    }
+};
+```
+
+### The Draw_function_info structure
+```c
+typedef bool (*Draw_function)(Draw_data* data);
+
+typedef struct Draw_function_info {
+    Draw_function draw;
+    short color_mode;
+} Draw_function_info;
+```
+
+# Resolving conflicting function names
 
 Some sort algorithms may declare functions with the same signature leading to compilation error, even when they are not declared in the header. To avoid this problem, mark "private" functions as static.
 
-For example, `sorts/src/merge_top_down.c` and `sorts/src/merge_bottom_up.c` both use and declare a `static int* copy_elements(Data* data, int start, int len)`. The `static` keyword prevent conflicts when compiling.
+For example, `app/sorts/src/merge_top_down.c` and `app/sorts/src/merge_bottom_up.c` both use and declare a `static int* copy_elements(Data* data, int start, int len)`. The `static` keyword prevent conflicts when compiling.
 
-# Example
+# APIs
+## Sort API
+### Constants
 
-Default configuration:
-```bash
-./bin/executable
+| Constant       | Type  | Description          |
+|----------------|-------|----------------------|
+| `SORT_SUCCESS` | short | Exit sort on success |
+| `SORT_FAILURE` | short | Exit sort on failure |
+
+### Structures
+#### Data structure
+
+`sort_api.h` auto includes [`common_api.h`](#common-api).
+
+```c
+typedef struct Data {
+    int* array;
+    int cursor, array_len;
+    void* _private; // Do not touch
+} Data;
 ```
 
-All arguments with a window size of 1000x700, starting with the 3rd sort, and rendering with a dot drawing mode :
-```bash
-./bin/executable -w 1000 -e 700 -r 30 -l 1000 -a 500 -d 'DOT' -s 2 -m -i -c
+| Field       | Description                                                                                                                        |
+|-------------|------------------------------------------------------------------------------------------------------------------------------------|
+| `array_len` | Array length                                                                                                                       |
+| `array`     | Array of integers to sort with an `array_len` length                                                                               |
+| `cursor`    | Defines "where" we are in the array at the current iteration. Used for rendering. Must be an index between `0` and `array_len - 1` |
+| `_private`  | Data for the simulation. Must not be touched                                                                                       |
+
+### Functions
+
+```c
+bool run(Data* data);
+void tick(Data* data);
+void swap(Data* data, int a, int b);
 ```
 
-All arguments with fullscreen, starting with the 2nd sort from the end, and rendering with a dot drawing mode :
-```bash
-./bin/executable -w 1000 -e 700 -r 30 -l 1000 -a 500 -d 'DOT' -s -2 -m -i -c -f
+| Function                         | Description                                                                                                                                              |
+|----------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `run(Data* data)`                | Returns a boolean telling whether the algorithm should keep running or not. When false, the algorithm should exit                                        |
+| `tick(Data* data)`               | This function is designed to be used after each iteration. It manages the looprate, when the simulation is paused or quitted, and it renders the changes |
+| `swap(Data* data, int a, int b)` | Helps to swap to array values defined by their indexes `a` and `b`                                                                                       |
+
+:warning: The simulation never checks for out of bounds.
+
+## Draw API
+### Constants
+
+| Constant                 | Type  | Description                              |
+|--------------------------|-------|------------------------------------------|
+| `NO_COLOR`               | Color | Default rendering color if not colorized |
+| `CURSOR_COLOR`           | Color | Default cursor color if not colorized    |
+| `COLORIZED_CURSOR_COLOR` | Color | Cursor color colorized                   |
+
+### Structures
+#### Draw_data
+
+`draw_api.h` auto includes [`common_api.h`](#common-api).
+
+```c
+typedef struct Draw_data {
+    int* array;
+    int array_len, current_array_len, cursor, window_w, window_h;
+    bool colorized;
+    void* _private; // Do not touch
+} Draw_data;
 ```
+
+| Field               | Description                                             |
+|---------------------|---------------------------------------------------------|
+| `array_len`         | Max array length                                        |
+| `current_array_len` | Current array length                                    |
+| `array`             | Copy of the array values of `array_len` length          |
+| `cursor`            | Current cursor position between `0` and `array_len - 1` |
+| `window_w`          | Window width                                            |
+| `window_h`          | Window height                                           |
+| `colorized`         | `true` if the drawing should be colorized               |
+| `_private`          | Data for the rendering. Must not be touched             |
+
+#### Color
+
+```c
+typedef struct Color {
+    int r, g, b, a;
+} Color;
+```
+
+| Field | Description                   |
+|-------|-------------------------------|
+| `r`   | Red value between 0 and 255   |
+| `g`   | Green value between 0 and 255 |
+| `b`   | Blue value between 0 and 255  |
+| `a`   | Alpha value between 0 and 255 |
+
+### Functions
+
+```c
+Color get_color(float ratio);
+Color get_color_distinct(float ratio);
+
+bool rectangle(Draw_data* data, int x, int y, int w, int h, Color color);
+bool triangle(Draw_data* data, int x1, int y1, int x2, int y2, int x3, int y3, Color color);
+```
+
+| Function                                                                                 | Description                                                                             |
+|------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------|
+| `get_color(float ratio)`                                                                 | Returns a color gradien from red (0.0) to red (1.0) going though all colors             |
+| `get_color_distinct(float ratio)`                                                        | Returns a color gradien from red (0.0) to purple (1.0) going though all distinct colors |
+| `rectangle(Draw_data* data, int x, int y, int w, int h, Color color)`                    | Draws a rectangle                                                                       |
+| `triangle(Draw_data* data, int x1, int y1, int x2, int y2, int x3, int y3, Color color)` | Draws a triangle                                                                        |
+
+# Common API
+
+`common_api.h` contains some helpful functions :
+
+```c
+int max(int a, int b);
+int min(int a, int b);
+int between(int inf, int sup, int v);
+
+float maxf(float a, float b);
+float minf(float a, float b);
+float betweenf(float inf, float sup, float v);
+
+void debug(char* message, ...);
+void debug_warn(char* message, ...);
+void debug_err(char* message, ...);
+```
+
+| Function                                  | Description                                                  |
+|-------------------------------------------|--------------------------------------------------------------|
+| `max(int a, int b)`                       | Returns the biggest value between `a` and `b`                |
+| `min(int a, int b)`                       | Returns the smallest value between `a` and `b`               |
+| `between(int inf, int sup, int v)`        | Returns `inf` if `v` < `inf`, `sup` if `v` > `sup`, else `v` |
+| `maxf(float a, float b)`                  | Same as `max(int a, int b)` but for `float`                  |
+| `minf(float a, float b)`                  | Same as `min(int a, int b)` but for `float`                  |
+| `betweenf(float inf, float sup, float v)` | Same as `between(int inf, int sup, int v)` but for `float`   |
+| `debug(char* message, ...)`               | Prints a log message. Works as printf with a new line        |
+| `debug_warn(char* message, ...)`          | Prints a warning message. Works as printf with a new line    |
+| `debug_err(char* message, ...)`           | Prints an error message. Works as printf with a new line     |

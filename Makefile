@@ -1,11 +1,24 @@
 CC=gcc
 BinFolder=./bin
-SortsFolder=./sorts
-SrcFolder=./src
-HeadersFolder=./headers
-SortHeadersFolder=$(SortsFolder)/headers
-SortSrcFolder=$(SortsFolder)/src
-OFiles=$(patsubst %.c,%.o,$(wildcard $(SortSrcFolder)/*.c)) $(patsubst %.c,%.o,$(wildcard $(SrcFolder)/*.c))
+
+Main=./app/main.c
+
+RendererHeaders=./app/renderer/headers
+RendererSrc=./app/renderer/src
+
+SortsHeaders=./app/sorts/headers
+SortsSrc=./app/sorts/src
+
+FunctionsHeaders=./app/functions/headers
+FunctionsSrc=./app/functions/src
+
+APIsHeaders=./app/api/headers
+APIsSrc=./app/api/src
+
+DrawHeaders=./app/draw/headers
+DrawSrc=./app/draw/src
+
+OFiles=$(patsubst %.c,%.o,$(Main)) $(patsubst %.c,%.o,$(wildcard $(APIsSrc)/*.c)) $(patsubst %.c,%.o,$(wildcard $(SortsSrc)/*.c)) $(patsubst %.c,%.o,$(wildcard $(DrawSrc)/*.c)) $(patsubst %.c,%.o,$(wildcard $(FunctionsSrc)/*.c)) $(patsubst %.c,%.o,$(wildcard $(RendererSrc)/*.c))
 Exec=executable
 Flags=-lm -lpthread
 SDLFlags=`sdl2-config --cflags --libs` -lSDL2 -lSDL2_ttf
@@ -27,7 +40,7 @@ run:
 	$(BinFolder)/$(Exec)
 
 %.o: %.c
-	$(CC) -o $(BinFolder)/$(notdir $@) -I $(HeadersFolder) -I $(SortHeadersFolder) -c $< $(SDLFlags) $(Flags)
+	$(CC) -o $(BinFolder)/$(notdir $@) -I $(APIsHeaders) -I $(SortsHeaders) -I $(DrawHeaders) -I $(FunctionsHeaders) -I $(RendererHeaders) -c $< $(SDLFlags) $(Flags)
 
 clean:
 	rm -f $(BinFolder)/*.o $(BinFolder)/$(Exec)
