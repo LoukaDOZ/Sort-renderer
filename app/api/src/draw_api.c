@@ -5,7 +5,7 @@
 #include "draw_api.h"
 
 const Color NO_COLOR = {255, 255, 255, 255};
-const Color CURSOR_COLOR = {255, 90, 0, 255};
+const Color CURSOR_COLOR = {255, 0, 0, 255};
 const Color COLORIZED_CURSOR_COLOR = {255, 255, 255, 255};
 
 Color get_color(float ratio) {
