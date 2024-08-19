@@ -163,7 +163,7 @@ const Sort_Algorithm SORT_ALGORITHMS[] = {
     },
     {
         "Stalin sort",
-        "Θ(n)",
+        "Θ(n²)",
         &run_stalin_sort
     },
     {
