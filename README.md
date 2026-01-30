@@ -120,7 +120,7 @@ All arguments with a window size of 1000x700, starting with the 3rd sort, and re
 
 All arguments with fullscreen, starting with the 2nd sort from the end, and rendering with a dot draw mode :
 ```bash
-./bin/executable -w 1000 -e 700 -r 30 -l 1000 -a 500 -d 1 -s -2 -m -i -c -f
+./bin/executable -r 30 -l 1000 -a 500 -d 1 -s -2 -m -i -c -f
 ```
 
 # Procedure to add a sort
@@ -342,7 +342,7 @@ void swap(Data* data, int a, int b);
 |----------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `run(Data* data)`                | Returns a boolean telling whether the algorithm should keep running or not. When false, the algorithm should exit                                        |
 | `tick(Data* data)`               | This function is designed to be used after each iteration. It manages the looprate, when the simulation is paused or quitted, and it renders the changes |
-| `swap(Data* data, int a, int b)` | Helps to swap to array values defined by their indexes `a` and `b`                                                                                       |
+| `swap(Data* data, int a, int b)` | Helps to swap two array values defined by their indexes `a` and `b`                                                                                       |
 
 :warning: The simulation never checks for out of bounds.
 
